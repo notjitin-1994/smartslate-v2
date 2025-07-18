@@ -1,0 +1,305 @@
+import React, { useState } from 'react';
+import { DollarSign, TrendingUp, BrainCircuit, Award, Link as LinkIcon, Clock, Info, Briefcase, GraduationCap, User, ArrowLeft, ArrowDown } from 'lucide-react';
+import { Reveal } from "../animations/Reveal";
+import { useSpring, motion, MotionValue, useTransform } from 'framer-motion';
+
+// --- ROI CALCULATOR COMPONENTS ---
+
+interface MetricCardProps {
+    icon: React.ElementType;
+    title: string;
+    value: MotionValue<number>;
+    unit?: string;
+    description: string;
+    source: string;
+    isCurrency?: boolean;
+}
+
+/**
+ * A styled card to display a single ROI metric.
+ */
+const MetricCard: React.FC<MetricCardProps> = ({ 
+    icon: Icon, 
+    title, 
+    value, 
+    unit = '', 
+    description, 
+    source, 
+    isCurrency = false 
+}) => {
+    // We need a new motion value that transforms the original one for display.
+    const displayValue = useTransform(value, (v) => Math.round(v).toLocaleString());
+
+    return (
+        <div className="group bg-card-bg p-6 rounded-xl h-full text-left flex flex-col border border-brand-accent/10 hover:border-brand-accent/30 transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-brand-accent/10">
+            <div className="flex items-start justify-between mb-3">
+                <div className="p-3 bg-brand-accent/10 rounded-full w-max transition-all duration-300 group-hover:bg-brand-accent/20">
+                    <Icon className="h-8 w-8 text-brand-accent" />
+                </div>
+                <div className="relative flex items-center">
+                    <Info className="h-4 w-4 text-text-secondary/50 cursor-help" />
+                    <div className="absolute left-full ml-4 w-60 bg-brand-bg text-text-secondary text-xs rounded-lg p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none shadow-lg border border-brand-card-bg z-10">
+                        {source}
+                        <div className="absolute top-1/2 -translate-y-1/2 right-full w-0 h-0 border-y-4 border-y-transparent border-r-4 border-r-brand-bg"></div>
+                    </div>
+                </div>
+            </div>
+            <h3 className="font-quicksand text-xl font-bold text-foreground mb-2">{title}</h3>
+            <motion.p className="text-4xl font-bold bg-gradient-to-r from-brand-accent to-brand-accent-dark bg-clip-text text-transparent tabular-nums mb-3">
+                {isCurrency && '$'}
+                <motion.span>{displayValue}</motion.span>
+                {unit}
+            </motion.p>
+            <p className="text-muted-foreground text-sm flex-grow">{description}</p>
+        </div>
+    );
+};
+
+interface PersonaSelectorProps {
+    onSelect: (persona: 'educator' | 'businessman' | 'student') => void;
+}
+
+/**
+ * Persona selection screen with improved visual design.
+ */
+const PersonaSelector: React.FC<PersonaSelectorProps> = ({ onSelect }) => {
+    const personaOptions = [
+        {
+            id: 'educator',
+            icon: GraduationCap,
+            title: 'Educator',
+            description: <>See how Smartslate can <strong className="gradient-text">boost student outcomes</strong> and <strong className="gradient-text">institutional rankings</strong>.</>
+        },
+        {
+            id: 'businessman',
+            icon: Briefcase,
+            title: 'Business Leader',
+            description: <>Discover the ROI of <strong className="gradient-text">upskilling your workforce</strong> and <strong className="gradient-text">closing critical skills gaps</strong>.</>
+        },
+        {
+            id: 'student',
+            icon: User,
+            title: 'Student / Professional',
+            description: <>Calculate potential <strong className="gradient-text">salary growth</strong> and <strong className="gradient-text">career acceleration</strong>.</>
+        }
+    ];
+
+    return (
+        <div className="w-full">
+            <div className="flex flex-col md:flex-row justify-between items-stretch gap-6 lg:gap-8">
+                {personaOptions.map(({ id, icon: Icon, title, description }) => (
+                    <button
+                        key={id}
+                        onClick={() => onSelect(id as 'educator' | 'businessman' | 'student')}
+                        className="group text-left bg-card-bg p-6 rounded-xl border border-brand-accent/10 hover:border-brand-accent/40 transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-brand-accent/10 relative overflow-hidden transform hover:-translate-y-1 md:w-[32%]"
+                    >
+                        <div className="animate-pulse-glow absolute inset-0"></div>
+                        <div className="icon-wrapper p-3 bg-brand-accent/10 rounded-full w-max mb-4 transition-all duration-300 group-hover:bg-brand-accent/20">
+                            <Icon className="h-8 w-8 text-brand-accent" />
+                        </div>
+                        <h3 className="text-xl font-bold text-white font-quicksand mb-2">{title}</h3>
+                        <p className="text-text-secondary flex-grow">{description}</p>
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+/**
+ * The main ROI Calculator component.
+ */
+const ROICalculator: React.FC = () => {
+    const [persona, setPersona] = useState<'educator' | 'businessman' | 'student' | null>(null);
+
+    // Educator states
+    const [studentCount, setStudentCount] = useState(2500);
+    const [graduationRate, setGraduationRate] = useState(85);
+    const [timeToDegree, setTimeToDegree] = useState(4);
+
+    // Businessman states
+    const [employeeCount, setEmployeeCount] = useState(500);
+    const [timeToProductivity, setTimeToProductivity] = useState(8);
+    const [employeeTurnover, setEmployeeTurnover] = useState(15);
+
+    // Student states
+    const [currentSalary, setCurrentSalary] = useState(60000);
+    const [timeToPromotion, setTimeToPromotion] = useState(24);
+    const [jobOpportunities, setJobOpportunities] = useState(2);
+
+    // Animation states - these will smoothly follow the actual state values
+    const animatedGraduationRate = useSpring(graduationRate, { stiffness: 100, damping: 30 });
+    const animatedTimeToDegree = useSpring(timeToDegree, { stiffness: 100, damping: 30 });
+    const animatedStudentCount = useSpring(studentCount, { stiffness: 100, damping: 30 });
+    const animatedTimeToProductivity = useSpring(timeToProductivity, { stiffness: 100, damping: 30 });
+    const animatedEmployeeTurnover = useSpring(employeeTurnover, { stiffness: 100, damping: 30 });
+    const animatedEmployeeCount = useSpring(employeeCount, { stiffness: 100, damping: 30 });
+    const animatedSalary = useSpring(currentSalary, { stiffness: 100, damping: 30 });
+    const animatedTimeToPromotion = useSpring(timeToPromotion, { stiffness: 100, damping: 30 });
+    const animatedJobOpportunities = useSpring(jobOpportunities, { stiffness: 100, damping: 30 });
+
+    // --- DERIVED ANIMATED VALUES FOR METRICS ---
+
+    // Educator
+    const projectedGraduationRate = useTransform(animatedGraduationRate, v => v * 1.05);
+    const projectedTimeToDegree = useTransform(animatedTimeToDegree, v => v * 0.9);
+    const projectedRankingBoost = useTransform(animatedStudentCount, v => Math.round(v / 1000 * 5));
+
+    // Businessman
+    const projectedProductivityTime = useTransform(animatedTimeToProductivity, v => v * 0.75);
+    const projectedEmployeeRetention = useTransform(animatedEmployeeTurnover, v => v * 0.8);
+    const projectedAnnualROI = useTransform(
+        [animatedEmployeeCount, animatedEmployeeTurnover],
+        ([employees, turnover]) => Number(employees) * 5000 * (Number(turnover) / 100)
+    );
+
+    // Student
+    const projectedSalary = useTransform(animatedSalary, v => v * 1.25);
+    const projectedPromotionTime = useTransform(animatedTimeToPromotion, v => v * 0.7);
+    const projectedJobOpportunities = useTransform(animatedJobOpportunities, v => v * 2);
+
+    const renderCalculator = () => {
+        if (!persona) return null;
+
+        let calculatorView, headline, closingArgument;
+
+        switch (persona) {
+            case 'educator':
+                headline = "The Institutional Impact of AI-Powered Learning";
+                calculatorView = (
+                    <>
+                        <div className="grid md:grid-cols-3 gap-6 lg:gap-8 mb-8">
+                            <div>
+                                <label htmlFor="studentCount" className="block text-sm font-medium text-text-secondary mb-2">Number of Students</label>
+                                <input type="range" id="studentCount" min="500" max="5000" value={studentCount} onChange={(e) => setStudentCount(parseInt(e.target.value))} className="range-slider" />
+                                <div className="text-right text-lg font-bold text-white mt-2">{studentCount.toLocaleString()}</div>
+                            </div>
+                            <div>
+                                <label htmlFor="graduationRate" className="block text-sm font-medium text-text-secondary mb-2">Current Graduation Rate (%)</label>
+                                <input type="range" id="graduationRate" min="50" max="99" value={graduationRate} onChange={(e) => setGraduationRate(parseInt(e.target.value))} className="range-slider" />
+                                <div className="text-right text-lg font-bold text-white mt-2">{graduationRate}%</div>
+                            </div>
+                            <div>
+                                <label htmlFor="timeToDegree" className="block text-sm font-medium text-text-secondary mb-2">Avg. Time to Degree (Years)</label>
+                                <input type="range" id="timeToDegree" min="3" max="6" step="0.1" value={timeToDegree} onChange={(e) => setTimeToDegree(parseFloat(e.target.value))} className="range-slider" />
+                                <div className="text-right text-lg font-bold text-white mt-2">{timeToDegree.toFixed(1)}</div>
+                            </div>
+                        </div>
+                        <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+                            <MetricCard icon={TrendingUp} title="Graduation Rate" value={projectedGraduationRate} unit="%" description="Projected 5% increase in graduation rates with personalized learning paths." source="Based on case studies from institutions implementing adaptive learning technologies." />
+                            <MetricCard icon={Clock} title="Time to Degree" value={projectedTimeToDegree} unit=" years" description="Projected 10% reduction in average time to complete degree programs." source="Analysis of accelerated learning paths enabled by AI-driven curriculum optimization." />
+                            <MetricCard icon={Award} title="Institutional Ranking" value={projectedRankingBoost} unit=" points" description="Potential boost in national rankings from improved student outcomes." source="Correlation models between student success metrics and university ranking systems." />
+                        </div>
+                    </>
+                );
+                closingArgument = <p className="text-lg text-muted-foreground">In a competitive academic landscape, student success is the ultimate benchmark. By investing in AI-driven educational tools, you're not just improving statistics—you're <strong className="gradient-text">enhancing your institution's reputation</strong>, attracting <strong className="gradient-text">top-tier talent</strong>, and securing a <strong className="gradient-text">brighter future for your students</strong> and faculty alike.</p>;
+                break;
+
+            case 'businessman':
+                headline = "The Business ROI of a Future-Ready Workforce";
+                calculatorView = (
+                    <>
+                        <div className="grid md:grid-cols-3 gap-6 lg:gap-8 mb-8">
+                            <div>
+                                <label htmlFor="employeeCount" className="block text-sm font-medium text-text-secondary mb-2">Number of Employees</label>
+                                <input type="range" id="employeeCount" min="50" max="2000" value={employeeCount} onChange={(e) => setEmployeeCount(parseInt(e.target.value))} className="range-slider" />
+                                <div className="text-right text-lg font-bold text-white mt-2">{employeeCount.toLocaleString()}</div>
+                            </div>
+                            <div>
+                                <label htmlFor="timeToProductivity" className="block text-sm font-medium text-text-secondary mb-2">Avg. Time to Full Productivity (Weeks)</label>
+                                <input type="range" id="timeToProductivity" min="4" max="12" value={timeToProductivity} onChange={(e) => setTimeToProductivity(parseInt(e.target.value))} className="range-slider" />
+                                <div className="text-right text-lg font-bold text-white mt-2">{timeToProductivity}</div>
+                            </div>
+                            <div>
+                                <label htmlFor="employeeTurnover" className="block text-sm font-medium text-text-secondary mb-2">Annual Employee Turnover (%)</label>
+                                <input type="range" id="employeeTurnover" min="5" max="40" value={employeeTurnover} onChange={(e) => setEmployeeTurnover(parseInt(e.target.value))} className="range-slider" />
+                                <div className="text-right text-lg font-bold text-white mt-2">{employeeTurnover}%</div>
+                            </div>
+                        </div>
+                        <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+                            <MetricCard icon={BrainCircuit} title="Time to Productivity" value={projectedProductivityTime} unit=" wks" description="Projected 25% reduction in time for employees to reach full productivity." source="Data from corporate training programs measuring onboarding and upskilling efficiency." />
+                            <MetricCard icon={TrendingUp} title="Employee Retention" value={projectedEmployeeRetention} unit="%" description="Projected 20% decrease in voluntary turnover due to investment in career growth." source="Industry reports linking professional development opportunities to employee loyalty." />
+                            <MetricCard icon={DollarSign} title="Annual ROI" value={projectedAnnualROI} isCurrency description="Estimated annual return from reduced recruitment costs and increased productivity." source="Standard ROI calculation model based on a conservative $5k value per retained employee." />
+                        </div>
+                    </>
+                );
+                closingArgument = <p className="text-lg text-muted-foreground">The most valuable asset in any business is its people. Investing in targeted, AI-powered upskilling doesn't just fill skills gaps—it <strong className="gradient-text">boosts innovation</strong>, creates a more <strong className="gradient-text">agile and resilient workforce</strong>, and delivers a <strong className="gradient-text">measurable return</strong> that echoes across your entire organization.</p>;
+                break;
+
+            case 'student':
+                headline = "Accelerate Your Career with In-Demand Skills";
+                calculatorView = (
+                    <>
+                        <div className="grid md:grid-cols-3 gap-6 lg:gap-8 mb-8">
+                            <div>
+                                <label htmlFor="currentSalary" className="block text-sm font-medium text-text-secondary mb-2">Current Annual Salary ($)</label>
+                                <input type="range" id="currentSalary" min="30000" max="150000" step="1000" value={currentSalary} onChange={(e) => setCurrentSalary(parseInt(e.target.value))} className="range-slider" />
+                                <div className="text-right text-lg font-bold text-white mt-2">${currentSalary.toLocaleString()}</div>
+                            </div>
+                            <div>
+                                <label htmlFor="timeToPromotion" className="block text-sm font-medium text-text-secondary mb-2">Est. Time to Next Promotion (Months)</label>
+                                <input type="range" id="timeToPromotion" min="6" max="48" value={timeToPromotion} onChange={(e) => setTimeToPromotion(parseInt(e.target.value))} className="range-slider" />
+                                <div className="text-right text-lg font-bold text-white mt-2">{timeToPromotion}</div>
+                            </div>
+                            <div>
+                                <label htmlFor="jobOpportunities" className="block text-sm font-medium text-text-secondary mb-2">Current Job Opportunities (Multiplier)</label>
+                                <input type="range" id="jobOpportunities" min="1" max="5" step="0.1" value={jobOpportunities} onChange={(e) => setJobOpportunities(parseFloat(e.target.value))} className="range-slider" />
+                                <div className="text-right text-lg font-bold text-white mt-2">{jobOpportunities.toFixed(1)}x</div>
+                            </div>
+                        </div>
+                        <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+                            <MetricCard icon={DollarSign} title="Salary Increase" value={projectedSalary} isCurrency description="Projected 25% salary boost after acquiring certified, in-demand skills." source="Market analysis of salary data for roles requiring specialized technology skills." />
+                            <MetricCard icon={Clock} title="Time to Promotion" value={projectedPromotionTime} unit=" mths" description="Projected 30% reduction in time to achieve your next career milestone." source="Based on career progression data from professionals in high-growth industries." />
+                            <MetricCard icon={LinkIcon} title="Job Opportunities" value={projectedJobOpportunities} unit="x" description="Projected 2x multiplier for relevant job openings unlocked with new skills." source="Data compiled from major job boards on skill-based role availability." />
+                        </div>
+                    </>
+                );
+                closingArgument = <p className="text-lg text-muted-foreground">Your career is your most valuable asset. The right skills don't just lead to a better salary; they unlock <strong className="gradient-text">accelerated career paths</strong>, greater <strong className="gradient-text">professional influence</strong>, and the freedom to pursue <strong className="gradient-text">opportunities you're truly passionate about</strong>. Invest in yourself and take control of your future.</p>;
+                break;
+            default:
+                return null;
+        }
+
+        return (
+            <Reveal>
+                <div className="bg-card-bg/80 backdrop-blur-md p-6 md:p-8 lg:p-12 rounded-2xl shadow-2xl border border-transparent mt-12">
+                    <div className="flex justify-between items-center mb-8">
+                        <h2 className="font-quicksand text-2xl md:text-3xl font-bold text-white">{headline}</h2>
+                        <button onClick={() => setPersona(null)} className="text-text-secondary hover:text-white transition-colors flex items-center gap-2 text-sm font-semibold">
+                            <ArrowLeft className="w-4 h-4" /> Change Persona
+                        </button>
+                    </div>
+                    {calculatorView}
+                    <div className="pt-8 mt-8 border-t border-brand-accent/20">
+                        {closingArgument}
+                    </div>
+                </div>
+            </Reveal>
+        );
+    };
+
+    return (
+        <section id="roi-calculator" className="py-16 md:py-24">
+            <div className="container mx-auto px-6">
+                <div className="text-left w-full">
+                    <h2 className="font-quicksand text-3xl md:text-4xl font-bold text-white mb-4">
+                        Select your <strong className="gradient-text font-semibold">Persona</strong>
+                    </h2>
+                    <p className="text-lg text-text-secondary mb-10">
+                        Select your persona to unlock a <strong className="gradient-text font-semibold">personalized ROI calculation</strong>, tailored to your unique <strong className="gradient-text font-semibold">career path or business objectives</strong>.
+                    </p>
+                </div>
+
+                <div className="max-w-5xl mx-auto">
+                    {!persona ? (
+                        <PersonaSelector onSelect={setPersona} />
+                    ) : (
+                        renderCalculator()
+                    )}
+                </div>
+            </div>
+        </section>
+    );
+};
+
+export default ROICalculator;
