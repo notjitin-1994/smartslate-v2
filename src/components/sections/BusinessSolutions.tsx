@@ -1,8 +1,8 @@
 import React from 'react';
 import { Reveal } from '../common/reveal';
-import { IgnitionTimeline } from '../animations/IgnitionTimeline';
-import { SkillBlueprint } from '../animations/SkillBlueprint';
-import { SolaraBrain } from '../animations/SolaraBrain';
+import CourseBuildingAnimation from '../animations/CourseBuildingAnimation';
+import LearningBlueprintAnimation from '../animations/LearningBlueprintAnimation';
+import { IlluminatingSun } from '../animations/IlluminatingSun';
 
 import type { FormType } from '../../lib/formUtils';
 
@@ -30,29 +30,38 @@ export const BusinessSolutions: React.FC<BusinessSolutionsProps> = ({ onContactC
             <Reveal>
               <div className="space-y-4">
                 <h2 className="font-quicksand text-3xl md:text-4xl font-bold text-white">
-                  Ignition Series: <span className="gradient-text">Ready-to-Deploy Academies</span>
+                  Ignition Series: <span className="gradient-text">In Development</span>
                 </h2>
                 <p className="text-lg text-text-secondary leading-relaxed">
-                  Your team is your engine, but even the best engines need the right fuel. Don't let skill gaps slow your momentum. Our <strong>Ignition Series</strong> offers a curated library of over <strong>250+ ready-to-deploy courses</strong> in critical domains like AI, Data Science, and Leadership.
+                  Your team is your engine, and we're crafting the perfect fuel. Our <strong>Ignition Series</strong> library is currently in development, with courses being added regularly in high-demand areas like AI, Data Science, and Leadership.
                 </p>
                 <p className="text-lg text-text-secondary leading-relaxed">
-                  Stop waiting for curriculum development. Deploy a world-class training academy in <strong>under 48 hours</strong> and see an average <strong>35% increase in team productivity</strong> within the first quarter. You're not just buying courses; you're buying speed, efficiency, and a decisive competitive edge.
+                  We're building this <strong>with you in mind</strong>. Tell us what courses and skills would be most valuable for your team, and we'll prioritize them in our development pipeline.
                 </p>
+                <p className="text-sm text-text-secondary/80 italic mt-2">
+                  First courses launching Q4 2024
+                </p>
+                <button 
+                  onClick={() => onContactClick('ignition_interest')}
+                  className="px-6 py-2 bg-transparent border border-brand-accent text-brand-accent font-semibold rounded-lg hover:bg-brand-accent hover:text-brand-bg transition-colors duration-300 mt-4"
+                >
+                  Tell Us What You Want
+                </button>
               </div>
             </Reveal>
             <div className="flex items-center justify-center">
-              <IgnitionTimeline />
+              <CourseBuildingAnimation />
             </div>
           </div>
         </div>
       </section>
 
       {/* Product 2: Strategic Skill Architecture */}
-      <section id="skill-architecture" className="py-12 md:py-16">
+      <section id="skill-architecture" className="py-12 md:py-16 bg-gradient-to-br from-brand-card-bg/30 to-transparent rounded-2xl">
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="flex items-center justify-center order-last md:order-first">
-              <SkillBlueprint skills={leadershipBlueprintData} />
+            <div className="flex items-center justify-center order-last md:order-first h-96">
+              <LearningBlueprintAnimation />
             </div>
             <Reveal>
               <div className="space-y-4">
@@ -65,6 +74,12 @@ export const BusinessSolutions: React.FC<BusinessSolutionsProps> = ({ onContactC
                 <p className="text-lg text-text-secondary leading-relaxed">
                   Our <strong>Strategic Skill Architecture</strong> service goes beyond course creation. We partner with your leadership to create a <strong>bespoke learning blueprint</strong> that aligns directly with your 3-to-5-year business objectives. We've helped leaders like you <strong>reduce employee ramp-up time by 60%</strong> and <strong>increase role-specific proficiency by over 70%</strong>. This isn't just custom content; it's your corporate strategy, encoded into your talent.
                 </p>
+                <button 
+                  onClick={() => onContactClick('strategy_consultation')}
+                  className="px-6 py-2 bg-transparent border border-brand-accent text-brand-accent font-semibold rounded-lg hover:bg-brand-accent hover:text-brand-bg transition-colors duration-300 mt-6"
+                >
+                  Schedule a Strategy Session
+                </button>
               </div>
             </Reveal>
           </div>
@@ -90,14 +105,14 @@ export const BusinessSolutions: React.FC<BusinessSolutionsProps> = ({ onContactC
                   <strong>Solara AI</strong> is a self-evolving Learning Experience Platform (LXP) that doesn't just manage content—it anticipates needs. Using predictive analytics, it identifies future skill gaps and auto-generates learning paths, turning your organization into a truly adaptive workforce. Be more than a client; be a pioneer.
                 </p>
                  <button 
-                  onClick={() => onContactClick('introduction')}
+                  onClick={() => onContactClick('ignition_interest')}
                   className="px-6 py-2 bg-transparent border border-brand-accent text-brand-accent font-semibold rounded-lg hover:bg-brand-accent hover:text-brand-bg transition-colors duration-300">
                   Register Interest
                 </button>
               </div>
             </Reveal>
             <div className="flex items-center justify-center">
-              <SolaraBrain />
+              <IlluminatingSun />
             </div>
           </div>
         </div>

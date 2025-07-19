@@ -373,7 +373,14 @@ export const ROICalculator: React.FC<ROICalculatorProps> = ({ onRevealNext: onRe
                 <div className="mt-12">
                                         <button onClick={onRevealNextFromProps} className="group inline-flex items-center justify-center px-8 py-3 border border-white/50 rounded-lg text-lg font-bold text-white transition-all duration-300 hover:bg-white/10 hover:border-white">
                         Collaborate with Us
-                        <ArrowDown className="w-5 h-5 ml-2 transition-transform duration-300 group-hover:translate-y-1" />
+                        <svg 
+                          className="w-5 h-5 ml-2 transition-transform duration-300 group-hover:translate-y-1 animate-arrow-bounce" 
+                          fill="none" 
+                          viewBox="0 0 24 24" 
+                          stroke="currentColor"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                        </svg>
                     </button>
                 </div>
             </div>

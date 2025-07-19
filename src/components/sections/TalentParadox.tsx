@@ -2,7 +2,19 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Zap, Users, Target, BookOpenCheck } from 'lucide-react';
 import { Reveal } from '../common/reveal';
 import PeopleVisualization from '../common/PeopleVisualization';
+import DisruptionTimeline from '../common/DisruptionTimeline';
+import EmployabilityCrisis from '../common/EmployabilityCrisis';
+import LearningDemand from '../common/LearningDemand';
 import './TalentParadox.css';
+
+interface DataItem {
+  value: number;
+  label: string;
+  desc: React.ReactNode;
+  excerpt: string;
+  icon: React.ReactElement<{ className?: string }>;
+  key: string;
+}
 
 interface StatIconCardProps {
   icon: React.ReactElement<{ className?: string }>;
@@ -47,34 +59,38 @@ export const TalentParadox: React.FC<TalentParadoxProps> = ({ onRevealNext }) =>
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const data = useMemo(() => ({
+  const data = useMemo<Record<string, DataItem>>(() => ({
     perception: { 
       value: 16, 
       label: "Perception Gap", 
       desc: <>While academic institutions believe their students are prepared, <strong className="gradient-text">industry leaders disagree</strong>, highlighting a <strong className="gradient-text">major disconnect</strong> in work-readiness.</>, 
       excerpt: "Only 16% of industry leaders believe emerging talent is work-ready.", 
-      icon: <Users className="w-10 h-10" /> 
+      icon: <Users className="w-10 h-10" />,
+      key: 'perception'
     },
     disruption: { 
       value: 40, 
       label: "Skills Disruption", 
       desc: <>Core skills required for a typical job will <strong className="gradient-text">change by 2030</strong>, demanding a <strong className="gradient-text">fundamental shift</strong> in education and training.</>, 
       excerpt: "40% of core skills will change.", 
-      icon: <Zap className="w-10 h-10" /> 
+      icon: <Zap className="w-10 h-10" />,
+      key: 'disruption'
     },
     crisis: { 
       value: 42.6, 
       label: "Employability Crisis", 
       desc: <>The direct result of this skills gap is a <strong className="gradient-text">shrinking talent pipeline</strong>, with the employability of emerging professionals at a <strong className="gradient-text">startling low</strong>.</>, 
       excerpt: "The employability rate for emerging talent in India has dropped to 42.6%.", 
-      icon: <Target className="w-10 h-10" /> 
+      icon: <Target className="w-10 h-10" />,
+      key: 'crisis'
     },
     demand: { 
       value: 97, 
       label: "Learning Demand", 
       desc: <>The workforce is eager to adapt. This <strong className="gradient-text">ambition is the single most powerful lever</strong> for growth and retention.</>, 
       excerpt: "97% of young professionals demand on-the-job learning.", 
-      icon: <BookOpenCheck className="w-10 h-10" /> 
+      icon: <BookOpenCheck className="w-10 h-10" />,
+      key: 'demand'
     }
   }), []);
 
@@ -127,7 +143,10 @@ export const TalentParadox: React.FC<TalentParadoxProps> = ({ onRevealNext }) =>
     return () => cancelAnimationFrame(animationFrameId);
   }, [isVisible, data]);
 
-  const activeData = data[activeSection as keyof typeof data];
+  const activeData = useMemo(() => {
+    console.log('Active section changed to:', activeSection);
+    return Object.values(data).find(item => item.key === activeSection) || data.perception;
+  }, [activeSection, data]);
 
   return (
         <section id="talent-paradox" className="relative w-full pt-6 pb-16 bg-brand-background">
@@ -156,21 +175,24 @@ export const TalentParadox: React.FC<TalentParadoxProps> = ({ onRevealNext }) =>
                     <div ref={ref} className="paradox-dashboard border border-brand-accent/20 rounded-xl p-8">
             <div className="visualization-container">
               <div className="chart-grid">
-                {Object.entries(data).map(([key, item]) => (
+                {Object.values(data).map((item) => (
                   <StatIconCard 
-                    key={key}
-                    active={activeSection === key}
-                    value={counterValues[key as keyof typeof counterValues]}
+                    key={item.key}
+                    active={activeSection === item.key}
+                    value={counterValues[item.key as keyof typeof counterValues]}
                     label={item.label}
                     icon={item.icon}
-                    onClick={() => setActiveSection(key)}
+                    onClick={() => {
+                      console.log('Setting active section to:', item.key);
+                      setActiveSection(item.key);
+                    }}
                   />
                 ))}
               </div>
               
               <div className="narrative-panel">
                 <div className="mb-6">
-                  <h3 className="text-2xl font-bold font-quicksand mb-2 text-white">{activeData.label}</h3>
+                  <h3 className="text-2xl font-bold font-quicksand mb-6 text-white">{activeData.label}</h3>
                   
                   {activeSection === 'perception' ? (
                     <div className="mb-4">
@@ -181,6 +203,23 @@ export const TalentParadox: React.FC<TalentParadoxProps> = ({ onRevealNext }) =>
                         className="max-w-md mx-auto"
                       />
                     </div>
+                  ) : activeSection === 'disruption' ? (
+                    <div className="mb-6">
+                      <DisruptionTimeline 
+                        className="mt-4"
+                        startYear={2024}
+                        endYear={2030}
+                        disruptionPercentage={40}
+                      />
+                    </div>
+                  ) : activeSection === 'crisis' ? (
+                    <div className="mb-6">
+                      <EmployabilityCrisis className="mt-2" />
+                    </div>
+                  ) : activeSection === 'demand' ? (
+                    <div className="mb-6">
+                      <LearningDemand className="mt-8" />
+                    </div>
                   ) : (
                     <p className="stat-value text-5xl font-bold mb-4 text-brand-accent">
                       {activeData.value.toString().includes('.') 
@@ -190,7 +229,7 @@ export const TalentParadox: React.FC<TalentParadoxProps> = ({ onRevealNext }) =>
                     </p>
                   )}
                   
-                  <p className="text-text-secondary">{activeData.desc}</p>
+                  <p className="text-text-secondary mt-6">{activeData.desc}</p>
                 </div>
                 
                 <div 

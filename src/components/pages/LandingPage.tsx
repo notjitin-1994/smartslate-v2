@@ -1,9 +1,8 @@
 import React, { lazy, Suspense, useState, useEffect, useRef } from 'react';
 import { Hero } from '../sections/Hero';
 import { TalentParadox } from '../sections/TalentParadox';
-import { Solution } from '../sections/Solution';
+import { FrameworkSection } from '../sections/FrameworkSection';
 import { WhoWePartnerWith } from '../sections/WhoWePartnerWith';
-
 const ROICalculator = lazy(() => import('../sections/ROICalculator'));
 
 const LandingPage: React.FC = () => {
@@ -22,7 +21,7 @@ const LandingPage: React.FC = () => {
     }
     return {
       talentParadox: false,
-      solution: false,
+      framework: false,
       roiCalculator: false,
       partners: false,
     };
@@ -34,7 +33,7 @@ const LandingPage: React.FC = () => {
 
   const sectionRefs = {
     talentParadox: useRef<HTMLDivElement>(null),
-    solution: useRef<HTMLDivElement>(null),
+    framework: useRef<HTMLDivElement>(null),
     roiCalculator: useRef<HTMLDivElement>(null),
     partners: useRef<HTMLDivElement>(null),
   };
@@ -68,13 +67,16 @@ const LandingPage: React.FC = () => {
 
       {revealedSections.talentParadox && (
         <div id="talent-paradox" ref={sectionRefs.talentParadox} className="section-wrapper transition-opacity duration-1000 ease-in opacity-100">
-          <TalentParadox onRevealNext={() => handleReveal('solution')} />
+          <TalentParadox onRevealNext={() => handleReveal('framework')} />
         </div>
       )}
 
-      {revealedSections.solution && (
-        <div id="solution" ref={sectionRefs.solution} className="section-wrapper transition-opacity duration-1000 ease-in opacity-100">
-          <Solution onRevealNext={() => handleReveal('roiCalculator')} />
+      {revealedSections.framework && (
+        <div id="framework" ref={sectionRefs.framework} className="section-wrapper transition-opacity duration-1000 ease-in opacity-100">
+          <FrameworkSection 
+            onRevealNext={() => handleReveal('partners')} 
+            onDiscoverROI={() => handleReveal('roiCalculator')}
+          />
         </div>
       )}
 

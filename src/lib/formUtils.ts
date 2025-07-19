@@ -1,6 +1,6 @@
 import type { ExpertFormState, LeaderFormState, InvestorFormState, EngineerFormState } from '../types/forms/types';
 
-export type FormType = 'standard' | 'instructor' | 'introduction' | 'investor' | 'expert' | 'leader' | 'engineer';
+export type FormType = 'standard' | 'instructor' | 'introduction' | 'investor' | 'expert' | 'leader' | 'engineer' | 'ignition_interest' | 'strategy_consultation';
 
 export interface StandardFormData {
   name: string;

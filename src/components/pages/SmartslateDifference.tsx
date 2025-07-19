@@ -1,7 +1,7 @@
 import React from 'react';
 import { Reveal } from '../common/reveal';
 import { Users, Briefcase } from 'lucide-react';
-import DeepResearchAnimation from '../animations/DeepResearchAnimation';
+import ResearchInsightsAnimation from '../animations/ResearchInsightsAnimation';
 import { StarryNight } from '../common/StarryNight';
 const SmartslateDifference: React.FC = () => {
   return (
@@ -51,7 +51,7 @@ const SmartslateDifference: React.FC = () => {
                 </div>
               </Reveal>
               <Reveal>
-                <DeepResearchAnimation />
+                <ResearchInsightsAnimation />
               </Reveal>
             </div>
           </div>
