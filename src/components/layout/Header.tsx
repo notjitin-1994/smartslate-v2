@@ -31,14 +31,13 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick }) => {
       if (gradient) {
         return cn(
           'text-sm whitespace-nowrap transition-all duration-300 font-bold',
-          'text-transparent bg-clip-text bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(243,72%,68%)]',
-          'bg-size-200 animate-gradient',
+          'text-indigo-500', // Using indigo-500 for active state
           'hover:brightness-125'
         );
       }
       return cn('text-sm whitespace-nowrap transition-colors duration-300 font-medium', 'text-[hsl(var(--primary))]');
     }
-    // Inactive link
+    // Inactive link - use gradient-text class for the gradient effect
     return cn(
       'text-sm whitespace-nowrap transition-colors duration-300 font-medium',
       gradient ? 'gradient-text hover:font-semibold' : 'text-text-secondary/90 hover:text-white'
@@ -48,7 +47,7 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick }) => {
   const mobileNavLinkClasses = ({ isActive, gradient }: { isActive: boolean; gradient?: boolean }): string => {
     if (isActive) {
       if (gradient) {
-        return cn('block py-2 font-semibold', 'text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-[hsl(var(--primary))]');
+        return cn('block py-2 font-semibold', 'text-indigo-500'); // Using indigo-500 for active state on mobile
       }
       return cn('block py-2 font-semibold', 'text-[hsl(var(--primary))]');
     }
@@ -56,7 +55,7 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick }) => {
   };
 
   return (
-    <header id="main-header" className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-black/70 backdrop-blur-lg border-b border-gray-700/50 shadow-2xl`}>
+        <header id="main-header" className={`fixed top-0 left-0 right-0 z-[1000] transition-all duration-300 bg-black/90 backdrop-blur-md border-b border-gray-700/50 shadow-2xl`}>
       <div className="container mx-auto px-6 py-3">
         <div className="flex items-center justify-between">
           <NavLink to="/" className="py-2">

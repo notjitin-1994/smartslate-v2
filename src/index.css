@@ -5,6 +5,7 @@
 :root {
   --animation-duration: 0.3s;
   --animation-easing: cubic-bezier(0.16, 1, 0.3, 1);
+  --header-height: 4.5rem; /* 72px */
 }
 
 /* Reset and base styles with performance in mind */
@@ -23,10 +24,7 @@ html, body {
   overflow-x: hidden;
   overflow-y: auto;
   scroll-behavior: smooth;
-  /* Enable GPU acceleration */
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000px;
+  /* transform property was removed to fix position:fixed behavior */
   -webkit-overflow-scrolling: touch;
   will-change: scroll-position;
 }
@@ -44,7 +42,7 @@ html, body {
 }
 
 [id] {
-  scroll-margin-top: 4rem; /* Offset for fixed header */
+  scroll-margin-top: var(--header-height); /* Offset for fixed header */
 }
 
 
@@ -52,6 +50,12 @@ html, body {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .main-content {
+    padding-top: var(--header-height);
+  }
+}
 
 
 /* Animated gradient */

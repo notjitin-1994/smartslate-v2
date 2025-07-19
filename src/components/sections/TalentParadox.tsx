@@ -22,6 +22,7 @@ interface StatIconCardProps {
   label: string;
   active: boolean;
   onClick: () => void;
+  interactive?: boolean;
 }
 
 const StatIconCard: React.FC<StatIconCardProps> = ({ 
@@ -29,15 +30,16 @@ const StatIconCard: React.FC<StatIconCardProps> = ({
   value, 
   label, 
   active, 
-  onClick 
+  onClick,
+  interactive = true
 }) => (
   <div 
-    className="stat-icon-card group" 
+    className={`stat-icon-card group ${!interactive ? 'non-interactive' : ''}`}
     data-active={active}
-    onClick={onClick} 
-    role="button" 
-    tabIndex={0} 
-    onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onClick()}
+    onClick={interactive ? onClick : undefined} 
+    role={interactive ? "button" : undefined} 
+    tabIndex={interactive ? 0 : -1} 
+    onKeyDown={interactive ? (e) => (e.key === 'Enter' || e.key === ' ') && onClick() : undefined}
   >
     <div className="icon-wrapper">
       {React.cloneElement(icon as React.ReactElement, {
@@ -176,16 +178,13 @@ export const TalentParadox: React.FC<TalentParadoxProps> = ({ onRevealNext }) =>
             <div className="visualization-container">
               <div className="chart-grid">
                 {Object.values(data).map((item) => (
-                  <StatIconCard 
+                  <StatIconCard
                     key={item.key}
                     active={activeSection === item.key}
                     value={counterValues[item.key as keyof typeof counterValues]}
                     label={item.label}
                     icon={item.icon}
-                    onClick={() => {
-                      console.log('Setting active section to:', item.key);
-                      setActiveSection(item.key);
-                    }}
+                    onClick={() => setActiveSection(item.key)}
                   />
                 ))}
               </div>
@@ -206,10 +205,10 @@ export const TalentParadox: React.FC<TalentParadoxProps> = ({ onRevealNext }) =>
                   ) : activeSection === 'disruption' ? (
                     <div className="mb-6">
                       <DisruptionTimeline 
-                        className="mt-4"
                         startYear={2024}
                         endYear={2030}
                         disruptionPercentage={40}
+                        isInteractive={false}
                       />
                     </div>
                   ) : activeSection === 'crisis' ? (

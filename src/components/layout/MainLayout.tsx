@@ -14,6 +14,9 @@ const MainLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+
+
+
   const handleContact = (formType: FormType | string = 'standard') => {
     setModalFormType(formType as FormType);
     setIsModalOpen(true);
@@ -23,11 +26,13 @@ const MainLayout: React.FC = () => {
     setIsModalOpen(false);
   };
 
+
+
   return (
     <ErrorBoundary>
       <div className="bg-brand-background text-text-primary overflow-x-hidden">
         <Header onContactClick={handleContact} />
-        <main>
+        <main className="main-content">
           <Outlet />
         </main>
         <Footer onContactClick={handleContact} />
