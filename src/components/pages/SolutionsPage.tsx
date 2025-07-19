@@ -7,7 +7,7 @@ interface SolutionsPageProps {
 }
 
 import { BusinessSolutions } from '../sections/BusinessSolutions';
-import { StarryBackground } from '../common/StarryBackground';
+import { StarryNight } from '../common/StarryNight';
 
 const SolutionsPage: React.FC<SolutionsPageProps> = ({ onContactClick }) => {
   // In the future, we can add state here to toggle between
@@ -25,7 +25,7 @@ const SolutionsPage: React.FC<SolutionsPageProps> = ({ onContactClick }) => {
             From instant-impact courses to fully bespoke learning ecosystems, our solutions are designed to bridge the skills gap and build your future-ready workforce.
           </p>
         </div>
-        <StarryBackground />
+        <StarryNight className="opacity-80" />
       </section>
 
       <BusinessSolutions onContactClick={onContactClick} />

@@ -1,3 +1,4 @@
+/* Optimized for iPad Pro performance */
 .paradox-dashboard {
   position: relative;
   overflow: hidden;
@@ -8,19 +9,34 @@
   flex-direction: column;
   justify-content: center;
   max-width: 1440px;
-  background: radial-gradient(ellipse at center, hsl(var(--brand-card-bg) / 0.5) 0%, transparent 70%);
+  /* Simplified background for better performance */
+  background: linear-gradient(
+    to bottom, 
+    hsl(var(--brand-card-bg) / 0.5) 0%, 
+    hsl(var(--brand-card-bg) / 0.3) 50%, 
+    transparent 100%
+  );
   border-radius: 12px;
+  /* Enable GPU acceleration */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .stat-icon-card {
   padding: 1.5rem 1rem;
   text-align: center;
   cursor: pointer;
-  transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  /* Optimized transitions for mobile */
+  transition: 
+    transform 0.3s var(--animation-easing, ease),
+    opacity 0.3s var(--animation-easing, ease);
   background: hsl(var(--brand-card-bg) / 0.4);
   border: 1px solid hsl(var(--brand-accent) / 0.15);
   border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  /* Reduced shadow for better performance */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -29,6 +45,12 @@
   position: relative;
   overflow: hidden;
   z-index: 1;
+  /* Performance optimizations */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
 
 .stat-icon-card::before {
@@ -323,35 +345,13 @@
 .excerpt-box {
   position: relative;
   padding: 1.5rem;
-  margin: 2rem 0;
-  border-radius: 0.5rem;
-  background: hsl(var(--brand-accent) / 0.05);
   overflow: hidden;
-  z-index: 1;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  border: 1px solid hsl(var(--brand-accent) / 0.1);
-  min-width: 200px;
-  position: relative;
-}
-
-.excerpt-box::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  background: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--brand-accent)) 100%);
-  z-index: -1;
-  border-radius: 0.5rem;
-  transform: scaleX(0);
-  transform-origin: left;
+  border-radius: 0 8px 8px 0;
 }
 
 .excerpt-box::after {
   content: '';
   position: absolute;
-  left: 0;
   top: 0;
   bottom: 0;
   width: 0;

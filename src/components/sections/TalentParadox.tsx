@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Zap, Users, Target, BookOpenCheck } from 'lucide-react';
 import { Reveal } from '../common/reveal';
+import PeopleVisualization from '../common/PeopleVisualization';
 import './TalentParadox.css';
 
 interface StatIconCardProps {
@@ -133,12 +134,21 @@ export const TalentParadox: React.FC<TalentParadoxProps> = ({ onRevealNext }) =>
       <div className="container mx-auto px-4">
         <Reveal>
           <div className="text-left mb-12 max-w-4xl">
-            <h2 className="section-title whitespace-nowrap">
-              <span className="gradient-text">The Talent Paradox</span>: A <span className="gradient-text">Crisis</span> of Scale
+            <h2 className="section-title">
+              <span className="gradient-text">The Talent Paradox</span>:<br className="sm:hidden" /> A <span className="gradient-text">Crisis</span> of Scale
             </h2>
-            <p className="text-text-secondary text-lg max-w-3xl">
+            <p className="text-text-secondary text-lg max-w-3xl mb-4">
               The numbers paint a clear picture. India's <strong className="gradient-text">potential is immense</strong>, but it's constrained by a <strong className="gradient-text">persistent skills gap</strong>. This isn't just a challenge—it's a <strong className="gradient-text">direct risk to our collective economic future</strong>.
             </p>
+            <div className="flex items-center text-brand-accent/80 text-sm font-medium mb-2">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+              </svg>
+              <span>Tap each metric to uncover the real cost of the skills gap - the numbers might surprise you</span>
+              <svg className="w-4 h-4 ml-2 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
+            </div>
           </div>
         </Reveal>
         
@@ -161,12 +171,25 @@ export const TalentParadox: React.FC<TalentParadoxProps> = ({ onRevealNext }) =>
               <div className="narrative-panel">
                 <div className="mb-6">
                   <h3 className="text-2xl font-bold font-quicksand mb-2 text-white">{activeData.label}</h3>
-                  <p className="stat-value text-5xl font-bold mb-4 text-brand-accent">
-                    {activeData.value.toString().includes('.') 
-                      ? counterValues[activeSection as keyof typeof counterValues].toFixed(1) 
-                      : Math.ceil(counterValues[activeSection as keyof typeof counterValues])
-                    }%
-                  </p>
+                  
+                  {activeSection === 'perception' ? (
+                    <div className="mb-4">
+                      <PeopleVisualization 
+                        yesCount={16} 
+                        noCount={84}
+                        size="md"
+                        className="max-w-md mx-auto"
+                      />
+                    </div>
+                  ) : (
+                    <p className="stat-value text-5xl font-bold mb-4 text-brand-accent">
+                      {activeData.value.toString().includes('.') 
+                        ? counterValues[activeSection as keyof typeof counterValues].toFixed(1) 
+                        : Math.ceil(counterValues[activeSection as keyof typeof counterValues])
+                      }%
+                    </p>
+                  )}
+                  
                   <p className="text-text-secondary">{activeData.desc}</p>
                 </div>
                 

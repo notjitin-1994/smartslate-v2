@@ -1,19 +1,46 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Quicksand:wght@700&display=swap');
+@import './styles/animations.css';
 
-/* Reset and base styles */
+/* Performance Optimizations */
+:root {
+  --animation-duration: 0.3s;
+  --animation-easing: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Reset and base styles with performance in mind */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Make sure html and body take up full viewport height */
 html, body {
   width: 100%;
-
   overflow-x: hidden;
   overflow-y: auto;
   scroll-behavior: smooth;
+  /* Enable GPU acceleration */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  -webkit-overflow-scrolling: touch;
+  will-change: scroll-position;
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 [id] {

@@ -2,14 +2,14 @@ import React from 'react';
 import { Reveal } from '../common/reveal';
 import { Users, Briefcase } from 'lucide-react';
 import DeepResearchAnimation from '../animations/DeepResearchAnimation';
-import { StarryBackground } from '../common/StarryBackground';
+import { StarryNight } from '../common/StarryNight';
 const SmartslateDifference: React.FC = () => {
   return (
     <div className="bg-brand-background text-text-primary">
       <main className="overflow-hidden">
         {/* Hero Section */}
         <section className="relative pt-24 sm:pt-32 pb-16 md:pb-24">
-          <StarryBackground />
+          <StarryNight className="opacity-80" />
           <div className="container mx-auto px-6 relative z-10">
           <Reveal>
             <h1 className="font-quicksand text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight">

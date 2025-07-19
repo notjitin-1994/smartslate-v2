@@ -3,7 +3,7 @@ import { CollaborationCard } from './collaborate/CollaborationCard';
 import { BrainCircuit, Users, TrendingUp, Code } from 'lucide-react';
 
 import type { FormType } from '../../lib/formUtils';
-import { StarryBackground } from '../common/StarryBackground';
+import { StarryNight } from '../common/StarryNight';
 
 interface CollaboratePageProps {
   onContactClick: (formType: FormType) => void;
@@ -12,7 +12,7 @@ interface CollaboratePageProps {
 const CollaboratePage: React.FC<CollaboratePageProps> = ({ onContactClick }) => (
   <main>
     <section className="relative pt-24 md:pt-32 pb-12 md:pb-16">
-      <StarryBackground />
+      <StarryNight className="opacity-80" />
       <div className="container mx-auto px-6 text-left">
         <h1 className="font-quicksand text-4xl md:text-6xl font-bold text-white leading-tight mb-4">
           Let's Build the <span className="gradient-text">Future of Learning.</span> Together.

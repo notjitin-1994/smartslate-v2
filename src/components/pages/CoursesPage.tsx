@@ -1,13 +1,13 @@
 import React from 'react';
 import { Reveal } from '../common/reveal';
 import { BrainCircuit, Palette, Sparkles } from 'lucide-react';
-import { StarryBackground } from '../common/StarryBackground';
+import { StarryNight } from '../common/StarryNight';
 import { CourseCard } from '../common/CourseCard';
 
 const CoursesPage: React.FC = () => (
   <>
     <section id="courses-hero" className="relative w-full pt-32 pb-20 md:pt-40 md:pb-24">
-      <StarryBackground />
+      <StarryNight className="opacity-80" />
       <div className="container mx-auto px-6 relative z-10 text-left">
         <Reveal>
           <h1 className="font-quicksand text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight">

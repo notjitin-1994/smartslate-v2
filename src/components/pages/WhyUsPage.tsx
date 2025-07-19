@@ -1,5 +1,5 @@
 import React from 'react';
-import { StarryBackground } from '../common/StarryBackground';
+import { StarryNight } from '../common/StarryNight';
 
 interface WhyUsPageProps {
   onContactClick: (formType?: string) => void;
@@ -17,7 +17,7 @@ const WhyUsPage: React.FC<WhyUsPageProps> = ({ onContactClick }) => (
           The disconnect between traditional education and modern economy demands creates the single greatest opportunity for innovation.
         </p>
       </div>
-      <StarryBackground />
+      <StarryNight className="opacity-80" />
     </section>
     {/* More sections to be added */}
   </main>
