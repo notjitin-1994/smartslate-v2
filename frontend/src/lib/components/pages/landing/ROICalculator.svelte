@@ -13,8 +13,10 @@
 		ArrowLeft,
 		Briefcase,
 		GraduationCap,
-		User
+		User,
+		Handshake
 	} from 'lucide-svelte';
+	import AnimatedButton from '$lib/components/common/AnimatedButton.svelte';
 
 	type Persona = 'businessman' | 'educator' | 'student';
 
@@ -157,10 +159,18 @@
 				</div>
 			{/if}
 		</div>
+		<div class="button-wrapper">
+			<AnimatedButton text="Explore Our Partnerships" icon={Handshake} />
+		</div>
 	</Container>
 </section>
 
 <style>
+	.button-wrapper {
+		display: flex;
+		justify-content: flex-start;
+		margin-top: var(--space-xl);
+	}
 	#roi-calculator {
 		padding: var(--space-xxl) 0;
 	}

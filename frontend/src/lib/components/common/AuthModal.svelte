@@ -4,10 +4,24 @@
 	import { quintOut } from 'svelte/easing';
 	import SocialButton from './SocialButton.svelte';
 	import { onMount } from 'svelte';
+	import {
+		createUserWithEmailAndPassword,
+		signInWithEmailAndPassword,
+		GoogleAuthProvider,
+		signInWithPopup
+	} from 'firebase/auth';
+	import { auth } from '$lib/firebase';
 
 	type Tab = 'signin' | 'signup';
 	let activeTab: Tab = 'signin';
 	let showContent = true;
+
+	// Form State
+	let email = '';
+	let password = '';
+	let name = ''; // For sign-up
+	let loading = false;
+	let error: string | null = null;
 
 	function closeModal() {
 		authModalStore.update((state) => ({ ...state, isOpen: false }));
@@ -16,11 +30,70 @@
 	function switchTab(newTab: Tab) {
 		if (newTab === activeTab) return;
 
+		// Reset state when switching tabs
+		error = null;
+		email = '';
+		password = '';
+		name = '';
+
 		showContent = false;
 		setTimeout(() => {
 			activeTab = newTab;
 			showContent = true;
 		}, 200); // Corresponds to the fade duration
+	}
+
+	async function handleSignUp(event: Event) {
+		event.preventDefault();
+		loading = true;
+		error = null;
+		try {
+			await createUserWithEmailAndPassword(auth, email, password);
+			// User is automatically signed in, onAuthStateChanged will handle the rest.
+			closeModal();
+		} catch (e: any) {
+			if (e.code === 'auth/email-already-in-use') {
+				error = 'This email address is already in use.';
+			} else if (e.code === 'auth/weak-password') {
+				error = 'Password should be at least 6 characters.';
+			} else {
+				error = 'An unexpected error occurred. Please try again.';
+			}
+			console.error('Sign up error:', e);
+		} finally {
+			loading = false;
+		}
+	}
+
+	async function handleSignIn() {
+		loading = true;
+		error = null;
+		try {
+			await signInWithEmailAndPassword(auth, email, password);
+			closeModal();
+		} catch (e: any) {
+			error = 'Invalid email or password. Please try again.';
+			console.error('Sign in error:', e);
+		} finally {
+			loading = false;
+		}
+	}
+
+	async function handleGoogleSignIn() {
+		loading = true;
+		error = null;
+		try {
+			const provider = new GoogleAuthProvider();
+			await signInWithPopup(auth, provider);
+			closeModal();
+		} catch (e: any) {
+			if (e.code !== 'auth/popup-closed-by-user') {
+				error = 'Failed to sign in with Google. Please try again.';
+				console.error('Google sign in error:', e);
+			}
+		} finally {
+			loading = false;
+		}
 	}
 
 	onMount(() => {
@@ -29,9 +102,7 @@
 				closeModal();
 			}
 		};
-
 		window.addEventListener('keydown', handleKeydown);
-
 		return () => {
 			window.removeEventListener('keydown', handleKeydown);
 		};
@@ -39,9 +110,7 @@
 
 	// SVG icons for social buttons
 	const icons = {
-		google: `<path d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.9 8.2,4.73 12.19,4.73C14.76,4.73 16.04,5.7 17.26,6.88L19.43,4.72C17.56,2.93 15.1,2 12.19,2C6.92,2 2.71,6.62 2.71,12C2.71,17.38 6.92,22 12.19,22C17.6,22 21.54,18.33 21.54,12.29C21.54,11.88 21.48,11.49 21.35,11.1Z" fill-rule="evenodd" clip-rule="evenodd"></path>`,
-		microsoft: `<path d="M11.4,21H3V12.5H11.4V21ZM21,21H12.6V12.5H21V21ZM11.4,11.5H3V3H11.4V11.5ZM21,11.5H12.6V3H21V11.5Z"></path>`,
-		sso: `<path d="M14,7H10A1,1,0,0,0,9,8V10A1,1,0,0,0,10,11H14A1,1,0,0,0,15,10V8A1,1,0,0,0,14,7ZM12,10A1,1,0,1,1,13,9,1,1,0,0,1,12,10Z"></path><path d="M20,14H4a2,2,0,0,0-2,2v6H22V16A2,2,0,0,0,20,14ZM12,20a2,2,0,1,1,2-2A2,2,0,0,1,12,20Z"></path>`
+		google: `<path d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.9 8.2,4.73 12.19,4.73C14.76,4.73 16.04,5.7 17.26,6.88L19.43,4.72C17.56,2.93 15.1,2 12.19,2C6.92,2 2.71,6.62 2.71,12C2.71,17.38 6.92,22 12.19,22C17.6,22 21.54,18.33 21.54,12.29C21.54,11.88 21.48,11.49 21.35,11.1Z" fill-rule="evenodd" clip-rule="evenodd"></path>`
 	};
 </script>
 
@@ -55,7 +124,7 @@
 		on:click|stopPropagation
 		transition:fly={{ y: 20, duration: 300, easing: quintOut }}
 	>
-		<button class="close-button" on:click={closeModal}>
+		<button class="close-button" on:click={closeModal} aria-label="Close modal">
 			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
 		</button>
 
@@ -73,24 +142,31 @@
 						</h2>
 						<p class="subtitle">Sign in to your account to continue</p>
 
-						<form class="auth-form">
+						<form class="auth-form" on:submit|preventDefault={handleSignIn}>
 							<div class="input-group">
-								<label for="email">Email Address or Phone Number</label>
-								<input type="text" id="email" placeholder="you@example.com" />
+								<label for="email">Email Address</label>
+								<input type="email" id="email" placeholder="you@example.com" bind:value={email} required disabled={loading} />
 							</div>
 							<div class="input-group">
 								<label for="password">Password</label>
-								<input type="password" id="password" />
+								<input type="password" id="password" bind:value={password} required disabled={loading} />
 							</div>
-							<button type="submit" class="btn-primary">Sign In</button>
+							{#if error}
+								<p class="error-message">{error}</p>
+							{/if}
+							<button type="submit" class="btn-primary" disabled={loading}>
+								{#if loading}
+									<span class="loader"></span> Signing In...
+								{:else}
+									Sign In
+								{/if}
+							</button>
 						</form>
 
 						<div class="separator">Or continue with</div>
 
 						<div class="social-logins">
-							<SocialButton provider="Google" icon={icons.google} />
-							<SocialButton provider="Microsoft" icon={icons.microsoft} />
-							<SocialButton provider="SSO" icon={icons.sso} />
+							<SocialButton provider="Google" icon={icons.google} on:click={handleGoogleSignIn} disabled={loading} />
 						</div>
 					{:else}
 						<h2 class="title">
@@ -98,20 +174,29 @@
 						</h2>
 						<p class="subtitle">Get started with SmartSlate</p>
 
-						<form class="auth-form">
+						<form class="auth-form" on:submit={handleSignUp}>
 							<div class="input-group">
 								<label for="name">Full Name</label>
-								<input type="text" id="name" placeholder="Your Name" />
+								<input type="text" id="name" placeholder="Your Name" bind:value={name} required disabled={loading} />
 							</div>
 							<div class="input-group">
 								<label for="signup-email">Email Address</label>
-								<input type="email" id="signup-email" placeholder="you@example.com" />
+								<input type="email" id="signup-email" placeholder="you@example.com" bind:value={email} required disabled={loading} />
 							</div>
 							<div class="input-group">
 								<label for="signup-password">Password</label>
-								<input type="password" id="signup-password" />
+								<input type="password" id="signup-password" placeholder="6+ characters" bind:value={password} required disabled={loading} />
 							</div>
-							<button type="submit" class="btn-primary">Create Account</button>
+							{#if error}
+								<p class="error-message">{error}</p>
+							{/if}
+							<button type="submit" class="btn-primary" disabled={loading}>
+								{#if loading}
+									<span class="loader"></span> Creating Account...
+								{:else}
+									Create Account
+								{/if}
+							</button>
 						</form>
 					{/if}
 				</div>
@@ -260,10 +345,19 @@
 		cursor: pointer;
 		transition: var(--transition-fast);
 		margin-top: var(--space-md);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: var(--space-sm);
 	}
 
-	.btn-primary:hover {
+	.btn-primary:hover:not(:disabled) {
 		opacity: 0.9;
+	}
+
+	.btn-primary:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
 	}
 
 	.separator {
@@ -293,5 +387,34 @@
 	.social-logins {
 		display: flex;
 		gap: var(--space-md);
+		justify-content: center;
+	}
+
+	.error-message {
+		color: var(--destructive);
+		font-size: 0.9rem;
+		text-align: center;
+		margin-top: calc(-1 * var(--space-md));
+		margin-bottom: var(--space-sm);
+	}
+
+	.loader {
+		width: 16px;
+		height: 16px;
+		border: 2px solid #fff;
+		border-bottom-color: transparent;
+		border-radius: 50%;
+		display: inline-block;
+		box-sizing: border-box;
+		animation: rotation 1s linear infinite;
+	}
+
+	@keyframes rotation {
+		0% {
+			transform: rotate(0deg);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
 	}
 </style>

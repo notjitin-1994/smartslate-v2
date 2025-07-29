@@ -5,7 +5,8 @@
 	import SkillsGap from './talent-paradox/SkillsGap.svelte';
 	import IndustryDemand from './talent-paradox/IndustryDemand.svelte';
 	import EconomicImpact from './talent-paradox/EconomicImpact.svelte';
-	import { ShieldAlert, Puzzle, TrendingUp, Landmark } from 'lucide-svelte';
+	import { ShieldAlert, Puzzle, TrendingUp, Landmark, LayoutGrid } from 'lucide-svelte';
+	import AnimatedButton from '$lib/components/common/AnimatedButton.svelte';
 
 	type Section = 'crisis' | 'gap' | 'demand' | 'impact';
 
@@ -77,6 +78,9 @@
 					{/key}
 				</div>
 			</div>
+		</div>
+		<div class="discover-framework">
+			<AnimatedButton text="Discover the Framework" icon={LayoutGrid} />
 		</div>
 	</Container>
 </section>
@@ -210,5 +214,10 @@
 		50% {
 			box-shadow: 0 0 25px rgba(167, 218, 219, 0.4);
 		}
+	}
+
+	.discover-framework {
+		text-align: left;
+		margin-top: var(--space-xl);
 	}
 </style>

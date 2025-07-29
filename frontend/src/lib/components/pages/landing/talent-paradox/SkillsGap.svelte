@@ -42,7 +42,7 @@
 	{#if isVisible}
 		<div class="timeline-wrapper">
 			<div class="progress-bar-container" in:fade={{ delay: 200, duration: 500 }}>
-				<div class="progress-bar" />
+				<div class="progress-bar"></div>
 				<div class="disruption-marker" style:left={`${100 - disruptionPercentage}%`}>
 					<div class="marker-label">{disruptionPercentage}% Skills Shift</div>
 				</div>
@@ -50,7 +50,7 @@
 			<div class="years-container">
 				{#each years as year, i}
 					<div class="year-marker" in:fade={{ delay: 400 + i * 100, duration: 400 }}>
-						<div class="year-dot" class:future={year >= 2028} />
+						<div class="year-dot" class:future={year >= 2028}></div>
 						<div class="year-label">{year}</div>
 					</div>
 				{/each}

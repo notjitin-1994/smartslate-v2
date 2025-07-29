@@ -1,5 +1,9 @@
 <script lang="ts">
 	import '../app.css';
+	import { onMount } from 'svelte';
+	import { onAuthStateChanged } from 'firebase/auth';
+	import { auth } from '$lib/firebase';
+	import { authStore } from '$lib/stores/authStore';
 	import AuthModal from '$lib/components/common/AuthModal.svelte';
 	import { authModalStore } from '$lib/stores/authModalStore';
 
@@ -7,6 +11,15 @@
 
 	authModalStore.subscribe((state) => {
 		isModalOpen = state.isOpen;
+	});
+
+	onMount(() => {
+		authStore.setLoading();
+		const unsubscribe = onAuthStateChanged(auth, (user) => {
+			authStore.setUser(user);
+		});
+
+		return () => unsubscribe();
 	});
 </script>
 

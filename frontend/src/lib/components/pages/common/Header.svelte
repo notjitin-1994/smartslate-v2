@@ -2,15 +2,59 @@
 	import logo from '$lib/assets/images/Final-Dark-BG.png';
 	import Container from '$lib/components/pages/common/Container.svelte';
 	import { authModalStore } from '$lib/stores/authModalStore';
+	import { authStore } from '$lib/stores/authStore';
+	import { auth } from '$lib/firebase';
+	import { signOut } from 'firebase/auth';
 	import { fly, fade } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
+	import { browser } from '$app/environment';
 
 	let showProductsDropdown = false;
+	let showUserDropdown = false;
 	let isMobileMenuOpen = false;
+	let showMobileProducts = false;
+
+	function toggleProductsDropdown() {
+		showProductsDropdown = !showProductsDropdown;
+		if (showProductsDropdown) {
+			showUserDropdown = false;
+		}
+	}
+
+	function toggleUserDropdown() {
+		showUserDropdown = !showUserDropdown;
+		if (showUserDropdown) {
+			showProductsDropdown = false;
+		}
+	}
+
+	function closeDropdowns() {
+		showProductsDropdown = false;
+		showUserDropdown = false;
+	}
+
+	onMount(() => {
+		if (browser) {
+			document.addEventListener('click', closeDropdowns);
+		}
+	});
+
+	onDestroy(() => {
+		if (browser) {
+			document.removeEventListener('click', closeDropdowns);
+		}
+	});
 
 	function toggleMobileMenu() {
 		isMobileMenuOpen = !isMobileMenuOpen;
+		if (!isMobileMenuOpen) {
+			showMobileProducts = false;
+		}
+	}
+
+	function toggleMobileProductsDropdown() {
+		showMobileProducts = !showMobileProducts;
 	}
 
 	function closeMobileMenu() {
@@ -19,6 +63,11 @@
 
 	function openAuthModal() {
 		authModalStore.update((state) => ({ ...state, isOpen: true }));
+	}
+
+	async function handleSignOut() {
+		await signOut(auth);
+		// onAuthStateChanged will handle the rest
 	}
 
 	// Prevent body scroll when mobile menu is open
@@ -46,10 +95,11 @@
 				<nav class="desktop-nav">
 					<div
 						class="dropdown-container"
-						on:mouseenter={() => (showProductsDropdown = true)}
-						on:mouseleave={() => (showProductsDropdown = false)}
+						on:click|stopPropagation
 					>
-						<a href="/products" class="dropdown-toggle">Products</a>
+						<button class="dropdown-toggle-button" on:click|stopPropagation={toggleProductsDropdown}>
+							Products
+						</button>
 						{#if showProductsDropdown}
 							<div class="dropdown-menu" transition:fly={{ y: -10, duration: 200, easing: quintOut }}>
 								<a href="/products/ignite">Ignite Series</a>
@@ -63,7 +113,40 @@
 				</nav>
 
 				<div class="actions">
-					<button on:click={openAuthModal} class="btn-signin">Sign In</button>
+					{#if $authStore.loading}
+						<div class="loader" />
+					{:else if $authStore.user}
+						<div
+							class="dropdown-container"
+							on:click|stopPropagation
+						>
+							<button class="user-avatar-button" on:click|stopPropagation={toggleUserDropdown}>
+								{#if $authStore.user.photoURL}
+									<img src={$authStore.user.photoURL} alt="User avatar" class="user-avatar" />
+								{:else}
+									<div class="user-avatar-placeholder">
+										{$authStore.user.email?.charAt(0).toUpperCase()}
+									</div>
+								{/if}
+							</button>
+							{#if showUserDropdown}
+								<div
+									class="dropdown-menu user-dropdown"
+									transition:fly={{ y: -10, duration: 200, easing: quintOut }}
+								>
+									<div class="user-info">
+										<p class="user-name">{$authStore.user.displayName || 'User'}</p>
+										<p class="user-email">{$authStore.user.email}</p>
+									</div>
+									<hr />
+									<a href="/profile" class="dropdown-item" on:click={closeDropdowns}>Profile</a>
+									<button on:click={handleSignOut} class="dropdown-item">Sign Out</button>
+								</div>
+							{/if}
+						</div>
+					{:else}
+						<button on:click={openAuthModal} class="btn-signin">Sign In</button>
+					{/if}
 				</div>
 			</div>
 
@@ -93,26 +176,58 @@
 				<h2 class="mobile-nav-title">Menu</h2>
 			</div>
 			<nav class="mobile-nav">
-				<a href="/products" on:click={closeMobileMenu}>Products</a>
-				<div class="mobile-dropdown">
-					<a href="/products/ignite" on:click={closeMobileMenu}>Ignite Series</a>
-					<a href="/products/ssa" on:click={closeMobileMenu}>Strategic Skills Architecture</a>
-					<a href="/products/solara" on:click={closeMobileMenu}>Solara</a>
-				</div>
+				<button class="mobile-nav-toggle" on:click={toggleMobileProductsDropdown}>Products</button>
+				{#if showMobileProducts}
+					<div class="mobile-dropdown">
+						<a href="/products/ignite" on:click={closeMobileMenu}>Ignite Series</a>
+						<a href="/products/ssa" on:click={closeMobileMenu}>Strategic Skills Architecture</a>
+						<a href="/products/solara" on:click={closeMobileMenu}>Solara</a>
+					</div>
+				{/if}
 				<a href="/difference" on:click={closeMobileMenu}>The Smartslate Difference</a>
 				<a href="/partner" on:click={closeMobileMenu}>Partner & Collaborate</a>
 			</nav>
 			<div class="mobile-actions">
 				<hr />
-				<button
-					on:click={() => {
-						closeMobileMenu();
-						openAuthModal();
-					}}
-					class="btn-signin"
-				>
-					Sign In
-				</button>
+				{#if $authStore.user}
+					<a href="/profile" class="mobile-user-profile-link" on:click={closeMobileMenu}>
+						<div class="mobile-user-info">
+							<div class="user-avatar-link">
+								{#if $authStore.user.photoURL}
+									<img src={$authStore.user.photoURL} alt="User avatar" class="user-avatar" />
+								{:else}
+									<div class="user-avatar-placeholder">
+										{$authStore.user.email?.charAt(0).toUpperCase()}
+									</div>
+								{/if}
+							</div>
+							<div class="user-details">
+								<p class="user-name">{$authStore.user.displayName || 'User'}</p>
+								<p class="user-email">{$authStore.user.email}</p>
+							</div>
+						</div>
+					</a>
+
+					<button
+						on:click={() => {
+							closeMobileMenu();
+							handleSignOut();
+						}}
+						class="btn-signout"
+					>
+						Sign Out
+					</button>
+				{:else}
+					<button
+						on:click={() => {
+							closeMobileMenu();
+							openAuthModal();
+						}}
+						class="btn-signin"
+					>
+						Sign In
+					</button>
+				{/if}
 			</div>
 		</aside>
 	{/if}
@@ -180,6 +295,22 @@
 		position: relative;
 	}
 
+	.dropdown-toggle-button {
+		background: none;
+		border: none;
+		color: var(--text-primary);
+		font-size: 0.9rem;
+		font-family: inherit;
+		cursor: pointer;
+		padding: 0;
+		transition: var(--transition-fast);
+		position: relative;
+	}
+
+	.dropdown-toggle-button:hover {
+		color: var(--primary-accent);
+	}
+
 	.dropdown-menu {
 		position: absolute;
 		top: calc(100% + var(--space-md));
@@ -226,6 +357,110 @@
 
 	.actions .btn-signin:hover {
 		opacity: 0.9;
+	}
+
+	.user-avatar-button {
+		background: none;
+		border: none;
+		padding: 0;
+		cursor: pointer;
+		border-radius: 50%;
+		width: 36px;
+		height: 36px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		overflow: hidden;
+		border: 2px solid transparent;
+		transition: border-color var(--transition-fast);
+	}
+
+	.user-avatar-button:hover {
+		border-color: var(--primary-accent);
+	}
+
+	.user-avatar {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.user-avatar-placeholder {
+		width: 100%;
+		height: 100%;
+		background-color: var(--primary-accent);
+		color: var(--background);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: bold;
+		font-size: 1rem;
+	}
+
+	.user-dropdown {
+		right: 0;
+		left: auto;
+		transform: translateX(0);
+	}
+
+	.user-info {
+		padding: var(--space-sm) var(--space-lg);
+		font-size: 0.9rem;
+	}
+
+	.user-name {
+		font-weight: 600;
+		color: var(--text-primary);
+		margin: 0;
+	}
+
+	.user-email {
+		color: var(--text-secondary);
+		margin: 0;
+	}
+
+	.user-dropdown hr {
+		border: none;
+		border-top: var(--border-subtle);
+		margin: var(--space-sm) 0;
+	}
+
+	.dropdown-item {
+		background: none;
+		border: none;
+		color: var(--text-secondary);
+		padding: var(--space-sm) var(--space-lg);
+		width: 100%;
+		text-align: left;
+		cursor: pointer;
+		font-size: 0.9rem;
+		text-decoration: none;
+		display: block;
+	}
+
+	.dropdown-item:hover {
+		background-color: var(--primary-accent);
+		color: var(--background);
+	}
+
+	.loader {
+		width: 20px;
+		height: 20px;
+		border: 2px solid var(--text-primary);
+		border-bottom-color: transparent;
+		border-radius: 50%;
+		display: inline-block;
+		box-sizing: border-box;
+		animation: rotation 1s linear infinite;
+	}
+
+	@keyframes rotation {
+		0% {
+			transform: rotate(0deg);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* --- Hamburger & Mobile Nav --- */
@@ -305,9 +540,78 @@
 		flex-direction: column;
 	}
 
+	.mobile-user-profile-link {
+		display: block;
+		text-decoration: none;
+		border-radius: var(--radius-md);
+		transition: background-color var(--transition-fast);
+		margin-bottom: var(--space-md);
+	}
+
+	.mobile-user-profile-link:hover {
+		background-color: rgba(255, 255, 255, 0.05);
+	}
+
+	.mobile-user-info {
+		display: flex;
+		align-items: center;
+		gap: var(--space-md);
+		padding: var(--space-sm);
+	}
+
+	.user-avatar-link {
+		display: block;
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		overflow: hidden;
+		flex-shrink: 0;
+	}
+
+	.mobile-user-info .user-avatar {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.mobile-user-info .user-avatar-placeholder {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: var(--primary-accent);
+		color: var(--background);
+		font-weight: bold;
+		font-size: 1rem;
+	}
+
+	.mobile-user-info .user-details {
+		font-size: 0.9rem;
+		overflow: hidden;
+	}
+
+	.mobile-user-info .user-name {
+		font-weight: 600;
+		color: var(--text-primary);
+		margin: 0;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.mobile-user-info .user-email {
+		color: var(--text-secondary);
+		margin: 0;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
 	.mobile-nav-header {
 		padding-bottom: var(--space-lg);
 		border-bottom: var(--border-subtle);
+		margin-bottom: var(--space-lg);
 	}
 
 	.mobile-nav-title {
@@ -332,9 +636,20 @@
 		font-family: var(--font-body);
 	}
 
-	.mobile-nav > a {
+	.mobile-nav > a,
+	.mobile-nav-toggle {
 		color: var(--text-primary);
 		font-weight: 500;
+	}
+
+	.mobile-nav-toggle {
+		background: none;
+		border: none;
+		padding: 0;
+		font-size: 1.1rem;
+		font-family: var(--font-body);
+		cursor: pointer;
+		text-align: left;
 	}
 
 	.mobile-dropdown {
@@ -362,7 +677,8 @@
 		margin-bottom: var(--space-lg);
 	}
 
-	.mobile-actions .btn-signin {
+	.mobile-actions .btn-signin,
+	.mobile-actions .btn-signout {
 		display: block;
 		width: 100%;
 		text-align: center;
@@ -373,6 +689,15 @@
 		text-decoration: none;
 		font-weight: bold;
 		font-size: 1.1rem;
+		border: none;
+		cursor: pointer;
+		font-family: inherit;
+	}
+
+	.mobile-actions .btn-signout {
+		background-color: transparent;
+		border: 1px solid var(--secondary-accent);
+		color: var(--secondary-accent);
 	}
 
 	/* --- Responsive Breakpoint --- */

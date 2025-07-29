@@ -2,6 +2,8 @@
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import { Zap, Network, Layers, ChevronRight } from 'lucide-svelte';
+	import AnimatedButton from '$lib/components/common/AnimatedButton.svelte';
+	import RupeeIcon from '$lib/components/common/RupeeIcon.svelte';
 
 	const frameworkSteps = [
 		{
@@ -101,6 +103,9 @@
 					{/if}
 				</div>
 			{/each}
+		</div>
+		<div class="roi-button-container">
+			<AnimatedButton text="Unearth your ROI" icon={RupeeIcon} />
 		</div>
 	</div>
 </section>
@@ -248,5 +253,10 @@
 		.section-header p {
 			font-size: 1rem;
 		}
+	}
+
+	.roi-button-container {
+		text-align: left;
+		margin-top: var(--space-xl);
 	}
 </style>

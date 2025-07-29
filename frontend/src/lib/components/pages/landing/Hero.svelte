@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import Container from '$lib/components/pages/common/Container.svelte';
+  import { ChevronDown } from 'lucide-svelte';
+  import AnimatedButton from '$lib/components/common/AnimatedButton.svelte';
 
 </script>
 
@@ -21,9 +23,7 @@
         <strong>talent paradox</strong> isn't just a statistic—it's a
         <strong>direct threat to your bottom line and future success</strong>.
       </p>
-      <button>
-        Uncover the Crisis
-      </button>
+      <AnimatedButton text="Uncover the Crisis" icon={ChevronDown} />
     </div>
   </Container>
 </section>
@@ -64,26 +64,6 @@
   strong {
   	color: var(--text-primary);
   	font-weight: 700;
-  }
- 
-  button {
-  	background-color: var(--secondary-accent);
-  	color: #ffffff;
-  	border: none;
-  	padding: var(--space-md) var(--space-lg); /* Increased padding for better tap target */
-  	font-family: var(--font-body);
-  	font-size: 1.1rem; /* Slightly larger font for mobile */
-  	font-weight: 700;
-  	cursor: pointer;
-  	border-radius: var(--radius-md);
-  	margin-top: var(--space-md);
-  	transition: var(--transition-fast);
-  	box-shadow: var(--shadow-md);
-  }
- 
-  button:hover {
-  	transform: translateY(-2px);
-  	box-shadow: var(--shadow-lg);
   }
  
   /* Removed component-specific media query. Styles are now handled globally in app.css */

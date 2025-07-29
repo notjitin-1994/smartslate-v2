@@ -37,18 +37,18 @@
 					class="candidate-dot"
 					class:employable={candidate.isEmployable}
 					in:fade={{ duration: 500, delay: i * 15 }}
-				/>
+				></div>
 			{/each}
 		</div>
 	{/if}
 
 	<div class="legend">
 		<div class="legend-item">
-			<span class="legend-dot employable" />
+			<span class="legend-dot employable"></span>
 			<span>{employableCount}% Job-Ready</span>
 		</div>
 		<div class="legend-item">
-			<span class="legend-dot" />
+			<span class="legend-dot"></span>
 			<span>{100 - employableCount}% Needs Upskilling</span>
 		</div>
 	</div>
