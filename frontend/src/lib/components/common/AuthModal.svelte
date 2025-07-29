@@ -8,7 +8,8 @@
 		createUserWithEmailAndPassword,
 		signInWithEmailAndPassword,
 		GoogleAuthProvider,
-		signInWithPopup
+		signInWithPopup,
+		 updateProfile
 	} from 'firebase/auth';
 	import { auth } from '$lib/firebase';
 
@@ -48,7 +49,12 @@
 		loading = true;
 		error = null;
 		try {
-			await createUserWithEmailAndPassword(auth, email, password);
+			const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+			  if (userCredential.user) {
+			    await updateProfile(userCredential.user, {
+			      displayName: name,
+			    });
+			  }
 			// User is automatically signed in, onAuthStateChanged will handle the rest.
 			closeModal();
 		} catch (e: any) {

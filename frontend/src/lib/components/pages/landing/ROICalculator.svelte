@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { tweened } from 'svelte/motion';
+	import { createEventDispatcher, onMount } from 'svelte';
+import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import Container from '$lib/components/pages/common/Container.svelte';
 	import PersonaSelector from './roi-calculator/PersonaSelector.svelte';
@@ -19,6 +19,8 @@
 	import AnimatedButton from '$lib/components/common/AnimatedButton.svelte';
 
 	type Persona = 'businessman' | 'educator' | 'student';
+
+	const dispatch = createEventDispatcher();
 
 	let persona: Persona | null = null;
 
@@ -160,9 +162,9 @@
 			{/if}
 		</div>
 		<div class="button-wrapper">
-			<AnimatedButton text="Explore Our Partnerships" icon={Handshake} />
-		</div>
-	</Container>
+		<AnimatedButton text="Explore Our Partnerships" icon={Handshake} on:click={() => dispatch('revealNext')} />
+	</div>
+</Container>
 </section>
 
 <style>

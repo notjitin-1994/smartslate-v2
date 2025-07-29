@@ -1,44 +1,46 @@
 <script lang="ts">
+ 	import { createEventDispatcher } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import Container from '$lib/components/pages/common/Container.svelte';
-	import EmployabilityCrisis from './talent-paradox/EmployabilityCrisis.svelte';
-	import SkillsGap from './talent-paradox/SkillsGap.svelte';
-	import IndustryDemand from './talent-paradox/IndustryDemand.svelte';
-	import EconomicImpact from './talent-paradox/EconomicImpact.svelte';
-	import { ShieldAlert, Puzzle, TrendingUp, Landmark, LayoutGrid } from 'lucide-svelte';
-	import AnimatedButton from '$lib/components/common/AnimatedButton.svelte';
+ 	import Container from '$lib/components/pages/common/Container.svelte';
+ 	import EmployabilityCrisis from './talent-paradox/EmployabilityCrisis.svelte';
+ 	import SkillsGap from './talent-paradox/SkillsGap.svelte';
+ 	import IndustryDemand from './talent-paradox/IndustryDemand.svelte';
+ 	import EconomicImpact from './talent-paradox/EconomicImpact.svelte';
+ 	import { ShieldAlert, Puzzle, TrendingUp, Landmark, LayoutGrid } from 'lucide-svelte';
+ 	import AnimatedButton from '$lib/components/common/AnimatedButton.svelte';
 
-	type Section = 'crisis' | 'gap' | 'demand' | 'impact';
+ 	type Section = 'crisis' | 'gap' | 'demand' | 'impact';
 
+  const dispatch = createEventDispatcher();
 
-	const sections = [
-		{
-			id: 'impact',
-			label: 'The Economic Impact',
-			component: EconomicImpact,
-			icon: Landmark
-		},
-		{
-			id: 'crisis',
-			label: 'The Employability Crisis',
-			component: EmployabilityCrisis,
-			icon: ShieldAlert
-		},
-		{
-			id: 'gap',
-			label: 'The Critical Skills Gap',
-			component: SkillsGap,
-			icon: Puzzle
-		},
-		{
-			id: 'demand',
-			label: 'Evolving Industry Demand',
-			component: IndustryDemand,
-			icon: TrendingUp
-		}
-	];
+ 	const sections = [
+ 		{
+ 			id: 'impact',
+ 			label: 'The Economic Impact',
+ 			component: EconomicImpact,
+ 			icon: Landmark
+ 		},
+ 		{
+ 			id: 'crisis',
+ 			label: 'The Employability Crisis',
+ 			component: EmployabilityCrisis,
+ 			icon: ShieldAlert
+ 		},
+ 		{
+ 			id: 'gap',
+ 			label: 'The Critical Skills Gap',
+ 			component: SkillsGap,
+ 			icon: Puzzle
+ 		},
+ 		{
+ 			id: 'demand',
+ 			label: 'Evolving Industry Demand',
+ 			component: IndustryDemand,
+ 			icon: TrendingUp
+ 		}
+ 	];
 
-	let activeSection: Section = 'impact';
+ 	let activeSection: Section = 'impact';
 </script>
 
 <section class="talent-paradox-section">
@@ -80,7 +82,7 @@
 			</div>
 		</div>
 		<div class="discover-framework">
-			<AnimatedButton text="Discover the Framework" icon={LayoutGrid} />
+			<AnimatedButton text="Discover the Framework" icon={LayoutGrid} on:click={() => dispatch('revealNext')} />
 		</div>
 	</Container>
 </section>
