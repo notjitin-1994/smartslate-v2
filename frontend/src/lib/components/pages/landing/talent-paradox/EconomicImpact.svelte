@@ -60,8 +60,8 @@
 		background-color: rgba(255, 255, 255, 0.03);
 		border: 1px solid var(--border-color);
 		border-radius: 12px;
-		padding: 1.5rem;
-		min-height: 400px;
+		padding: 2.5rem;
+		min-height: 500px;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;

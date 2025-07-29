@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
-	import Container from '$lib/components/common/Container.svelte';
+	import Container from '$lib/components/pages/common/Container.svelte';
 	import EmployabilityCrisis from './talent-paradox/EmployabilityCrisis.svelte';
 	import SkillsGap from './talent-paradox/SkillsGap.svelte';
 	import IndustryDemand from './talent-paradox/IndustryDemand.svelte';
@@ -9,30 +9,35 @@
 
 	type Section = 'crisis' | 'gap' | 'demand' | 'impact';
 
-	let activeSection: Section = 'crisis';
 
-	const sections = {
-		crisis: {
+	const sections = [
+		{
+			id: 'impact',
+			label: 'The Economic Impact',
+			component: EconomicImpact,
+			icon: Landmark
+		},
+		{
+			id: 'crisis',
 			label: 'The Employability Crisis',
 			component: EmployabilityCrisis,
 			icon: ShieldAlert
 		},
-		gap: {
+		{
+			id: 'gap',
 			label: 'The Critical Skills Gap',
 			component: SkillsGap,
 			icon: Puzzle
 		},
-		demand: {
+		{
+			id: 'demand',
 			label: 'Evolving Industry Demand',
 			component: IndustryDemand,
 			icon: TrendingUp
-		},
-		impact: {
-			label: 'The Economic Impact',
-			component: EconomicImpact,
-			icon: Landmark
 		}
-	};
+	];
+
+	let activeSection: Section = 'impact';
 </script>
 
 <section class="talent-paradox-section">
@@ -51,10 +56,10 @@
 				</div>
 
 				<div class="button-group">
-					{#each Object.entries(sections) as [key, { label, icon }]}
+					{#each sections as { id, label, icon }}
 						<button
-							class:active={activeSection === key}
-							on:click={() => (activeSection = key as Section)}
+							class:active={activeSection === id}
+							on:click={() => (activeSection = id as Section)}
 						>
 							<svelte:component this={icon} size={20} />
 							<span>{label}</span>
@@ -64,11 +69,13 @@
 			</div>
 
 			<div class="right-panel">
-				{#key activeSection}
-					<div in:fade={{ duration: 300 }}>
-						<svelte:component this={sections[activeSection].component} />
-					</div>
-				{/key}
+				<div class="right-panel-wrapper">
+					{#key activeSection}
+						<div in:fade={{ duration: 300 }}>
+							<svelte:component this={sections.find(s => s.id === activeSection)?.component} />
+						</div>
+					{/key}
+				</div>
 			</div>
 		</div>
 	</Container>
@@ -76,33 +83,30 @@
 
 <style>
 	.talent-paradox-section {
-		padding: 6rem 0;
+		padding: var(--space-xxl) 0;
 		background-color: transparent;
 	}
 
 	.grid-layout {
 		display: grid;
 		grid-template-columns: 1fr 1.25fr;
-		gap: 4rem;
-		align-items: flex-start;
+		gap: var(--space-xl);
 	}
 
 	.left-panel {
 		position: sticky;
-		top: 8rem; /* Adjust based on header height */
+		top: var(--space-xxl); /* Adjust based on header height */
 	}
 
 	.section-header h2 {
-		font-family: var(--font-heading);
 		font-size: 3rem;
-		font-weight: 700;
-		color: var(--text-primary);
-		margin-bottom: 1rem;
+		margin-bottom: var(--space-md);
 	}
 
-.accent {
-		color: var(--secondary-accent);
+	.accent {
+		color: var(--primary-accent);
 	}
+
 	.section-header p {
 		font-size: 1.125rem;
 		color: var(--text-secondary);
@@ -113,62 +117,64 @@
 	.button-group {
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
-		margin-top: 2.5rem;
+		gap: var(--space-sm);
+		margin-top: var(--space-xl);
 	}
 
 	.button-group button {
 		background: transparent;
-		border: 1px solid var(--border-color);
+		border: var(--border-subtle);
 		color: var(--text-secondary);
-		padding: 1rem 1.5rem;
-		border-radius: 8px;
+		padding: var(--space-md) var(--space-lg);
+		border-radius: var(--radius-md);
 		text-align: left;
 		font-size: 1rem;
 		font-weight: 500;
 		cursor: pointer;
-		transition: all 0.3s ease;
+		transition: var(--transition-medium);
 		display: flex;
 		align-items: center;
-		gap: 0.75rem;
+		gap: var(--space-md);
 		box-shadow: 0 0 0px rgba(167, 218, 219, 0);
 	}
 
 	.button-group button:not(.active) {
-		box-shadow: 0 0 15px rgba(167, 218, 219, 0.2);
 		animation: pulse 2.5s infinite cubic-bezier(0.4, 0, 0.6, 1);
 	}
 
 	.button-group button:hover {
-		background-color: rgba(167, 218, 219, 0.1);
-		border-color: rgba(167, 218, 219, 0.3);
-		color: var(--primary-accent);
+		background-color: var(--primary-tint-lighter);
+		border-color: var(--primary-shade-dark);
+		color: var(--primary-shade-darker);
 		transform: translateY(-2px);
 	}
 
 	.button-group button.active {
 		background-color: var(--secondary-accent);
-		color: var(--button-text);
+		color: #ffffff;
 		border-color: var(--secondary-accent);
 		font-weight: 600;
 		animation: none;
-		box-shadow: 0 5px 15px rgba(167, 218, 219, 0.4);
+		box-shadow: var(--shadow-lg);
 	}
 
+	.right-panel-wrapper > :global(div) {
+		height: 100%;
+	}
 	.right-panel {
 		min-height: 400px; /* Ensure panel has height for transitions */
-		transition: transform 0.3s ease, box-shadow 0.3s ease;
+		transition: var(--transition-medium);
 	}
 
 	.right-panel:hover {
 		transform: translateY(-5px);
-		box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+		box-shadow: var(--shadow-lg);
 	}
 
 	@media (max-width: 992px) {
 		.grid-layout {
 			grid-template-columns: 1fr;
-			gap: 3rem;
+			gap: var(--space-xl);
 		}
 		.left-panel {
 			position: static;
@@ -190,7 +196,7 @@
 
 	@media (max-width: 768px) {
 		.talent-paradox-section {
-			padding: 4rem 0;
+			padding: var(--space-xl) 0;
 		}
 		.section-header h2 {
 			font-size: 2.25rem;

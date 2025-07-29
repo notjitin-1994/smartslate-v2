@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
-	import Container from '$lib/components/common/Container.svelte';
+	import Container from '$lib/components/pages/common/Container.svelte';
 	import PersonaSelector from './roi-calculator/PersonaSelector.svelte';
 	import MetricCard from './roi-calculator/MetricCard.svelte';
 	import {
@@ -162,38 +162,36 @@
 
 <style>
 	#roi-calculator {
-		padding: var(--section-padding);
+		padding: var(--space-xxl) 0;
 	}
 
 	.section-header {
 		max-width: 100%;
-		margin: 0 0 3rem 0;
+		margin: 0 0 var(--space-xl) 0;
 		text-align: left;
 	}
 
 	.section-header h2 {
-		font-family: var(--font-family-heading);
 		font-size: 3rem;
-		font-weight: 700;
-		color: var(--color-text-primary);
-		margin-bottom: 1rem;
+		margin-bottom: var(--space-md);
 	}
 
 	.accent {
-		color: var(--secondary-accent);
+		color: var(--primary-accent);
 	}
 
 	.section-header p {
 		font-size: 1.125rem;
-		color: var(--color-text-secondary);
+		color: var(--text-secondary);
 		line-height: 1.6;
+		max-width: 60ch;
 	}
 
 	.calculator-wrapper {
 		background: rgba(13, 15, 28, 0.5);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 1.5rem;
-		padding: 2.5rem 3.5rem;
+		border: var(--border-default);
+		border-radius: var(--radius-lg);
+		padding: var(--space-xl) var(--space-xxl);
 		min-height: 400px;
 		display: flex;
 		flex-direction: column;
@@ -204,64 +202,63 @@
 		width: 100%;
 		display: flex;
 		flex-direction: column;
-		gap: 2.5rem;
+		gap: var(--space-xl);
 	}
 
 	.calculator-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
-		gap: 1rem;
+		gap: var(--space-lg);
 	}
 
 	.calculator-header h2 {
-		font-family: var(--font-family-heading);
-		font-size: var(--font-size-h3);
+		font-size: 2.5rem;
 		font-weight: 700;
-		color: var(--color-text-primary);
+		color: var(--primary-shade-darker);
 		flex-grow: 1;
 	}
 
 	.calculator-header :global(strong) {
 		font-weight: 700;
-		color: var(--color-text-primary);
+		color: var(--primary-shade-darker);
 	}
 
 	.back-button {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.5rem;
-		font-size: var(--font-size-small);
+		gap: var(--space-sm);
+		font-size: 0.9rem;
 		font-weight: 600;
-		color: var(--color-text-secondary);
+		color: var(--text-secondary);
 		background: none;
 		border: none;
 		cursor: pointer;
-		transition: color 0.2s ease;
+		transition: var(--transition-fast);
 		flex-shrink: 0;
 	}
 
 	.back-button:hover {
-		color: var(--color-text-primary);
+		color: var(--text-primary);
 	}
 
 	.slider-container {
 		display: flex;
 		flex-direction: column;
-		gap: 1.5rem;
-		margin-bottom: 1rem;
+		gap: var(--space-lg);
+		margin-bottom: var(--space-md);
 	}
 
 	.slider-container label {
-		font-size: var(--font-size-large);
+		font-size: 1.1rem;
 		font-weight: 500;
-		color: var(--color-text-secondary);
+		color: var(--primary-shade-dark);
 	}
 
 	.slider-wrapper {
 		display: flex;
 		align-items: center;
-		gap: 2rem;
+		gap: var(--space-lg);
 	}
 
 	input[type='range'] {
@@ -270,10 +267,10 @@
 		appearance: none;
 		width: 100%;
 		height: 4px;
-		background: rgba(255, 255, 255, 0.1);
-		border-radius: 2px;
+		background: var(--primary-shade-dark);
+		border-radius: var(--radius-sm);
 		outline: none;
-		transition: opacity 0.2s;
+		transition: var(--transition-fast);
 	}
 
 	input[type='range']::-webkit-slider-thumb {
@@ -281,7 +278,7 @@
 		appearance: none;
 		width: 18px;
 		height: 18px;
-		background: #fff;
+		background: var(--secondary-accent);
 		cursor: pointer;
 		border-radius: 50%;
 	}
@@ -289,17 +286,17 @@
 	input[type='range']::-moz-range-thumb {
 		width: 18px;
 		height: 18px;
-		background: #fff;
+		background: var(--secondary-accent);
 		cursor: pointer;
 		border-radius: 50%;
 		border: none;
 	}
 
 	.slider-value {
-		font-family: var(--font-family-heading);
+		font-family: var(--font-heading);
 		font-weight: 600;
 		font-size: 2rem;
-		color: var(--color-text-primary);
+		color: var(--primary-shade-darker);
 		min-width: 120px;
 		text-align: right;
 	}
@@ -307,15 +304,15 @@
 	.metrics-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-		gap: 1.5rem;
+		gap: var(--space-lg);
 	}
 
 	.closing-argument {
-		padding-top: 2.5rem;
-		margin-top: 1.5rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.1);
-		font-size: var(--font-size-medium);
-		color: var(--color-text-secondary);
+		padding-top: var(--space-xl);
+		margin-top: var(--space-lg);
+		border-top: var(--border-subtle);
+		font-size: 1.1rem;
+		color: var(--primary-shade-dark);
 		line-height: 1.7;
 		max-width: 80ch;
 		margin-left: auto;
@@ -325,6 +322,6 @@
 
 	.closing-argument :global(strong) {
 		font-weight: 600;
-		color: var(--color-text-primary);
+		color: var(--primary-shade-darker);
 	}
 </style>

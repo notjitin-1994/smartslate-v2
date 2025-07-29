@@ -60,9 +60,15 @@
 <style>
 	.persona-selector-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		grid-template-columns: 1fr; /* Mobile-first: single column */
 		gap: 2rem;
 		justify-content: center;
+	}
+
+	@media (min-width: 768px) {
+		.persona-selector-grid {
+			grid-template-columns: repeat(3, 1fr); /* 3 columns for tablet and up */
+		}
 	}
 
 	.persona-card {

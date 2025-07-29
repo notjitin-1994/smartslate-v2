@@ -1,6 +1,7 @@
 <script lang="ts">
 	import logo from '$lib/assets/images/Final-Dark-BG.png';
-	import Container from '$lib/components/common/Container.svelte';
+	import Container from '$lib/components/pages/common/Container.svelte';
+	import { authModalStore } from '$lib/stores/authModalStore';
 	import { fly, fade } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
@@ -16,38 +17,17 @@
 		isMobileMenuOpen = false;
 	}
 
-	// Prevent body scroll and blur main content when mobile menu is open
-	onMount(() => {
-		const mainContent = document.getElementById('main-content');
-		const footer = document.querySelector('footer');
+	function openAuthModal() {
+		authModalStore.update((state) => ({ ...state, isOpen: true }));
+	}
 
-		const unsubscribe = () => {
-			if (isMobileMenuOpen) {
-				document.body.classList.add('no-scroll');
-				mainContent?.classList.add('blurred');
-				footer?.classList.add('blurred');
-			} else {
-				document.body.classList.remove('no-scroll');
-				mainContent?.classList.remove('blurred');
-				footer?.classList.remove('blurred');
-			}
-		};
-		unsubscribe(); // initial check
-		return unsubscribe;
-	});
-
+	// Prevent body scroll when mobile menu is open
 	$: {
 		if (typeof document !== 'undefined') {
-			const mainContent = document.getElementById('main-content');
-			const footer = document.querySelector('footer');
 			if (isMobileMenuOpen) {
 				document.body.classList.add('no-scroll');
-				mainContent?.classList.add('blurred');
-				footer?.classList.add('blurred');
 			} else {
 				document.body.classList.remove('no-scroll');
-				mainContent?.classList.remove('blurred');
-				footer?.classList.remove('blurred');
 			}
 		}
 	}
@@ -83,7 +63,7 @@
 				</nav>
 
 				<div class="actions">
-					<a href="/signin" class="btn-signin">Sign In</a>
+					<button on:click={openAuthModal} class="btn-signin">Sign In</button>
 				</div>
 			</div>
 
@@ -124,7 +104,15 @@
 			</nav>
 			<div class="mobile-actions">
 				<hr />
-				<a href="/signin" class="btn-signin" on:click={closeMobileMenu}>Sign In</a>
+				<button
+					on:click={() => {
+						closeMobileMenu();
+						openAuthModal();
+					}}
+					class="btn-signin"
+				>
+					Sign In
+				</button>
 			</div>
 		</aside>
 	{/if}
@@ -133,23 +121,21 @@
 <style>
 	header {
 		position: sticky;
-		top: 1rem;
+		top: var(--space-md);
 		z-index: 10;
 		max-width: 1200px;
 		margin: 0 auto;
-		width: calc(100% - 2rem);
+		width: calc(100% - var(--space-lg));
 	}
 
 	.header-background {
 		position: absolute;
 		inset: 0;
-		background-color: rgba(9, 21, 33, 0.25);
+		background-color: rgba(9, 21, 33, 0.25); /* Using a specific rgba for the glass effect */
 		backdrop-filter: blur(12px);
-		border: 1px solid rgba(var(--rgb-secondary-accent), 0.25);
-		border-radius: 12px;
-		box-shadow:
-			0 4px 20px rgba(0, 0, 0, 0.15),
-			0 0 25px rgba(var(--rgb-secondary-accent), 0.2); /* Subtle teal glow */
+		border: var(--border-subtle);
+		border-radius: var(--radius-lg);
+		box-shadow: var(--shadow-lg);
 	}
 
 	.content {
@@ -157,7 +143,7 @@
 		justify-content: space-between;
 		align-items: center;
 		position: relative;
-		padding: 1rem 0;
+		padding: var(--space-md) 0;
 	}
 
 	.logo-link img {
@@ -168,25 +154,26 @@
 	.nav-and-actions {
 		display: flex;
 		align-items: center;
-		gap: 2rem;
+		gap: var(--space-lg);
 	}
 
 	/* --- Desktop Navigation --- */
 	.desktop-nav {
 		display: flex;
 		align-items: center;
-		gap: 1.5rem;
+		gap: var(--space-lg);
 	}
 
 	.desktop-nav a {
-		color: var(--primary-accent);
+		color: var(--text-primary);
 		text-decoration: none;
 		font-size: 0.9rem;
 		position: relative;
+		transition: var(--transition-fast);
 	}
 
 	.desktop-nav a:hover {
-		text-decoration: underline;
+		color: var(--primary-accent);
 	}
 
 	.dropdown-container {
@@ -195,57 +182,62 @@
 
 	.dropdown-menu {
 		position: absolute;
-		top: calc(100% + 1rem);
+		top: calc(100% + var(--space-md));
 		left: 50%;
 		transform: translateX(-50%);
 		background-color: var(--background);
-		border: 1px solid rgba(167, 218, 219, 0.2);
-		border-radius: 8px;
-		padding: 0.5rem 0;
+		border: var(--border-subtle);
+		border-radius: var(--radius-md);
+		padding: var(--space-sm) 0;
 		min-width: 240px;
 		z-index: 11;
-		box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+		box-shadow: var(--shadow-lg);
 		display: flex;
 		flex-direction: column;
 	}
 
 	.dropdown-menu a {
-		padding: 0.75rem 1.5rem;
+		padding: var(--space-sm) var(--space-lg);
 		white-space: nowrap;
 		font-size: 0.9rem;
+		color: var(--text-secondary);
 	}
 
 	.dropdown-menu a:hover {
-		background-color: var(--secondary-accent);
-		color: var(--button-text);
+		background-color: var(--primary-accent);
+		color: var(--background);
 		text-decoration: none;
 	}
 
-	.actions .btn-signin {
+	.actions .btn-signin,
+	.mobile-actions .btn-signin {
 		background-color: var(--secondary-accent);
-		color: var(--button-text);
-		padding: 0.5rem 1.25rem;
-		border-radius: 6px;
+		color: #ffffff;
+		padding: var(--space-sm) var(--space-md);
+		border-radius: var(--radius-sm);
 		text-decoration: none;
 		font-weight: bold;
 		font-size: 0.9rem;
-		transition: background-color 0.2s ease;
+		transition: var(--transition-fast);
+		border: none;
+		cursor: pointer;
+		font-family: inherit;
 	}
 
 	.actions .btn-signin:hover {
-		background-color: #c1f0f0;
+		opacity: 0.9;
 	}
 
 	/* --- Hamburger & Mobile Nav --- */
 	.hamburger {
-		display: none;
+		display: none; /* Hidden by default */
 		background: transparent;
 		border: none;
 		cursor: pointer;
 		padding: 0;
 		z-index: 1001;
-		width: 25px;
-		height: 21px;
+		width: 44px;
+		height: 44px;
 		position: relative;
 	}
 
@@ -253,31 +245,38 @@
 		display: block;
 		width: 25px;
 		height: 3px;
-		background-color: var(--primary-accent);
-		transition: all 0.3s ease-in-out;
+		background-color: var(--text-primary);
+		transition: var(--transition-medium);
 		position: absolute;
-		left: 0;
-		border-radius: 3px;
+		left: 50%;
+		transform: translateX(-50%);
+		border-radius: var(--radius-sm);
 	}
 
-	.hamburger span:nth-child(1) { top: 0; }
-	.hamburger span:nth-child(2) { top: 9px; }
-	.hamburger span:nth-child(3) { top: 18px; }
+	.hamburger span:nth-child(1) {
+		top: 10px;
+	}
+	.hamburger span:nth-child(2) {
+		top: 20px;
+	}
+	.hamburger span:nth-child(3) {
+		top: 30px;
+	}
 
 	.hamburger.is-active {
 		position: fixed;
-		top: calc(1rem + 1rem);
-		right: 1rem;
+		top: calc(var(--space-md) + var(--space-md));
+		right: var(--space-md);
 	}
 
 	.hamburger.is-active span:nth-child(1) {
-		transform: translateY(9px) rotate(45deg);
+		transform: translate(-50%, 10px) rotate(45deg);
 	}
 	.hamburger.is-active span:nth-child(2) {
 		opacity: 0;
 	}
 	.hamburger.is-active span:nth-child(3) {
-		transform: translateY(-9px) rotate(-45deg);
+		transform: translate(-50%, -10px) rotate(-45deg);
 	}
 
 	.mobile-nav-backdrop {
@@ -300,15 +299,15 @@
 		height: 100%;
 		background-color: var(--background);
 		z-index: 999;
-		padding: 2rem;
-		box-shadow: -10px 0 30px rgba(0, 0, 0, 0.2);
+		padding: var(--space-xl);
+		box-shadow: var(--shadow-lg);
 		display: flex;
 		flex-direction: column;
 	}
 
 	.mobile-nav-header {
-		padding-bottom: 1.5rem;
-		border-bottom: 1px solid rgba(167, 218, 219, 0.1);
+		padding-bottom: var(--space-lg);
+		border-bottom: var(--border-subtle);
 	}
 
 	.mobile-nav-title {
@@ -323,8 +322,8 @@
 		display: flex;
 		flex-direction: column;
 		align-items: flex-start;
-		gap: 1.5rem;
-		padding-top: 1.5rem;
+		gap: var(--space-lg);
+		padding-top: var(--space-lg);
 	}
 
 	.mobile-nav a {
@@ -334,7 +333,7 @@
 	}
 
 	.mobile-nav > a {
-		color: var(--primary-accent);
+		color: var(--text-primary);
 		font-weight: 500;
 	}
 
@@ -342,25 +341,25 @@
 		display: flex;
 		flex-direction: column;
 		align-items: flex-start;
-		gap: 1rem;
-		margin-top: -0.5rem;
-		padding-left: 1rem;
-		border-left: 1px solid rgba(167, 218, 219, 0.2);
+		gap: var(--space-md);
+		margin-top: calc(-1 * var(--space-sm));
+		padding-left: var(--space-md);
+		border-left: var(--border-subtle);
 	}
 
 	.mobile-dropdown a {
-		color: var(--secondary-accent);
+		color: var(--primary-shade-dark);
 	}
 
 	.mobile-actions {
 		margin-top: auto;
-		padding-top: 1.5rem;
+		padding-top: var(--space-lg);
 	}
 
 	.mobile-actions hr {
 		border: none;
-		border-top: 1px solid rgba(167, 218, 219, 0.1);
-		margin-bottom: 1.5rem;
+		border-top: var(--border-subtle);
+		margin-bottom: var(--space-lg);
 	}
 
 	.mobile-actions .btn-signin {
@@ -368,9 +367,9 @@
 		width: 100%;
 		text-align: center;
 		background-color: var(--secondary-accent);
-		color: var(--button-text);
-		padding: 0.75rem 1.25rem;
-		border-radius: 6px;
+		color: #ffffff;
+		padding: var(--space-md) var(--space-lg);
+		border-radius: var(--radius-md);
 		text-decoration: none;
 		font-weight: bold;
 		font-size: 1.1rem;
@@ -382,7 +381,10 @@
 			display: none;
 		}
 		.hamburger {
-			display: block;
+			display: flex;
+		}
+		.content {
+			padding: var(--space-sm) 0; /* Reduce padding on mobile */
 		}
 	}
 </style>

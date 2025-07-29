@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import Container from '$lib/components/common/Container.svelte';
+  import Container from '$lib/components/pages/common/Container.svelte';
 
 </script>
 
@@ -30,76 +30,61 @@
 
 <style>
   section {
-    position: relative;
-    min-height: 60vh;
-    display: flex;
-    align-items: center;
-    padding: 2rem 0;
-    overflow: hidden;
-    background-color: transparent;
+  	position: relative;
+  	min-height: 60vh;
+  	display: flex;
+  	align-items: center;
+  	padding: var(--space-xl) 0;
+  	overflow: hidden;
   }
-
-  canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-  }
-
+ 
   .content {
-    width: 100%;
-    text-align: left;
-    z-index: 1;
+  	width: 100%;
+  	text-align: left;
+  	z-index: 1;
   }
-
+ 
   h1 {
-    font-family: var(--font-heading);
-    font-weight: 700;
-    font-size: 3rem;
-    margin-bottom: 1.5rem;
+  	font-size: 3rem;
+  	margin-bottom: var(--space-lg);
+  	max-width: 20ch; /* Limit line length for readability */
   }
-
+ 
   .accent {
-    color: var(--secondary-accent);
+  	color: var(--primary-accent);
   }
-
+ 
   p {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    margin-bottom: 1rem;
+  	font-size: 1.1rem;
+  	margin-bottom: var(--space-md);
+  	max-width: 65ch; /* Optimal reading length */
+  	color: var(--text-secondary);
   }
-
+ 
   strong {
-    color: var(--primary-accent);
-    font-weight: bold;
+  	color: var(--text-primary);
+  	font-weight: 700;
   }
-
+ 
   button {
-    background-color: var(--secondary-accent);
-    color: var(--button-text);
-    border: none;
-    padding: 0.8rem 1.5rem;
-    font-family: var(--font-body);
-    font-size: 1rem;
-    cursor: pointer;
-    border-radius: 5px;
-    margin-top: 1rem;
-    transition: transform 0.2s;
+  	background-color: var(--secondary-accent);
+  	color: #ffffff;
+  	border: none;
+  	padding: var(--space-md) var(--space-lg); /* Increased padding for better tap target */
+  	font-family: var(--font-body);
+  	font-size: 1.1rem; /* Slightly larger font for mobile */
+  	font-weight: 700;
+  	cursor: pointer;
+  	border-radius: var(--radius-md);
+  	margin-top: var(--space-md);
+  	transition: var(--transition-fast);
+  	box-shadow: var(--shadow-md);
   }
-
+ 
   button:hover {
-    transform: scale(1.05);
+  	transform: translateY(-2px);
+  	box-shadow: var(--shadow-lg);
   }
-
-  @media (max-width: 768px) {
-    h1 {
-      font-size: 2.5rem;
-    }
-
-    section {
-      padding: 4rem 0 2rem 0;
-    }
-  }
+ 
+  /* Removed component-specific media query. Styles are now handled globally in app.css */
 </style>

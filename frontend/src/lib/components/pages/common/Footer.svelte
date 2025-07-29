@@ -11,39 +11,48 @@
 <style>
 	footer {
 		text-align: center;
-		padding: 1rem; /* Simplified and reduced padding */
-		margin-top: 4rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.1);
+		padding: var(--space-lg);
+		margin-top: var(--space-xl);
+		border-top: var(--border-subtle);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 1rem; /* Reduced gap */
+		gap: var(--space-md);
 	}
 
 	.footer-logo {
-		height: 18px; /* Increased size by 20% */
+		height: 18px;
 		width: auto;
-		/* margin-bottom: 0.5rem; */ /* Removed, spacing now handled by parent gap */
 	}
 
 	.footer-text {
 		display: flex;
-		flex-wrap: wrap; /* Allow wrapping on small screens */
+		flex-wrap: wrap;
 		justify-content: center;
 		align-items: center;
-		gap: 0.5rem 1rem; /* Vertical and horizontal gap */
+		gap: var(--space-sm) var(--space-md);
 	}
 
 	.tagline {
-		font-size: var(--font-size-large);
-		color: var(--color-text-secondary);
-		/* font-style: italic; */ /* Removed italic style */
+		font-size: 1rem;
+		color: var(--text-secondary);
 		margin: 0;
 	}
 
 	.copyright {
-		font-size: var(--font-size-small);
-		color: var(--color-text-tertiary);
+		font-size: 0.875rem;
+		color: var(--primary-shade-dark);
 		margin: 0;
+	}
+
+	@media (max-width: 768px) {
+		.footer-logo {
+			height: 24px; /* Increase logo size for better visibility */
+		}
+
+		.footer-text {
+			flex-direction: column;
+			gap: var(--space-sm);
+		}
 	}
 </style>

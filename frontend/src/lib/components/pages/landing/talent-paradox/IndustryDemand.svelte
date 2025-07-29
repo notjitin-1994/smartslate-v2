@@ -33,7 +33,7 @@
 			{#each people as person, i (person.id)}
 				<div class="person-icon" in:fade={{ duration: 500, delay: i * 10 }}>
 					<User
-						size={24}
+						size={20}
 						strokeWidth={1.5}
 						class={person.wantsToLearn ? 'wants-learn' : 'content'}
 					/>
@@ -89,8 +89,8 @@
 	.grid-container {
 		display: grid;
 		grid-template-columns: repeat(10, 1fr);
-		gap: 0.75rem;
-		margin-bottom: 2rem;
+		gap: 0.5rem;
+		margin-bottom: 1.5rem;
 	}
 
 	.person-icon {
