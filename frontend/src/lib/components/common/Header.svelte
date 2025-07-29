@@ -145,9 +145,11 @@
 		inset: 0;
 		background-color: rgba(9, 21, 33, 0.25);
 		backdrop-filter: blur(12px);
-		border: 1px solid rgba(167, 218, 219, 0.1);
+		border: 1px solid rgba(var(--rgb-secondary-accent), 0.25);
 		border-radius: 12px;
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+		box-shadow:
+			0 4px 20px rgba(0, 0, 0, 0.15),
+			0 0 25px rgba(var(--rgb-secondary-accent), 0.2); /* Subtle teal glow */
 	}
 
 	.content {
