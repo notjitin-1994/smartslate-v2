@@ -113,3 +113,6 @@ dist/
 
 # Zip files
 *.zip
+
+.firebase/serviceAccountKey.json
+scripts/serviceAccountKey.json.json
