@@ -32,37 +32,61 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.listUsers = exports.setAdminClaim = void 0;
-const admin = __importStar(require("firebase-admin"));
-const https_1 = require("firebase-functions/v2/https");
-const firebase_functions_1 = require("firebase-functions");
-admin.initializeApp();
-const ensureAdmin = (context) => {
-    if (!context.auth) {
-        throw new https_1.HttpsError('unauthenticated', 'The function must be called while authenticated.');
-    }
-    if (context.auth.token.admin !== true) {
-        throw new https_1.HttpsError('permission-denied', 'Only an admin can perform this action.');
-    }
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-exports.setAdminClaim = (0, https_1.onCall)({ cors: true }, async (request) => {
-    ensureAdmin(request);
-    const { uid } = request.data;
-    if (typeof uid !== 'string' || uid.length === 0) {
-        throw new https_1.HttpsError('invalid-argument', 'The function must be called with a valid "uid" argument.');
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.deleteUser = exports.setAdminClaim = exports.listUsers = void 0;
+const admin = __importStar(require("firebase-admin"));
+const firebase_functions_1 = require("firebase-functions");
+const https_1 = require("firebase-functions/v2/https");
+const cors_1 = __importDefault(require("cors"));
+admin.initializeApp();
+// Configure CORS to allow requests from your frontend origin
+const corsHandler = (0, cors_1.default)({ origin: 'http://localhost:5173' });
+/**
+ * Middleware to authenticate the user and check for admin privileges.
+ * It verifies the Firebase ID token from the Authorization header.
+ */
+const authenticateAndAuthorize = async (req, res, next) => {
+    firebase_functions_1.logger.info('Verifying token...');
+    if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) {
+        firebase_functions_1.logger.error('No token provided.');
+        res.status(403).send('Unauthorized');
+        return;
     }
+    const idToken = req.headers.authorization.split('Bearer ')[1];
     try {
-        await admin.auth().setCustomUserClaims(uid, { admin: true });
-        return { message: `Success! User ${uid} has been made an admin.` };
+        const decodedToken = await admin.auth().verifyIdToken(idToken);
+        if (decodedToken.admin !== true) {
+            firebase_functions_1.logger.error('User is not an admin.');
+            res.status(403).send('Permission Denied');
+            return;
+        }
+        req.user = decodedToken; // Add user to the request object
+        next();
     }
     catch (error) {
-        firebase_functions_1.logger.error('Error setting custom claim:', error);
-        throw new https_1.HttpsError('internal', 'An error occurred while setting the custom claim.');
+        firebase_functions_1.logger.error('Error while verifying token:', error);
+        res.status(403).send('Unauthorized');
     }
-});
-exports.listUsers = (0, https_1.onCall)({ cors: true }, async (request) => {
-    ensureAdmin(request);
+};
+/**
+ * A wrapper for admin functions that applies CORS and authentication middleware.
+ * @param handler The core function logic to execute after middleware checks.
+ * @returns An HTTPS function handler.
+ */
+const createAdminFunction = (handler) => {
+    return (0, https_1.onRequest)((req, res) => {
+        corsHandler(req, res, () => {
+            authenticateAndAuthorize(req, res, () => {
+                handler(req, res);
+            });
+        });
+    });
+};
+// --- Admin Functions ---
+exports.listUsers = createAdminFunction(async (req, res) => {
     try {
         const listUsersResult = await admin.auth().listUsers(1000);
         const users = listUsersResult.users.map((user) => ({
@@ -74,26 +98,41 @@ exports.listUsers = (0, https_1.onCall)({ cors: true }, async (request) => {
             },
             customClaims: user.customClaims,
         }));
-        return { users };
+        res.status(200).json({ users });
     }
     catch (error) {
         firebase_functions_1.logger.error('Error listing users:', error);
-        throw new https_1.HttpsError('internal', 'An error occurred while listing users.');
+        res.status(500).json({ error: 'An error occurred while listing users.' });
     }
 });
-exports.deleteUser = (0, https_1.onCall)({ cors: true }, async (request) => {
-    ensureAdmin(request);
-    const { uid } = request.data;
-    if (typeof uid !== 'string' || uid.length === 0) {
-        throw new https_1.HttpsError('invalid-argument', 'The function must be called with a valid "uid" argument.');
+exports.setAdminClaim = createAdminFunction(async (req, res) => {
+    const { uid } = req.body;
+    if (!uid) {
+        res.status(400).json({ error: 'UID is required.' });
+        return;
+    }
+    try {
+        await admin.auth().setCustomUserClaims(uid, { admin: true });
+        res.status(200).json({ message: `Successfully set admin claim for user ${uid}` });
+    }
+    catch (error) {
+        firebase_functions_1.logger.error(`Error setting admin claim for user ${uid}:`, error);
+        res.status(500).json({ error: 'An error occurred while setting the admin claim.' });
+    }
+});
+exports.deleteUser = createAdminFunction(async (req, res) => {
+    const { uid } = req.body;
+    if (!uid) {
+        res.status(400).json({ error: 'UID is required.' });
+        return;
     }
     try {
         await admin.auth().deleteUser(uid);
-        return { message: `Successfully deleted user ${uid}` };
+        res.status(200).json({ message: `Successfully deleted user ${uid}` });
     }
     catch (error) {
-        firebase_functions_1.logger.error('Error deleting user:', error);
-        throw new https_1.HttpsError('internal', 'An error occurred while deleting the user.');
+        firebase_functions_1.logger.error(`Error deleting user ${uid}:`, error);
+        res.status(500).json({ error: 'An error occurred while deleting the user.' });
     }
 });
 //# sourceMappingURL=index.js.map

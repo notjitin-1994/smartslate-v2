@@ -6,7 +6,23 @@ import cors from 'cors';
 admin.initializeApp();
 
 // Configure CORS to allow requests from your frontend origin
-const corsHandler = cors({ origin: 'http://localhost:5173' });
+const corsHandler = cors({
+  origin: [
+    'http://localhost:5173',
+    'https://smartslate.io/',
+    'https://www.smartslate.io/'
+  ],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'Origin'
+  ],
+  exposedHeaders: [
+    'Content-Type'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  preflightContinue: true
+});
 
 /**
  * Middleware to authenticate the user and check for admin privileges.
