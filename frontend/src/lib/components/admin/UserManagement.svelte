@@ -29,45 +29,48 @@
    * @param functionName The name of the cloud function to call.
    * @param data The JSON payload to send to the function.
    */
-  async function callAdminFunction(functionName: string, data: object = {}) {
-    if (!browser) return; // Don't run on server
+  async function callAdminFunction(path: string, method: 'GET' | 'POST' = 'POST', data: object = {}) {
+    if (!browser) return;
 
-    const user = auth.currentUser; // Get the live user object
-
-    // Null check is critical
+    const user = auth.currentUser;
     if (!user) {
-        console.error("No user is currently signed in.");
-        // Optionally, handle this with a user-facing error
-        return;
+      console.error("No user is currently signed in.");
+      throw new Error("Authentication required.");
     }
 
     try {
-        const idToken = await user.getIdToken();
-        const url = `https://us-central1-${projectId}.cloudfunctions.net/${functionName}`;
+      const idToken = await user.getIdToken();
+      // All requests now go to the single 'api' endpoint, with the specific action determined by the path.
+      const url = `https://us-central1-${projectId}.cloudfunctions.net/api/${path}`;
 
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${idToken}`,
-          },
-          body: JSON.stringify(data),
+      const options: RequestInit = {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`,
+        },
+      };
+
+      if (method !== 'GET') {
+        options.body = JSON.stringify(data);
+      }
+
+      const response = await fetch(url, options);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Network response was not ok.', {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText,
         });
+        throw new Error(`Request to ${path} failed with status ${response.status}`);
+      }
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('Network response was not ok.', {
-            status: response.status,
-            statusText: response.statusText,
-            body: errorText,
-          });
-          throw new Error(`Request failed with status ${response.status}`);
-        }
-
-        return response.json();
+      return response.json();
     } catch (error) {
-        console.error("Error in callAdminFunction:", error);
-        throw error; // Re-throw the error to be caught by the caller
+      console.error(`Error in callAdminFunction for path ${path}:`, error);
+      throw error;
     }
   }
 
@@ -76,7 +79,8 @@
     isLoading = true;
     // We now call setAdminClaim with a dummy UID to get the user list.
     // This is a workaround for the restrictive IAM policy.
-    callAdminFunction('setAdminClaim', { uid: 'dummy-uid-for-listing' })
+    // Fetch the list of users with a GET request to the new endpoint.
+    callAdminFunction('admin/users', 'GET')
       .then(data => {
         users = data.users;
         error = null;
@@ -103,7 +107,7 @@
     }
 
     try {
-      await callAdminFunction('setAdminClaim', { uid });
+      await callAdminFunction('admin/setAdminClaim', 'POST', { uid });
       users = users.map(u => u.uid === uid ? { ...u, customClaims: { ...u.customClaims, admin: true } } : u);
       alert('User successfully promoted to admin.');
     } catch (err: any) {
@@ -118,7 +122,7 @@
     }
 
     try {
-      await callAdminFunction('deleteUser', { uid });
+      await callAdminFunction('admin/deleteUser', 'POST', { uid });
       users = users.filter(u => u.uid !== uid);
       alert('User successfully deleted.');
     } catch (err: any) {
