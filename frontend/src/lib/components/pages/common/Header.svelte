@@ -140,6 +140,11 @@
 									</div>
 									<hr />
 									<a href="/profile" class="dropdown-item" on:click={closeDropdowns}>Profile</a>
+									{#if $authStore.user.customClaims?.admin}
+										<a href="/admin" class="dropdown-item" on:click={closeDropdowns}
+											>Admin Dashboard</a
+										>
+									{/if}
 									<button on:click={handleSignOut} class="dropdown-item">Sign Out</button>
 								</div>
 							{/if}
@@ -186,6 +191,9 @@
 				{/if}
 				<a href="/difference" on:click={closeMobileMenu}>The Smartslate Difference</a>
 				<a href="/partner" on:click={closeMobileMenu}>Partner & Collaborate</a>
+				{#if $authStore.user && $authStore.user.customClaims?.admin}
+					<a href="/admin" on:click={closeMobileMenu}>Admin Dashboard</a>
+				{/if}
 			</nav>
 			<div class="mobile-actions">
 				<hr />

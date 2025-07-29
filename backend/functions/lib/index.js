@@ -15,55 +15,85 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listAllUsers = void 0;
-const functions = __importStar(require("firebase-functions"));
+exports.deleteUser = exports.listUsers = exports.setAdminClaim = void 0;
 const admin = __importStar(require("firebase-admin"));
+const https_1 = require("firebase-functions/v2/https");
+const firebase_functions_1 = require("firebase-functions");
 admin.initializeApp();
 const ensureAdmin = (context) => {
     if (!context.auth) {
-        throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+        throw new https_1.HttpsError('unauthenticated', 'The function must be called while authenticated.');
     }
-    const userEmail = context.auth.token.email;
-    if (userEmail !== 'jitin@smartslate.io') {
-        throw new functions.https.HttpsError('permission-denied', 'Only the designated admin can access this function.');
+    if (context.auth.token.admin !== true) {
+        throw new https_1.HttpsError('permission-denied', 'Only an admin can perform this action.');
     }
 };
-exports.listAllUsers = functions.https.onCall(async (data, context) => {
+exports.setAdminClaim = (0, https_1.onCall)({ cors: true }, async (request) => {
+    ensureAdmin(request);
+    const { uid } = request.data;
+    if (typeof uid !== 'string' || uid.length === 0) {
+        throw new https_1.HttpsError('invalid-argument', 'The function must be called with a valid "uid" argument.');
+    }
     try {
-        ensureAdmin(context);
-        const nextPageToken = data === null || data === void 0 ? void 0 : data.nextPageToken;
-        const listUsersResult = await admin.auth().listUsers(1000, nextPageToken);
-        return {
-            users: listUsersResult.users.map(user => ({
-                uid: user.uid,
-                email: user.email,
-                displayName: user.displayName,
-                emailVerified: user.emailVerified,
-                disabled: user.disabled,
-                metadata: {
-                    creationTime: user.metadata.creationTime,
-                    lastSignInTime: user.metadata.lastSignInTime,
-                },
-                providerData: user.providerData,
-                customClaims: user.customClaims,
-            })),
-            nextPageToken: listUsersResult.pageToken,
-        };
+        await admin.auth().setCustomUserClaims(uid, { admin: true });
+        return { message: `Success! User ${uid} has been made an admin.` };
     }
     catch (error) {
-        console.error('Error listing users:', error);
-        if (error instanceof functions.https.HttpsError) {
-            throw error;
-        }
-        throw new functions.https.HttpsError('internal', 'An error occurred while listing users.');
+        firebase_functions_1.logger.error('Error setting custom claim:', error);
+        throw new https_1.HttpsError('internal', 'An error occurred while setting the custom claim.');
+    }
+});
+exports.listUsers = (0, https_1.onCall)({ cors: true }, async (request) => {
+    ensureAdmin(request);
+    try {
+        const listUsersResult = await admin.auth().listUsers(1000);
+        const users = listUsersResult.users.map((user) => ({
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            metadata: {
+                creationTime: user.metadata.creationTime,
+            },
+            customClaims: user.customClaims,
+        }));
+        return { users };
+    }
+    catch (error) {
+        firebase_functions_1.logger.error('Error listing users:', error);
+        throw new https_1.HttpsError('internal', 'An error occurred while listing users.');
+    }
+});
+exports.deleteUser = (0, https_1.onCall)({ cors: true }, async (request) => {
+    ensureAdmin(request);
+    const { uid } = request.data;
+    if (typeof uid !== 'string' || uid.length === 0) {
+        throw new https_1.HttpsError('invalid-argument', 'The function must be called with a valid "uid" argument.');
+    }
+    try {
+        await admin.auth().deleteUser(uid);
+        return { message: `Successfully deleted user ${uid}` };
+    }
+    catch (error) {
+        firebase_functions_1.logger.error('Error deleting user:', error);
+        throw new https_1.HttpsError('internal', 'An error occurred while deleting the user.');
     }
 });
 //# sourceMappingURL=index.js.map

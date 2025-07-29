@@ -1,0 +1,27 @@
+{
+  "name": "smartslate-v2",
+  "version": "1.0.0",
+  "description": "This repository contains the source code for the SmartSlate web application, a platform designed to bridge the skills gap and demonstrate the value of targeted talent development. The application features an interactive ROI calculator to illustrate the financial and career benefits for businesses, educators, and students.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "set-admin": "node scripts/set-initial-admin.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/notjitin-1994/smartslate-v2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/notjitin-1994/smartslate-v2/issues"
+  },
+  "homepage": "https://github.com/notjitin-1994/smartslate-v2#readme",
+  "dependencies": {
+    "firebase-admin": "^13.4.0"
+  }
+}

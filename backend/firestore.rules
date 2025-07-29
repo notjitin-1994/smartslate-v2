@@ -15,20 +15,8 @@ service cloud.firestore {
       return request.auth.uid == userId;
     }
 
-    function getRole(userId) {
-      return get(/databases/$(database)/documents/users/$(userId)).data.role;
-    }
-
-    function isSmartslateAdmin() {
-      return isSignedIn() && getRole(request.auth.uid) == 'smartslate-admin';
-    }
-
-    function isSmartslateManager() {
-      return isSignedIn() && getRole(request.auth.uid) == 'smartslate-manager';
-    }
-
-    function isManager() {
-      return isSignedIn() && getRole(request.auth.uid) == 'manager';
+    function isAdmin() {
+      return request.auth.token.admin == true;
     }
 
     // ====================================================================
@@ -36,27 +24,14 @@ service cloud.firestore {
     // ====================================================================
 
     match /users/{userId} {
-      // READ: Admins see all. Managers see their learners. Users see themselves.
-      allow read: if isSignedIn() &&
-                    (isOwner(userId) ||
-                     isSmartslateAdmin() ||
-                     (isSmartslateManager() && getRole(userId) in ['manager', 'learner']) ||
-                     (isManager() && getRole(userId) == 'learner' && resource.data.managerId == request.auth.uid));
+      // READ: Admins can read all user documents. Users can read their own.
+      allow read: if isOwner(userId) || isAdmin();
 
-      // LIST: Admins and Smartslate Managers can list users.
-      allow list: if isSmartslateAdmin() || isSmartslateManager();
+      // LIST: Only admins can list users.
+      allow list: if isAdmin();
 
-      // CREATE: Admins and Smartslate Managers can create users.
-      allow create: if isSmartslateAdmin() || isSmartslateManager();
-
-      // UPDATE: Admins can update anyone. Managers can update their learners. Users can update themselves.
-      allow update: if isSignedIn() &&
-                      (isOwner(userId) ||
-                       isSmartslateAdmin() ||
-                       (isSmartslateManager() && getRole(userId) in ['manager', 'learner']));
-
-      // DELETE: Only Admins and Smartslate Managers can delete users.
-      allow delete: if isSmartslateAdmin() || (isSmartslateManager() && getRole(userId) in ['manager', 'learner']);
+      // WRITE (Create, Update, Delete): Only admins can write to user documents.
+      allow write: if isAdmin();
     }
 
     // ====================================================================
@@ -67,8 +42,8 @@ service cloud.firestore {
       // READ: All authenticated users can read courses.
       allow read: if isSignedIn();
 
-      // WRITE (Create, Update, Delete): Only Admins and Smartslate Managers.
-      allow write: if isSmartslateAdmin() || isSmartslateManager();
+      // WRITE (Create, Update, Delete): Only admins can write to course documents.
+      allow write: if isAdmin();
     }
   }
 }
