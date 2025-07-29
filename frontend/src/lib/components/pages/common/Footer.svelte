@@ -1,6 +1,10 @@
+<script lang="ts">
+	import logo from '$lib/assets/images/Final-Dark-BG.png';
+</script>
+
 <footer>
 	<div class="logo-wrapper">
-		<img src="/src/lib/assets/images/Final-Dark-BG.png" alt="SmartSlate Logo" class="footer-logo" />
+		<img src={logo} alt="SmartSlate Logo" class="footer-logo" />
 	</div>
 	<div class="footer-text">
 		<p class="tagline">Revolutionizing the way the World learns.</p>
