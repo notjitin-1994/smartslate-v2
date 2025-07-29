@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@700&family=Lato&display=swap');
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --background: #091521;
+  --primary-accent: #E0E0E0;
+  --secondary-accent: #A7DADB;
+  --rgb-secondary-accent: 167, 218, 219;
+  --button-text: #1a1a2e;
+  --font-heading: 'Quicksand', sans-serif;
+  --font-body: 'Lato', sans-serif;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--primary-accent);
+  font-family: var(--font-body);
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background-color: #000;
+}
+body.no-scroll {
+	overflow: hidden;
+}
+.blurred {
+	filter: blur(4px);
+	transition: filter 0.3s ease-out;
+}
