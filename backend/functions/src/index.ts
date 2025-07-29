@@ -58,8 +58,22 @@ const authenticateAndAuthorize = async (req: any, res: any, next: any) => {
  * @returns An HTTPS function handler.
  */
 const createAdminFunction = (handler: (req: any, res: any) => void) => {
-  return onRequest((req, res) => {
-    corsHandler(req, res, () => {
+  return onRequest({ invoker: 'public' }, (req, res) => {
+    // Manually handle CORS preflight
+    corsHandler(req, res, (err?: any) => {
+      if (err) {
+        logger.error("CORS error:", err);
+        res.status(500).send("CORS Error");
+        return;
+      }
+
+      // If it's a preflight request, end here.
+      if (req.method === 'OPTIONS') {
+        res.status(204).send('');
+        return;
+      }
+
+      // For other requests, proceed to authentication and the main handler.
       authenticateAndAuthorize(req, res, () => {
         handler(req, res);
       });
@@ -88,6 +102,19 @@ export const listUsers = createAdminFunction(async (req, res) => {
   }
 });
 
+export const secureListUsers = async () => {
+  const listUsersResult = await admin.auth().listUsers(1000);
+  return listUsersResult.users.map((user) => ({
+    uid: user.uid,
+    email: user.email,
+    displayName: user.displayName,
+    metadata: {
+      creationTime: user.metadata.creationTime,
+    },
+    customClaims: user.customClaims,
+  }));
+};
+
 export const setAdminClaim = createAdminFunction(async (req, res) => {
   const { uid } = req.body;
   if (!uid) {
@@ -97,7 +124,8 @@ export const setAdminClaim = createAdminFunction(async (req, res) => {
 
   try {
     await admin.auth().setCustomUserClaims(uid, { admin: true });
-    res.status(200).json({ message: `Successfully set admin claim for user ${uid}` });
+    const users = await secureListUsers();
+    res.status(200).json({ message: `Successfully set admin claim for user ${uid}`, users });
   } catch (error) {
     logger.error(`Error setting admin claim for user ${uid}:`, error);
     res.status(500).json({ error: 'An error occurred while setting the admin claim.' });
@@ -113,7 +141,8 @@ export const deleteUser = createAdminFunction(async (req, res) => {
 
   try {
     await admin.auth().deleteUser(uid);
-    res.status(200).json({ message: `Successfully deleted user ${uid}` });
+    const users = await secureListUsers();
+    res.status(200).json({ message: `Successfully deleted user ${uid}`, users });
   } catch (error) {
     logger.error(`Error deleting user ${uid}:`, error);
     res.status(500).json({ error: 'An error occurred while deleting the user.' });

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { auth } from '$lib/firebase';
   import { authStore } from '$lib/stores/authStore';
   import { browser } from '$app/environment';
 
@@ -31,35 +32,51 @@
   async function callAdminFunction(functionName: string, data: object = {}) {
     if (!browser) return; // Don't run on server
 
-    const user = $authStore.user;
+    const user = auth.currentUser; // Get the live user object
+
+    // Null check is critical
     if (!user) {
-      throw new Error('No authenticated user found. Please log in.');
+        console.error("No user is currently signed in.");
+        // Optionally, handle this with a user-facing error
+        return;
     }
 
-    const token = await user.getIdToken();
-    const url = `https://us-central1-${projectId}.cloudfunctions.net/${functionName}`;
+    try {
+        const idToken = await user.getIdToken();
+        const url = `https://us-central1-${projectId}.cloudfunctions.net/${functionName}`;
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify(data),
-    });
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${idToken}`,
+          },
+          body: JSON.stringify(data),
+        });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: `Request failed with status ${response.status}` }));
-      throw new Error(errorData.error || 'An unknown error occurred.');
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Network response was not ok.', {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorText,
+          });
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        return response.json();
+    } catch (error) {
+        console.error("Error in callAdminFunction:", error);
+        throw error; // Re-throw the error to be caught by the caller
     }
-
-    return response.json();
   }
 
   // Reactive statement to fetch users when the user is authenticated
   $: if (browser && $authStore.user && !$authStore.loading) {
     isLoading = true;
-    callAdminFunction('listUsers')
+    // We now call setAdminClaim with a dummy UID to get the user list.
+    // This is a workaround for the restrictive IAM policy.
+    callAdminFunction('setAdminClaim', { uid: 'dummy-uid-for-listing' })
       .then(data => {
         users = data.users;
         error = null;
