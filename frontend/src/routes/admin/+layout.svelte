@@ -5,8 +5,8 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import Header from '$lib/components/pages/common/Header.svelte';
-	import Footer from '$lib/components/pages/common/Footer.svelte';
-	import AdminSidebar from '$lib/components/admin/AdminSidebar.svelte';
+	import AdminMobileNav from '$lib/components/admin/AdminMobileNav.svelte';
+	import ToastContainer from '$lib/components/common/ToastContainer.svelte';
 	import AdminTabs from '$lib/components/admin/AdminTabs.svelte';
 
 	let unsubscribe: () => void;
@@ -35,63 +35,40 @@
 
 <div class="admin-layout">
 	<Header />
-	<div class="admin-main-content-wrapper">
+	<div class="admin-main-content">
 		<AdminTabs />
-		<div class="admin-main-content">
-			<AdminSidebar />
-			<main class="admin-page-content">
-				<slot />
-			</main>
-		</div>
+		<main class="admin-page-content">
+			<slot />
+		</main>
 	</div>
-	<Footer />
+	<AdminMobileNav />
+	<ToastContainer />
 </div>
 
 <style>
 	.admin-layout {
+		height: 100vh;
 		display: flex;
 		flex-direction: column;
-		min-height: 100vh;
-		background-color: var(--background);
-	}
-
-	.admin-main-content-wrapper {
-		flex-grow: 1;
-		width: 100%;
-		max-width: 1400px;
-		margin: 0 auto;
-		padding: var(--space-lg);
 	}
 
 	.admin-main-content {
-		display: flex;
-		gap: var(--space-lg);
+		flex-grow: 1;
+		overflow-y: auto;
+		padding: 0 var(--space-xl);
 	}
 
 	.admin-page-content {
-		flex-grow: 1;
-		padding: var(--space-lg);
-		background-color: var(--background-secondary);
-		border-radius: var(--radius-lg);
-		border: var(--border-subtle);
+		padding-top: var(--space-xl);
 	}
 
 	@media (max-width: 768px) {
-		.admin-main-content-wrapper {
-			padding: var(--space-md);
-			margin-top: var(--space-lg);
-		}
-
 		.admin-main-content {
-			flex-direction: column;
+			padding: 0 var(--space-lg);
 		}
-
-		.admin-main-content :global(.admin-sidebar) {
-			display: none;
-		}
-
 		.admin-page-content {
-			padding: var(--space-md);
+			padding-top: var(--space-lg);
+			padding-bottom: 100px; /* Add padding for mobile nav */
 		}
 	}
 </style>

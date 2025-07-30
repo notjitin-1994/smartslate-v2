@@ -2,6 +2,9 @@
   import { auth } from '$lib/firebase';
   import { authStore } from '$lib/stores/authStore';
   import { browser } from '$app/environment';
+  import { toastStore } from '$lib/stores/toastStore';
+  import { onMount } from 'svelte';
+  import Pagination from '$lib/components/common/Pagination.svelte';
 
   // This is your Firebase project ID.
   // It's best practice to load this from environment variables.
@@ -22,6 +25,20 @@
   let users: User[] = [];
   let isLoading = true;
   let error: string | null = null;
+  let currentPage = 1;
+  let itemsPerPage = 10; // Default value
+
+  $: totalItems = users.length;
+  $: paginatedUsers = users.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  onMount(() => {
+    if (browser) {
+      const rowHeight = 70; // Approximate height of a table row
+      const headerFooterHeight = 200; // Approximate combined height of header, footer, and other UI elements
+      const availableHeight = window.innerHeight - headerFooterHeight;
+      itemsPerPage = Math.floor(availableHeight / rowHeight);
+    }
+  });
 
   /**
    * A helper function to make authenticated calls to our backend admin functions.
@@ -102,21 +119,18 @@
 
 
   async function setAdmin(uid: string) {
-    if (!confirm('Are you sure you want to make this user an admin?')) {
-      return;
-    }
-
     try {
       await callAdminFunction('admin/setAdminClaim', 'POST', { uid });
       users = users.map(u => u.uid === uid ? { ...u, customClaims: { ...u.customClaims, admin: true } } : u);
-      alert('User successfully promoted to admin.');
+      toastStore.add('User successfully promoted to admin.', 'success');
     } catch (err: any) {
       console.error('Error setting admin claim:', err);
-      alert(`Error: ${err.message}`);
+      toastStore.add(`Error: ${err.message}`, 'error');
     }
   }
 
   async function deleteUser(uid: string) {
+    // A simple browser confirm is acceptable here for a destructive action.
     if (!confirm('Are you sure you want to permanently delete this user? This action cannot be undone.')) {
       return;
     }
@@ -124,77 +138,232 @@
     try {
       await callAdminFunction('admin/deleteUser', 'POST', { uid });
       users = users.filter(u => u.uid !== uid);
-      alert('User successfully deleted.');
+      toastStore.add('User successfully deleted.', 'success');
     } catch (err: any) {
       console.error('Error deleting user:', err);
-      alert(`Error: ${err.message}`);
+      toastStore.add(`Error: ${err.message}`, 'error');
     }
   }
 </script>
 
-<div class="container mx-auto p-4">
-  <h1 class="text-2xl font-bold mb-4">User Management</h1>
+<div class="user-management-container">
+	<h1 class="page-title">User Management</h1>
 
-  {#if isLoading}
-    <p>Loading users...</p>
-  {:else if error}
-    <div class="text-red-500 bg-red-100 p-4 rounded">
-      <p><strong>Error:</strong> {error}</p>
-    </div>
-  {:else if users.length === 0}
-    <p>No users found.</p>
-  {:else}
-    <div class="overflow-x-auto bg-white rounded-lg shadow">
-      <table class="min-w-full">
-        <thead class="bg-gray-800 text-white">
-          <tr>
-            <th class="w-1/3 py-3 px-4 uppercase font-semibold text-sm text-left">User (Email/UID)</th>
-            <th class="w-1/4 py-3 px-4 uppercase font-semibold text-sm text-left">Created At</th>
-            <th class="w-1/6 py-3 px-4 uppercase font-semibold text-sm text-left">Role</th>
-            <th class="w-1/4 py-3 px-4 uppercase font-semibold text-sm text-left">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="text-gray-700">
-          {#each users as user (user.uid)}
-            <tr class="hover:bg-gray-100">
-              <td class="w-1/3 py-3 px-4">
-                <div class="font-bold">{user.displayName || 'N/A'}</div>
-                <div class="text-sm text-gray-500">{user.email || user.uid}</div>
-              </td>
-              <td class="w-1/4 py-3 px-4">{new Date(user.metadata.creationTime).toLocaleDateString()}</td>
-              <td class="w-1/6 py-3 px-4">
-                {#if user.customClaims?.admin}
-                  <span class="bg-green-200 text-green-800 py-1 px-3 rounded-full text-xs">Admin</span>
-                {:else}
-                  <span class="bg-gray-200 text-gray-800 py-1 px-3 rounded-full text-xs">User</span>
-                {/if}
-              </td>
-              <td class="w-1/4 py-3 px-4">
-                <button
-                  class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2 text-sm disabled:bg-gray-400"
-                  on:click={() => setAdmin(user.uid)}
-                  disabled={user.customClaims?.admin === true}
-                >
-                  Make Admin
-                </button>
-                <button
-                  class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded text-sm"
-                  on:click={() => deleteUser(user.uid)}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
-    </div>
-  {/if}
+	{#if isLoading}
+		<div class="loading-spinner"></div>
+	{:else if error}
+		<div class="error-message">
+			<p><strong>Error:</strong> {error}</p>
+		</div>
+	{:else if users.length === 0}
+		<p>No users found.</p>
+	{:else}
+		<div class="user-list-desktop table-wrapper">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>User</th>
+						<th>Created At</th>
+						<th>Role</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each paginatedUsers as user (user.uid)}
+						<tr class="table-row" style="--animation-order: {user.uid}">
+							<td>
+								<div class="user-info">
+									<span class="user-name">{user.displayName || 'N/A'}</span>
+									<span class="user-email">{user.email || user.uid}</span>
+								</div>
+							</td>
+							<td>{new Date(user.metadata.creationTime).toLocaleDateString()}</td>
+							<td>
+								{#if user.customClaims?.admin}
+									<span class="badge admin">Admin</span>
+								{:else}
+									<span class="badge user">User</span>
+								{/if}
+							</td>
+							<td>
+								<div class="action-buttons">
+									<button
+										class="btn btn-secondary"
+										on:click={() => setAdmin(user.uid)}
+										disabled={user.customClaims?.admin === true}
+									>
+										Make Admin
+									</button>
+									<button class="btn btn-danger" on:click={() => deleteUser(user.uid)}>
+										Delete
+									</button>
+								</div>
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
+		<div class="user-list-mobile">
+			{#each paginatedUsers as user (user.uid)}
+				<div class="user-card" style="--animation-order: {user.uid}">
+					<div class="user-info">
+						<span class="user-name">{user.displayName || 'N/A'}</span>
+						<span class="user-email">{user.email || user.uid}</span>
+					</div>
+					<div class="user-details">
+						<div class="detail-item">
+							<span class="detail-label">Created At</span>
+							<span class="detail-value"
+								>{new Date(user.metadata.creationTime).toLocaleDateString()}</span
+							>
+						</div>
+						<div class="detail-item">
+							<span class="detail-label">Role</span>
+							<span class="detail-value">
+								{#if user.customClaims?.admin}
+									<span class="badge admin">Admin</span>
+								{:else}
+									<span class="badge user">User</span>
+								{/if}
+							</span>
+						</div>
+					</div>
+					<div class="action-buttons">
+						<button
+							class="btn btn-secondary"
+							on:click={() => setAdmin(user.uid)}
+							disabled={user.customClaims?.admin === true}
+						>
+							Make Admin
+						</button>
+						<button class="btn btn-danger" on:click={() => deleteUser(user.uid)}>
+							Delete
+						</button>
+					</div>
+				</div>
+			{/each}
+		</div>
+		<Pagination bind:currentPage {totalItems} {itemsPerPage} />
+	{/if}
 </div>
 
 <style>
-  /* Scoped styles for the component */
-  .container {
-    max-width: 1200px;
-  }
+	.user-management-container {
+		animation: fade-in 0.5s ease-out;
+	}
+	.page-title {
+		font-size: 2.5rem;
+		margin-bottom: var(--space-xl);
+	}
+	.loading-spinner {
+		border: 4px solid rgba(255, 255, 255, 0.2);
+		border-left-color: var(--primary-accent);
+		border-radius: 50%;
+		width: 40px;
+		height: 40px;
+		animation: spin 1s linear infinite;
+		margin: var(--space-xxl) auto;
+	}
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+	.error-message {
+		background-color: rgba(239, 68, 68, 0.1);
+		border: 1px solid var(--color-error);
+		color: var(--color-error);
+		padding: var(--space-lg);
+		border-radius: var(--radius-md);
+	}
+	.user-list-desktop {
+		display: block;
+	}
+	.user-list-mobile {
+		display: none;
+	}
+	@media (max-width: 768px) {
+		.user-list-desktop {
+			display: none;
+		}
+		.user-list-mobile {
+			display: grid;
+			grid-template-columns: 1fr;
+			gap: var(--space-md);
+		}
+		.user-card {
+			display: block;
+			background-color: var(--container-bg);
+			border-radius: var(--radius-lg);
+			padding: var(--space-lg);
+			border: 1px solid var(--border-color);
+			animation: fade-in-row 0.5s ease-out forwards;
+			opacity: 0;
+			transform: translateY(10px);
+			animation-delay: calc(var(--animation-order) * 50ms);
+		}
+		.user-info {
+			margin-bottom: var(--space-lg);
+		}
+		.user-details {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: var(--space-md);
+			margin-bottom: var(--space-lg);
+		}
+		.detail-item {
+			display: flex;
+			flex-direction: column;
+			gap: var(--space-xs);
+		}
+		.detail-label {
+			font-size: 0.75rem;
+			color: var(--text-muted);
+			text-transform: uppercase;
+		}
+		.action-buttons {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: var(--space-sm);
+		}
+	}
+	@keyframes fade-in-row {
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+	.user-name {
+		font-weight: 700;
+		color: var(--text-primary);
+	}
+	.user-email {
+		font-size: 0.875rem;
+		color: var(--text-muted);
+	}
+	.badge {
+		padding: var(--space-xs) var(--space-sm);
+		border-radius: var(--radius-sm);
+		font-size: 0.75rem;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+	.badge.admin {
+		background-color: rgba(34, 197, 94, 0.1);
+		color: var(--color-success);
+	}
+	.badge.user {
+		background-color: rgba(100, 116, 139, 0.1);
+		color: var(--text-secondary);
+	}
+	.btn-danger {
+		background-color: transparent;
+		border: 1px solid var(--color-error);
+		color: var(--color-error);
+	}
+	.btn-danger:hover {
+		background-color: var(--color-error);
+		color: white;
+	}
 </style>

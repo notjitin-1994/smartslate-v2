@@ -62,15 +62,17 @@ adminRouter.use(authenticateAndAuthorizeAdmin);
 adminRouter.get("/users", async (req: express.Request, res: express.Response) => {
   try {
     const listUsersResult = await admin.auth().listUsers(1000);
-    const users = listUsersResult.users.map((user) => ({
-      uid: user.uid,
-      email: user.email,
-      displayName: user.displayName,
-      metadata: {
-        creationTime: user.metadata.creationTime,
-      },
-      customClaims: user.customClaims,
-    }));
+    const users = listUsersResult.users
+      .filter((user) => user.email && user.displayName)
+      .map((user) => ({
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        metadata: {
+          creationTime: user.metadata.creationTime,
+        },
+        customClaims: user.customClaims,
+      }));
     return res.status(200).json({ users });
   } catch (error) {
     functions.logger.error("Error listing users:", error);

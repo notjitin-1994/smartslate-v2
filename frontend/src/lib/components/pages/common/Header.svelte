@@ -9,6 +9,7 @@
 	import { quintOut } from 'svelte/easing';
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
+	import { mobileMenuStore } from '$lib/stores/mobileMenuStore';
 
 	let showProductsDropdown = false;
 	let showUserDropdown = false;
@@ -51,6 +52,7 @@
 		if (!isMobileMenuOpen) {
 			showMobileProducts = false;
 		}
+		mobileMenuStore.update((state) => ({ ...state, isOpen: isMobileMenuOpen }));
 	}
 
 	function toggleMobileProductsDropdown() {
@@ -59,6 +61,7 @@
 
 	function closeMobileMenu() {
 		isMobileMenuOpen = false;
+		mobileMenuStore.update((state) => ({ ...state, isOpen: false }));
 	}
 
 	function openAuthModal() {
@@ -541,11 +544,12 @@
 		max-width: 320px;
 		height: 100%;
 		background-color: var(--background);
-		z-index: 999;
+		z-index: 1002;
 		padding: var(--space-xl);
 		box-shadow: var(--shadow-lg);
 		display: flex;
 		flex-direction: column;
+		border-left: 1px solid var(--primary-accent);
 	}
 
 	.mobile-user-profile-link {

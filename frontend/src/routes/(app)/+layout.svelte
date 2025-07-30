@@ -3,16 +3,22 @@
 	import { authStore } from '$lib/stores/authStore';
 	import AuthModal from '$lib/components/common/AuthModal.svelte';
 	import { authModalStore } from '$lib/stores/authModalStore';
+	import { mobileMenuStore } from '$lib/stores/mobileMenuStore';
 
 	let isModalOpen = false;
+	let isMobileMenuOpen = false;
 
 	authModalStore.subscribe((state) => {
 		isModalOpen = state.isOpen;
 	});
 
+	mobileMenuStore.subscribe((state) => {
+		isMobileMenuOpen = state.isOpen;
+	});
+
 </script>
 
-<div class="layout-wrapper" class:modal-open={isModalOpen}>
+<div class="layout-wrapper" class:modal-open={isModalOpen} class:menu-open={isMobileMenuOpen}>
 	<slot />
 </div>
 

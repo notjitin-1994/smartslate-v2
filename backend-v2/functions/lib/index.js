@@ -95,7 +95,9 @@ adminRouter.use(authenticateAndAuthorizeAdmin);
 adminRouter.get("/users", async (req, res) => {
     try {
         const listUsersResult = await admin.auth().listUsers(1000);
-        const users = listUsersResult.users.map((user) => ({
+        const users = listUsersResult.users
+            .filter((user) => user.email && user.displayName)
+            .map((user) => ({
             uid: user.uid,
             email: user.email,
             displayName: user.displayName,
