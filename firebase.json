@@ -4,19 +4,15 @@
     "runtime": "nodejs20"
   },
   "firestore": {
-    "rules": "backend/firestore.rules",
-    "indexes": "backend/firestore.indexes.json"
+    "rules": "backend-v2/firestore.rules",
+    "indexes": "backend-v2/firestore.indexes.json"
   },
   "storage": {
-    "rules": "backend/storage.rules"
+    "rules": "backend-v2/storage.rules"
   },
   "hosting": {
     "public": "frontend/build",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
         "source": "**",

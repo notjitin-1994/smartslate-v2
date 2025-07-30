@@ -3,6 +3,7 @@
 ## Brand Colors
 
 ### Primary Colors
+
 - **Dark Background**: `#091420` (hsl(211, 55%, 8%))
   - Used for: Main background, dark sections
   - CSS Variable: `--brand-bg`
@@ -17,6 +18,7 @@
   - RGB: `167, 218, 219`
 
 ### Secondary Colors
+
 - **Accent Dark**: `#6ec8c9` (hsl(180, 42%, 55%))
   - Used for: Hover states, darker accents
   - CSS Variable: `--brand-accent-dark`
@@ -26,6 +28,7 @@
   - CSS Variable: `--brand-accent-light`
 
 ## Text Colors
+
 - **Main Text**: `#E4E4E4` (hsl(0, 0%, 89%))
   - Used for: Primary text content
   - CSS Variable: `--text-main`
@@ -35,7 +38,9 @@
   - CSS Variable: `--text-secondary`
 
 ## UI Colors
+
 ### Buttons & Interactive Elements
+
 - **Primary Button**: `#4F46E5` (hsl(243, 72%, 58%))
   - Used for: Main call-to-action buttons
   - CSS Variable: `--primary`
@@ -46,6 +51,7 @@
   - Effect: 15% lighter than primary
 
 ### Borders & Dividers
+
 - **Default Border**: `rgba(255, 255, 255, 0.1)`
   - Used for: Subtle separators, card borders
 
@@ -53,25 +59,33 @@
   - Used for: Interactive element borders, focus states
 
 ## Gradients
+
 1. **Primary Gradient**:
+
    ```
    linear-gradient(90deg, #a7dadb, #6ec8c9)
    ```
+
    - Used for: Hero sections, important CTAs
    - CSS Variable: `--gradient-primary`
 
 2. **Subtle Background Gradient**:
+
    ```
    linear-gradient(180deg, #09141f, #142433)
    ```
+
    - Used for: Section backgrounds
    - CSS Variable: `--gradient-subtle`
 
 ## Special Effects
+
 - **Glow Effect**:
+
   ```
   box-shadow: 0 0 25px rgba(167, 218, 219, 0.3);
   ```
+
   - Used for: Active states, important interactive elements
 
 - **Card Hover Effect**:
@@ -81,7 +95,8 @@
   ```
 
 ## Usage Guidelines
-1. **Text Readability**: 
+
+1. **Text Readability**:
    - Always maintain sufficient contrast between text and background colors
    - Use `--text-main` for primary content, `--text-secondary` for less important text
 
@@ -99,6 +114,7 @@
    - All colors should maintain their relative contrast in both light and dark modes
 
 ## CSS Variables Reference
+
 ```css
 :root {
   /* Brand Colors */
@@ -108,22 +124,31 @@
   --brand-accent-rgb: 167, 218, 219;
   --brand-accent-dark: 180 42% 55%;
   --brand-accent-light: 180 42% 90%;
-  
+
   /* Text Colors */
   --text-main: 0 0% 89%;
   --text-secondary: 214 14% 63%;
-  
+
   /* UI Colors */
   --primary: 243 72% 58%;
   --primary-foreground: 0 0% 100%;
-  
+
   /* Gradients */
-  --gradient-primary: linear-gradient(90deg, hsl(var(--brand-accent)), hsl(var(--brand-accent-dark)));
-  --gradient-subtle: linear-gradient(180deg, hsl(var(--brand-bg)), hsl(var(--brand-card-bg)));
+  --gradient-primary: linear-gradient(
+    90deg,
+    hsl(var(--brand-accent)),
+    hsl(var(--brand-accent-dark))
+  );
+  --gradient-subtle: linear-gradient(
+    180deg,
+    hsl(var(--brand-bg)),
+    hsl(var(--brand-card-bg))
+  );
 }
 ```
 
 ## Implementation Notes
+
 - Always use CSS variables for theming and consistency
 - For performance, prefer `hsla()` over `rgba()` for colors with transparency
 - Use the provided gradients for visual hierarchy and depth

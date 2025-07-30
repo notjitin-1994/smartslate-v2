@@ -2,19 +2,19 @@
 
 import { writable } from 'svelte/store';
 import { onAuthStateChanged, type User } from 'firebase/auth';
-import { auth } from '$lib/firebase';
+import { auth } from '$lib/services/firebase';
+
+type Role = 'smartslateAdmin' | 'smartslateManager' | 'smartslateClientManager' | 'learner';
 
 interface AppUser extends User {
-	customClaims?: {
-		admin?: boolean;
-	};
+	role: Role;
 }
 
 interface AuthState {
 	user: AppUser | null;
 	loading: boolean;
 	error: Error | null;
-	isAdmin: boolean;
+	role: Role | null;
 }
 
 function createAuthStore() {
@@ -22,7 +22,7 @@ function createAuthStore() {
 		user: null,
 		loading: true, // Assume loading until the first auth state check completes
 		error: null,
-		isAdmin: false
+		role: null
 	});
 
 	const listen = () => {
@@ -31,29 +31,27 @@ function createAuthStore() {
 			async (user) => {
 				if (user) {
 					const tokenResult = await user.getIdTokenResult(true); // Force refresh
-					const isAdmin = tokenResult.claims.admin === true;
+					const role = (tokenResult.claims.role as Role) || 'learner';
 					const appUser: AppUser = {
 						...user,
-						customClaims: {
-							admin: isAdmin
-						}
+						role: role
 					};
-					set({ user: appUser, loading: false, error: null, isAdmin });
+					set({ user: appUser, loading: false, error: null, role: role });
 				} else {
-					set({ user: null, loading: false, error: null, isAdmin: false });
+					set({ user: null, loading: false, error: null, role: null });
 				}
 			},
 			(error) => {
-				set({ user: null, loading: false, error, isAdmin: false });
+				set({ user: null, loading: false, error, role: null });
 			}
 		);
 	};
 
-  listen(); // Start listening when the store is created
+	listen(); // Start listening when the store is created
 
-  return {
-    subscribe,
-  };
+	return {
+		subscribe
+	};
 }
 
 export const authStore = createAuthStore();

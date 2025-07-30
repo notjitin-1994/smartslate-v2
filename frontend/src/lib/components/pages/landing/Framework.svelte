@@ -1,72 +1,72 @@
 <script lang="ts">
- 	import { createEventDispatcher, onMount } from 'svelte';
- 	import { fly } from 'svelte/transition';
- 	import { Zap, Network, Layers, ChevronRight } from 'lucide-svelte';
- 	import AnimatedButton from '$lib/components/common/AnimatedButton.svelte';
- 	import RupeeIcon from '$lib/components/common/RupeeIcon.svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
+	import { fly } from 'svelte/transition';
+	import { Zap, Network, Layers, ChevronRight } from 'lucide-svelte';
+	import AnimatedButton from '$lib/components/common/animated-button.svelte';
+	import RupeeIcon from '$lib/components/common/rupee-icon.svelte';
 
-  const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher();
 
- 	const frameworkSteps = [
- 		{
- 			id: 'ignite',
- 			icon: Zap,
- 			title: 'Ignite Series',
- 			subtitle: 'AI-Powered Learning',
- 			description:
- 				'Experience the future of education with our pre-built AI-assisted courses, featuring your personal AI tutor.',
- 			buttonText: 'Explore our Courses',
- 			href: '/courses'
- 		},
- 		{
- 			id: 'architecture',
- 			icon: Network,
- 			title: 'Strategic Skill Architecture',
- 			subtitle: 'Future-Proof Workforce',
- 			description:
- 				'We conduct comprehensive skill gap analysis and design custom learning ecosystems that evolve with your needs.',
- 			buttonText: 'Create your Strategic Skills Architecture',
- 			href: '/solutions'
- 		},
- 		{
- 			id: 'solara',
- 			icon: Layers,
- 			title: 'Solara',
- 			subtitle: 'End-to-End Learning Platform',
- 			description:
- 				'Revolutionize learning content creation with our all-in-one platform featuring interactive elements and a custom interaction builder.',
- 			buttonText: 'Learn More',
- 			href: '/solara'
- 		}
- 	];
+	const frameworkSteps = [
+		{
+			id: 'ignite',
+			icon: Zap,
+			title: 'Ignite Series',
+			subtitle: 'AI-Powered Learning',
+			description:
+				'Experience the future of education with our pre-built AI-assisted courses, featuring your personal AI tutor.',
+			buttonText: 'Explore our Courses',
+			href: '/courses'
+		},
+		{
+			id: 'architecture',
+			icon: Network,
+			title: 'Strategic Skill Architecture',
+			subtitle: 'Future-Proof Workforce',
+			description:
+				'We conduct comprehensive skill gap analysis and design custom learning ecosystems that evolve with your needs.',
+			buttonText: 'Create your Strategic Skills Architecture',
+			href: '/solutions'
+		},
+		{
+			id: 'solara',
+			icon: Layers,
+			title: 'Solara',
+			subtitle: 'End-to-End Learning Platform',
+			description:
+				'Revolutionize learning content creation with our all-in-one platform featuring interactive elements and a custom interaction builder.',
+			buttonText: 'Learn More',
+			href: '/solara'
+		}
+	];
 
- 	let visible: { [key: string]: boolean } = {};
+	let visible: { [key: string]: boolean } = {};
 
- 	onMount(() => {
- 		const observer = new IntersectionObserver(
- 			(entries) => {
- 				entries.forEach((entry) => {
- 					if (entry.isIntersecting) {
- 						visible[entry.target.id] = true;
- 					}
- 				});
- 			},
- 			{
- 				threshold: 0.5
- 			}
- 		);
+	onMount(() => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						visible[entry.target.id] = true;
+					}
+				});
+			},
+			{
+				threshold: 0.5
+			}
+		);
 
- 		const steps = document.querySelectorAll('.framework-step');
- 		steps.forEach((step) => {
- 			observer.observe(step);
- 		});
+		const steps = document.querySelectorAll('.framework-step');
+		steps.forEach((step) => {
+			observer.observe(step);
+		});
 
- 		return () => {
- 			steps.forEach((step) => {
- 				observer.unobserve(step);
- 			});
- 		};
- 	});
+		return () => {
+			steps.forEach((step) => {
+				observer.unobserve(step);
+			});
+		};
+	});
 </script>
 
 <section class="framework-section">
@@ -83,10 +83,7 @@
 			{#each frameworkSteps as step, i (step.id)}
 				<div class="framework-step" id={step.id}>
 					{#if visible[step.id]}
-						<div
-							class="step-card"
-							in:fly={{ y: 50, duration: 800, delay: i * 100 }}
-						>
+						<div class="step-card" in:fly={{ y: 50, duration: 800, delay: i * 100 }}>
 							<div>
 								<div class="icon-wrapper">
 									<svelte:component this={step.icon} size={36} />
@@ -107,7 +104,11 @@
 			{/each}
 		</div>
 		<div class="roi-button-container">
-			<AnimatedButton text="Unearth your ROI" icon={RupeeIcon} on:click={() => dispatch('revealNext')} />
+			<AnimatedButton
+				text="Unearth your ROI"
+				icon={RupeeIcon}
+				on:click={() => dispatch('revealNext')}
+			/>
 		</div>
 	</div>
 </section>

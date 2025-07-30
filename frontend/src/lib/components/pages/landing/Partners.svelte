@@ -20,7 +20,8 @@
 		},
 		businesses: {
 			title: 'Business Leaders',
-			pitch: 'Stop the endless search for the perfect hire and start cultivating the skills you need.',
+			pitch:
+				'Stop the endless search for the perfect hire and start cultivating the skills you need.',
 			benefits: [
 				{ icon: Lightbulb, text: 'Targeted Upskilling at Scale' },
 				{ icon: BarChart, text: 'AI-Driven Performance Insights' },

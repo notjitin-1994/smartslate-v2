@@ -1,31 +1,31 @@
-const admin = require('firebase-admin');
+const admin = require("firebase-admin");
 
 // IMPORTANT: You must download your own service account key file from the
 // Firebase console and place it in a secure directory.
 // Go to Project settings > Service accounts > Generate new private key
 // Update the path to your service account key file below.
 // Make sure this file is NOT committed to your version control.
-const serviceAccount = require('../.firebase/serviceAccountKey.json');
+const serviceAccount = require("../.firebase/serviceAccountKey.json");
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(serviceAccount),
 });
 
 const [email, password] = process.argv.slice(2);
 
 if (!email || !password) {
-  console.error('Usage: node scripts/set-initial-admin.js <email> <password>');
+  console.error("Usage: node scripts/set-initial-admin.js <email> <password>");
   process.exit(1);
 }
 
 if (password.length < 6) {
-  console.error('Error: Password must be at least 6 characters long.');
+  console.error("Error: Password must be at least 6 characters long.");
   process.exit(1);
 }
 
 const db = admin.firestore();
 const auth = admin.auth();
-const adminRole = 'smartslate-admin';
+const adminRole = "smartslate-admin";
 
 (async () => {
   let uid;
@@ -36,7 +36,7 @@ const adminRole = 'smartslate-admin';
       uid = userRecord.uid;
       console.log(`User ${email} already exists. UID: ${uid}.`);
     } catch (error) {
-      if (error.code === 'auth/user-not-found') {
+      if (error.code === "auth/user-not-found") {
         // If user does not exist, create a new one
         console.log(`User ${email} not found. Creating new user...`);
         const userRecord = await auth.createUser({
@@ -57,18 +57,24 @@ const adminRole = 'smartslate-admin';
     console.log(`Custom claim '${adminRole}' set for user ${email}.`);
 
     // Create/update user document in Firestore
-    await db.collection('users').doc(uid).set({
-      email: email,
-      role: adminRole,
-      createdAt: admin.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
+    await db.collection("users").doc(uid).set(
+      {
+        email: email,
+        role: adminRole,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true },
+    );
 
-    console.log(`Firestore document for user ${email} created/updated with role '${adminRole}'.`);
-    console.log('\n✅ Initial admin setup complete.');
-    console.log('   The user can now sign in with the provided credentials and will have admin privileges.');
-
+    console.log(
+      `Firestore document for user ${email} created/updated with role '${adminRole}'.`,
+    );
+    console.log("\n✅ Initial admin setup complete.");
+    console.log(
+      "   The user can now sign in with the provided credentials and will have admin privileges.",
+    );
   } catch (error) {
-    console.error('Error setting up initial admin user:', error.message);
+    console.error("Error setting up initial admin user:", error.message);
     process.exit(1);
   }
 })();

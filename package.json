@@ -23,5 +23,11 @@
   "homepage": "https://github.com/notjitin-1994/smartslate-v2#readme",
   "dependencies": {
     "firebase-admin": "^13.4.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "husky": "^9.1.4",
+    "lint-staged": "^15.2.7",
+    "prettier-plugin-svelte": "^3.4.0"
   }
 }

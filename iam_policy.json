@@ -1,9 +1,7 @@
 {
   "bindings": [
     {
-      "members": [
-        "user:jitin@smartslate.io"
-      ],
+      "members": ["user:jitin@smartslate.io"],
       "role": "roles/functions.admin"
     },
     {
@@ -13,9 +11,7 @@
       "role": "roles/artifactregistry.serviceAgent"
     },
     {
-      "members": [
-        "serviceAccount:490151080321@cloudbuild.gserviceaccount.com"
-      ],
+      "members": ["serviceAccount:490151080321@cloudbuild.gserviceaccount.com"],
       "role": "roles/artifactregistry.writer"
     },
     {
@@ -32,9 +28,7 @@
       "role": "roles/cloudbuild.builds.builder"
     },
     {
-      "members": [
-        "serviceAccount:490151080321@cloudbuild.gserviceaccount.com"
-      ],
+      "members": ["serviceAccount:490151080321@cloudbuild.gserviceaccount.com"],
       "role": "roles/cloudbuild.builds.editor"
     },
     {
@@ -198,27 +192,19 @@
       "role": "roles/logging.logWriter"
     },
     {
-      "members": [
-        "user:jitin@smartslate.io"
-      ],
+      "members": ["user:jitin@smartslate.io"],
       "role": "roles/logging.viewer"
     },
     {
-      "members": [
-        "user:jitin@smartslate.io"
-      ],
+      "members": ["user:jitin@smartslate.io"],
       "role": "roles/owner"
     },
     {
-      "members": [
-        "user:jitin@smartslate.io"
-      ],
+      "members": ["user:jitin@smartslate.io"],
       "role": "roles/resourcemanager.projectIamAdmin"
     },
     {
-      "members": [
-        "serviceAccount:490151080321@cloudbuild.gserviceaccount.com"
-      ],
+      "members": ["serviceAccount:490151080321@cloudbuild.gserviceaccount.com"],
       "role": "roles/run.admin"
     },
     {

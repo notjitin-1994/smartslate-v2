@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../../app.css';
 	import { authStore } from '$lib/stores/authStore';
-	import AuthModal from '$lib/components/common/AuthModal.svelte';
+	import AuthModal from '$lib/components/common/auth-modal.svelte';
 	import { authModalStore } from '$lib/stores/authModalStore';
 	import { mobileMenuStore } from '$lib/stores/mobileMenuStore';
 
@@ -15,7 +15,6 @@
 	mobileMenuStore.subscribe((state) => {
 		isMobileMenuOpen = state.isOpen;
 	});
-
 </script>
 
 <div class="layout-wrapper" class:modal-open={isModalOpen} class:menu-open={isMobileMenuOpen}>

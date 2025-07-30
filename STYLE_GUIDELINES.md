@@ -1,14 +1,15 @@
-
 # Brand Style Guidelines
 
 ## Color Palette
 
 ### Primary Colors
+
 - **Dark Background:** `#091521` - The primary background color for the application, providing a dark, modern, and focused canvas.
 - **Brand Color:** `#a7dadb` - The main brand color, used for primary calls-to-action, active states, and key brand moments. It's a calm and inviting teal.
 - **Accent Color:** `#4F46E5` - A vibrant indigo used for secondary actions, highlights, and to draw attention to specific elements without overpowering the primary brand color.
 
 ### Secondary Colors
+
 - **Text Main:** `#E4E4E4` - The primary color for body text, ensuring high readability against the dark background.
 - **Text Secondary:** `#A0AEC0` - Used for subheadings, helper text, and less prominent information.
 - **Card Background:** `#142433` - The background color for cards and other elevated surfaces.
@@ -25,6 +26,7 @@
 ## Tone of Voice
 
 The brand's tone of voice is:
+
 - **Professional yet approachable:** We are experts in our field, but we communicate in a way that is easy to understand.
 - **Innovative and forward-thinking:** We are focused on the future and the cutting edge of technology.
 - **Calm and confident:** Our tone is reassuring and instills trust in our users.

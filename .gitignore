@@ -114,5 +114,13 @@ dist/
 # Zip files
 *.zip
 
+# Firebase
 .firebase/serviceAccountKey.json
-scripts/serviceAccountKey.json.json
+serviceAccountKey.json
+serviceAccountKey.json.json
+*.serviceAccountKey.json
+
+# Environment variables
+.env*
+!/.env.example
+env.backup

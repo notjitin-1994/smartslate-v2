@@ -5,9 +5,9 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import Header from '$lib/components/pages/common/Header.svelte';
-	import AdminMobileNav from '$lib/components/admin/AdminMobileNav.svelte';
-	import ToastContainer from '$lib/components/common/ToastContainer.svelte';
-	import AdminTabs from '$lib/components/admin/AdminTabs.svelte';
+	import AdminMobileNav from '$lib/components/admin/admin-mobile-nav.svelte';
+	import ToastContainer from '$lib/components/common/toast-container.svelte';
+	import AdminTabs from '$lib/components/admin/admin-tabs.svelte';
 
 	let unsubscribe: () => void;
 
@@ -15,7 +15,12 @@
 		unsubscribe = authStore.subscribe((store) => {
 			if (browser) {
 				// Redirect if not loading and not an admin
-				if (store.user && !store.loading && !store.isAdmin) {
+				if (
+					store.user &&
+					!store.loading &&
+					store.role &&
+					!['smartslateAdmin', 'smartslateManager'].includes(store.role)
+				) {
 					goto('/');
 				}
 				// Redirect if not loading and not logged in

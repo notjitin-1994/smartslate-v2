@@ -1,0 +1,85 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ====================================================================
+    // Helper Functions
+    // ====================================================================
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function getRole() {
+      return request.auth.token.role;
+    }
+
+    function isSmartslateAdmin() {
+      return isSignedIn() && getRole() == 'smartslateAdmin';
+    }
+
+    function isSmartslateManager() {
+      return isSignedIn() && getRole() == 'smartslateManager';
+    }
+    
+    function isSmartslateClientManager() {
+        return isSignedIn() && getRole() == 'smartslateClientManager';
+    }
+
+    function isLearner() {
+      return isSignedIn() && getRole() == 'learner';
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // ====================================================================
+    // User Collection Rules
+    // ====================================================================
+
+    match /users/{userId} {
+      // CREATE: Admins and Client Managers can create users.
+      allow create: if isSmartslateAdmin() || isSmartslateClientManager();
+
+      // READ: Admins can read any user. Client Managers can read users in their group. Users can read their own profile.
+      allow read: if isSmartslateAdmin() || 
+                    (isSmartslateClientManager() && resource.data.clientGroupId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.clientGroupId) ||
+                    isOwner(userId);
+
+      // UPDATE: Admins can update any user. Client Managers can update users in their group. Learners can update specific fields on their own profile.
+      allow update: if (isSmartslateAdmin() && request.resource.data.keys().hasAny(['displayName', 'phoneNumber', 'photoURL', 'role'])) ||
+                     (isSmartslateClientManager() && request.resource.data.clientGroupId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.clientGroupId) ||
+                     (isLearner() && isOwner(userId) && request.resource.data.keys().hasOnly(['displayName', 'phoneNumber', 'photoURL']));
+
+      // DELETE: Only admins can delete users.
+      allow delete: if isSmartslateAdmin();
+    }
+
+    // ====================================================================
+    // Courses Collection Rules
+    // ====================================================================
+
+    match /courses/{courseId} {
+      // READ: Admins, Managers, and Client Managers can read all courses. Learners can read courses they are enrolled in.
+      allow read: if isSmartslateAdmin() || isSmartslateManager() || isSmartslateClientManager() ||
+                   (isLearner() && exists(/databases/$(database)/documents/users/$(request.auth.uid)/enrolledCourses/$(courseId)));
+
+      // WRITE (Create, Update, Delete): Only Admins and Managers can write to course documents.
+      allow write: if isSmartslateAdmin() || isSmartslateManager();
+    }
+    
+    // ====================================================================
+    // Enrollment Subcollection Rules
+    // ====================================================================
+    
+    match /users/{userId}/enrolledCourses/{courseId} {
+        // READ: Admins can see anyone's enrollments. Users can see their own.
+        allow read: if isSmartslateAdmin() || isOwner(userId);
+        
+        // WRITE: Only Admins and Client Managers can enroll users.
+        allow write: if isSmartslateAdmin() || isSmartslateClientManager();
+    }
+  }
+}

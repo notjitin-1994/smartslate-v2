@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher, onMount } from 'svelte';
-import { tweened } from 'svelte/motion';
+	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import Container from '$lib/components/pages/common/Container.svelte';
 	import PersonaSelector from './roi-calculator/PersonaSelector.svelte';
@@ -16,7 +16,7 @@ import { tweened } from 'svelte/motion';
 		User,
 		Handshake
 	} from 'lucide-svelte';
-	import AnimatedButton from '$lib/components/common/AnimatedButton.svelte';
+	import AnimatedButton from '$lib/components/common/animated-button.svelte';
 
 	type Persona = 'businessman' | 'educator' | 'student';
 
@@ -30,7 +30,7 @@ import { tweened } from 'svelte/motion';
 	let currentSalary = 180000;
 
 	// --- Business Metric Calculations ---
-	$: retentionSavings = (teamSize * 0.2 * 0.5) * 75000;
+	$: retentionSavings = teamSize * 0.2 * 0.5 * 75000;
 	$: productivityBoost = Math.floor(teamSize * 2000 * 0.25);
 	$: aiRevenueLift = teamSize * 10000;
 
@@ -67,8 +67,7 @@ import { tweened } from 'svelte/motion';
 	$: animatedPromotion.set(fasterPromotion);
 
 	let headlines: Record<Persona, string> = {
-		businessman:
-			'Turn <strong>Talent</strong> into Your <strong>Greatest Financial Asset</strong>',
+		businessman: 'Turn <strong>Talent</strong> into Your <strong>Greatest Financial Asset</strong>',
 		educator: 'Forge the <strong>Future of Graduate Success</strong>',
 		student: 'Engineer Your <strong>Career Trajectory</strong>'
 	};
@@ -113,14 +112,42 @@ import { tweened } from 'svelte/motion';
 							<div class="slider-container">
 								<label for="team-size-slider">How large is your team?</label>
 								<div class="slider-wrapper">
-									<input id="team-size-slider" type="range" min="10" max="1000" step="10" bind:value={teamSize} />
+									<input
+										id="team-size-slider"
+										type="range"
+										min="10"
+										max="1000"
+										step="10"
+										bind:value={teamSize}
+									/>
 									<span class="slider-value">{teamSize}</span>
 								</div>
 							</div>
 							<div class="metrics-grid">
-								<MetricCard icon={TrendingUp} title="Turnover Costs Saved" value={$animatedSavings} isCurrency={true} description="Annually, by cutting attrition in half through targeted upskilling." source="Based on Gallup and LinkedIn Learning data on employee replacement costs." />
-								<MetricCard icon={TrendingUp} title="Productivity Hours Gained" value={$animatedProductivity} unit="+" description="Per year, from a more efficient and capable workforce." source="Based on ATD findings on productivity increases from effective training." />
-								<MetricCard icon={TrendingUp} title="AI-Driven Revenue Lift" value={$animatedRevenue} isCurrency={true} description="Potential annual gain by equipping your team with strategic AI skills." source="Modeled on McKinsey & Accenture reports on AI adoption and revenue growth." />
+								<MetricCard
+									icon={TrendingUp}
+									title="Turnover Costs Saved"
+									value={$animatedSavings}
+									isCurrency={true}
+									description="Annually, by cutting attrition in half through targeted upskilling."
+									source="Based on Gallup and LinkedIn Learning data on employee replacement costs."
+								/>
+								<MetricCard
+									icon={TrendingUp}
+									title="Productivity Hours Gained"
+									value={$animatedProductivity}
+									unit="+"
+									description="Per year, from a more efficient and capable workforce."
+									source="Based on ATD findings on productivity increases from effective training."
+								/>
+								<MetricCard
+									icon={TrendingUp}
+									title="AI-Driven Revenue Lift"
+									value={$animatedRevenue}
+									isCurrency={true}
+									description="Potential annual gain by equipping your team with strategic AI skills."
+									source="Modeled on McKinsey & Accenture reports on AI adoption and revenue growth."
+								/>
 							</div>
 						{/if}
 
@@ -128,14 +155,42 @@ import { tweened } from 'svelte/motion';
 							<div class="slider-container">
 								<label for="student-count-slider">How many students in your program?</label>
 								<div class="slider-wrapper">
-									<input id="student-count-slider" type="range" min="50" max="2000" step="50" bind:value={studentCount} />
+									<input
+										id="student-count-slider"
+										type="range"
+										min="50"
+										max="2000"
+										step="50"
+										bind:value={studentCount}
+									/>
 									<span class="slider-value">{studentCount}</span>
 								</div>
 							</div>
 							<div class="metrics-grid">
-								<MetricCard icon={Award} title="Higher Employability" value={$animatedEmployability} unit="+ Students" description="Placed in high-demand roles within six months of graduation." source="Based on Burning Glass data on the value of industry-recognized credentials." />
-								<MetricCard icon={Clock} title="Faster Placements" value={fasterPlacement} unit=" Weeks" description="Average reduction in time-to-hire for skilled graduates." source="Industry benchmark for graduates with specialized, in-demand skill sets." />
-								<MetricCard icon={LinkIcon} title="New Industry Partners" value={$animatedPartnerships} unit="+" description="Attracted by a curriculum that produces work-ready talent." source="Modeled on the flywheel effect of universities supplying skilled graduates to corporate ecosystems." />
+								<MetricCard
+									icon={Award}
+									title="Higher Employability"
+									value={$animatedEmployability}
+									unit="+ Students"
+									description="Placed in high-demand roles within six months of graduation."
+									source="Based on Burning Glass data on the value of industry-recognized credentials."
+								/>
+								<MetricCard
+									icon={Clock}
+									title="Faster Placements"
+									value={fasterPlacement}
+									unit=" Weeks"
+									description="Average reduction in time-to-hire for skilled graduates."
+									source="Industry benchmark for graduates with specialized, in-demand skill sets."
+								/>
+								<MetricCard
+									icon={LinkIcon}
+									title="New Industry Partners"
+									value={$animatedPartnerships}
+									unit="+"
+									description="Attracted by a curriculum that produces work-ready talent."
+									source="Modeled on the flywheel effect of universities supplying skilled graduates to corporate ecosystems."
+								/>
 							</div>
 						{/if}
 
@@ -143,14 +198,42 @@ import { tweened } from 'svelte/motion';
 							<div class="slider-container">
 								<label for="salary-slider">What is your current annual salary?</label>
 								<div class="slider-wrapper">
-									<input id="salary-slider" type="range" min="180000" max="20000000" step="10000" bind:value={currentSalary} />
+									<input
+										id="salary-slider"
+										type="range"
+										min="180000"
+										max="20000000"
+										step="10000"
+										bind:value={currentSalary}
+									/>
 									<span class="slider-value">₹{currentSalary.toLocaleString('en-IN')}</span>
 								</div>
 							</div>
 							<div class="metrics-grid">
-								<MetricCard icon={TrendingUp} title="Potential Salary Increase" value={$animatedSalary} isCurrency={true} description="Annual lift by acquiring in-demand skills in your field." source="Based on World Economic Forum data on salary premiums for upskilling." />
-								<MetricCard icon={TrendingUp} title="Faster Promotion" value={$animatedPromotion} unit=" Months" description="Potential time saved to reach your next career milestone." source="Analysis of career progression data from leading HR analytics firms." />
-								<MetricCard icon={LinkIcon} title="Job Opportunities" value={jobOpportunities} unit="x" description="Multiplier for relevant job openings unlocked with new skills." source="Data compiled from major job boards on skill-based role availability." />
+								<MetricCard
+									icon={TrendingUp}
+									title="Potential Salary Increase"
+									value={$animatedSalary}
+									isCurrency={true}
+									description="Annual lift by acquiring in-demand skills in your field."
+									source="Based on World Economic Forum data on salary premiums for upskilling."
+								/>
+								<MetricCard
+									icon={TrendingUp}
+									title="Faster Promotion"
+									value={$animatedPromotion}
+									unit=" Months"
+									description="Potential time saved to reach your next career milestone."
+									source="Analysis of career progression data from leading HR analytics firms."
+								/>
+								<MetricCard
+									icon={LinkIcon}
+									title="Job Opportunities"
+									value={jobOpportunities}
+									unit="x"
+									description="Multiplier for relevant job openings unlocked with new skills."
+									source="Data compiled from major job boards on skill-based role availability."
+								/>
 							</div>
 						{/if}
 					</div>
@@ -162,9 +245,13 @@ import { tweened } from 'svelte/motion';
 			{/if}
 		</div>
 		<div class="button-wrapper">
-		<AnimatedButton text="Explore Our Partnerships" icon={Handshake} on:click={() => dispatch('revealNext')} />
-	</div>
-</Container>
+			<AnimatedButton
+				text="Explore Our Partnerships"
+				icon={Handshake}
+				on:click={() => dispatch('revealNext')}
+			/>
+		</div>
+	</Container>
 </section>
 
 <style>

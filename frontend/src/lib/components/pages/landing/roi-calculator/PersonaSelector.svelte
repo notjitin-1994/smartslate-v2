@@ -35,7 +35,13 @@
 
 <div class="persona-selector-grid">
 	{#each personas as persona (persona.id)}
-		<div class="persona-card" on:click={() => selectPersona(persona.id)} on:keypress={() => selectPersona(persona.id)} role="button" tabindex="0">
+		<div
+			class="persona-card"
+			on:click={() => selectPersona(persona.id)}
+			on:keypress={() => selectPersona(persona.id)}
+			role="button"
+			tabindex="0"
+		>
 			<div class="card-content">
 				<div class="icon-wrapper">
 					<svelte:component this={persona.icon} size={24} />

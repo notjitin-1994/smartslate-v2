@@ -4,7 +4,9 @@
 
 <div class="content-container">
 	<h1 class="content-title">Content Management</h1>
-	<p>This section is under construction. Content management features will be available here soon.</p>
+	<p>
+		This section is under construction. Content management features will be available here soon.
+	</p>
 </div>
 
 <style>

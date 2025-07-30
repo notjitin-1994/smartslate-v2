@@ -35,8 +35,8 @@
 <div class="infographic-content">
 	<h4>The Critical Skills Gap</h4>
 	<p class="subtitle">
-		An estimated <span class="highlight">{disruptionPercentage}%</span> of core job skills are expected
-		to change by {endYear}, demanding a new approach to talent development.
+		An estimated <span class="highlight">{disruptionPercentage}%</span> of core job skills are
+		expected to change by {endYear}, demanding a new approach to talent development.
 	</p>
 
 	{#if isVisible}

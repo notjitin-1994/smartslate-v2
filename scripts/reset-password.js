@@ -1,12 +1,12 @@
-const admin = require('firebase-admin');
-const serviceAccount = require('../.firebase/serviceAccountKey.json');
+const admin = require("firebase-admin");
+const serviceAccount = require("../.firebase/serviceAccountKey.json");
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(serviceAccount),
 });
 
-const email = 'jitin@smartslate.io';
-const newPassword = 'Vtvt@1234';
+const email = "jitin@smartslate.io";
+const newPassword = "Vtvt@1234";
 
 (async () => {
   try {
@@ -14,12 +14,12 @@ const newPassword = 'Vtvt@1234';
     const uid = userRecord.uid;
 
     await admin.auth().updateUser(uid, {
-      password: newPassword
+      password: newPassword,
     });
 
     console.log(`Successfully updated password for user: ${email}`);
   } catch (error) {
-    console.error('Error updating password:', error);
+    console.error("Error updating password:", error);
     process.exit(1);
   }
 })();

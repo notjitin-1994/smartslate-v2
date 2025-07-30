@@ -1,5 +1,5 @@
-const admin = require('firebase-admin');
-const serviceAccount = require('./serviceAccountKey.json'); // Download this from your Firebase project settings
+const admin = require("firebase-admin");
+const serviceAccount = require("./serviceAccountKey.json"); // Download this from your Firebase project settings
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -8,7 +8,7 @@ admin.initializeApp({
 const email = process.argv[2];
 
 if (!email) {
-  console.error('Please provide an email address as an argument.');
+  console.error("Please provide an email address as an argument.");
   process.exit(1);
 }
 
@@ -23,6 +23,6 @@ admin
     process.exit(0);
   })
   .catch((error) => {
-    console.error('Error setting custom claim:', error);
+    console.error("Error setting custom claim:", error);
     process.exit(1);
   });

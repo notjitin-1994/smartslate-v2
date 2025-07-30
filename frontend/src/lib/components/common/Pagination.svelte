@@ -1,14 +1,14 @@
 <script lang="ts">
-  export let currentPage: number;
-  export let totalItems: number;
-  export let itemsPerPage: number;
+	export let currentPage: number;
+	export let totalItems: number;
+	export let itemsPerPage: number;
 
-  $: totalPages = Math.ceil(totalItems / itemsPerPage);
+	$: totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  function goToPage(page: number) {
-    if (page < 1 || page > totalPages) return;
-    currentPage = page;
-  }
+	function goToPage(page: number) {
+		if (page < 1 || page > totalPages) return;
+		currentPage = page;
+	}
 </script>
 
 <div class="pagination-controls">

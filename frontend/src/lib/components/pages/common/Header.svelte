@@ -3,7 +3,7 @@
 	import Container from '$lib/components/pages/common/Container.svelte';
 	import { authModalStore } from '$lib/stores/authModalStore';
 	import { authStore } from '$lib/stores/authStore';
-	import { auth } from '$lib/firebase';
+	import { auth } from '$lib/services/firebase';
 	import { signOut } from 'firebase/auth';
 	import { fly, fade } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
@@ -96,15 +96,18 @@
 			<div class="nav-and-actions">
 				<!-- Desktop Nav -->
 				<nav class="desktop-nav">
-					<div
-						class="dropdown-container"
-						on:click|stopPropagation
-					>
-						<button class="dropdown-toggle-button" on:click|stopPropagation={toggleProductsDropdown}>
+					<div class="dropdown-container" on:click|stopPropagation>
+						<button
+							class="dropdown-toggle-button"
+							on:click|stopPropagation={toggleProductsDropdown}
+						>
 							Products
 						</button>
 						{#if showProductsDropdown}
-							<div class="dropdown-menu" transition:fly={{ y: -10, duration: 200, easing: quintOut }}>
+							<div
+								class="dropdown-menu"
+								transition:fly={{ y: -10, duration: 200, easing: quintOut }}
+							>
 								<a href="/products/ignite">Ignite Series</a>
 								<a href="/products/ssa">Strategic Skills Architecture</a>
 								<a href="/products/solara">Solara</a>
@@ -119,10 +122,7 @@
 					{#if $authStore.loading}
 						<div class="loader" />
 					{:else if $authStore.user}
-						<div
-							class="dropdown-container"
-							on:click|stopPropagation
-						>
+						<div class="dropdown-container" on:click|stopPropagation>
 							<button class="user-avatar-button" on:click|stopPropagation={toggleUserDropdown}>
 								{#if $authStore.user.photoURL}
 									<img src={$authStore.user.photoURL} alt="User avatar" class="user-avatar" />
@@ -143,7 +143,7 @@
 									</div>
 									<hr />
 									<a href="/profile" class="dropdown-item" on:click={closeDropdowns}>Profile</a>
-									{#if $authStore.user.customClaims?.admin}
+									{#if $authStore.role && ['smartslateAdmin', 'smartslateManager', 'smartslateClientManager'].includes($authStore.role)}
 										<a href="/admin" class="dropdown-item" on:click={closeDropdowns}
 											>Admin Dashboard</a
 										>
@@ -194,7 +194,7 @@
 				{/if}
 				<a href="/difference" on:click={closeMobileMenu}>The Smartslate Difference</a>
 				<a href="/partner" on:click={closeMobileMenu}>Partner & Collaborate</a>
-				{#if $authStore.user && $authStore.user.customClaims?.admin}
+				{#if $authStore.role && ['smartslateAdmin', 'smartslateManager', 'smartslateClientManager'].includes($authStore.role)}
 					<a href="/admin" on:click={closeMobileMenu}>Admin Dashboard</a>
 				{/if}
 			</nav>

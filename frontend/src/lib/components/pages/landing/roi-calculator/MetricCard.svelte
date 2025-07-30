@@ -43,10 +43,10 @@
 		transition: all 0.3s ease;
 	}
 
-    .metric-card:hover {
-        transform: translateY(-4px);
-        border-color: var(--primary-accent-faded);
-    }
+	.metric-card:hover {
+		transform: translateY(-4px);
+		border-color: var(--primary-accent-faded);
+	}
 
 	.card-header {
 		display: flex;
