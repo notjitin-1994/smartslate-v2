@@ -24,6 +24,10 @@
 	--text-secondary: #b0c5c6;
 	--text-muted: #7a8a8b;
 
+	/* BRAND ACCENT COLORS */
+	--brand-accent-color-1: var(--primary-accent);
+	--brand-accent-color-2: var(--secondary-accent);
+
 	/* STATE COLORS */
 	--color-success: #22c55e;
 	--color-error: #ef4444;
