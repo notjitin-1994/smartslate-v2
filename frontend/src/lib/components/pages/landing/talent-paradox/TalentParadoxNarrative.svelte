@@ -117,13 +117,13 @@
 					</div>
 					<div class="infographic-container">
 						{#if i === 0}
-							<EconomicImpactInfographic isHovered={visibleStates[i]} />
+							<EconomicImpactInfographic isHovered={visibleStates[i]} source="Based on World Bank and national economic projections." />
 						{:else if i === 1}
-							<EmployabilityCrisisInfographic isHovered={visibleStates[i]} />
+							<EmployabilityCrisisInfographic isHovered={visibleStates[i]} source="Data from NASSCOM, AICTE, and industry surveys." />
 						{:else if i === 2}
-							<SkillsGapInfographic isHovered={visibleStates[i]} />
+							<SkillsGapInfographic isHovered={visibleStates[i]} source="Analysis from World Economic Forum 'Future of Jobs' report." />
 						{:else if i === 3}
-							<IndustryDemandInfographic isHovered={visibleStates[i]} />
+							<IndustryDemandInfographic isHovered={visibleStates[i]} source="LinkedIn Learning and Coursera workforce trend reports." />
 						{/if}
 					</div>
 				</div>

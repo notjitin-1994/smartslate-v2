@@ -3,6 +3,7 @@
 
 	let element: HTMLElement;
 	let visible = false;
+	export let source: string;
 
 	onMount(() => {
 		const observer = new IntersectionObserver(

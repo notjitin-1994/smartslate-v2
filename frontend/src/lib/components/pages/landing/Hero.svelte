@@ -161,6 +161,23 @@
 			opacity: 1;
 			transition: none;
 		}
+	}
 
+	@media (max-width: 768px) {
+		h1 {
+			font-size: 2.5rem;
+		}
+		p {
+			font-size: 1rem;
+		}
+		.content {
+			padding: var(--space-lg);
+		}
+	}
+
+	@media (max-width: 480px) {
+		.content {
+			padding: var(--space-md);
+		}
 	}
 </style>

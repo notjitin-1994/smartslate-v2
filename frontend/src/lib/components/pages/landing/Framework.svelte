@@ -275,6 +275,9 @@
 			min-height: auto;
 			margin-top: var(--space-xl);
 		}
+		.step.active {
+			transform: none;
+		}
 	}
 
 	@media (max-width: 768px) {

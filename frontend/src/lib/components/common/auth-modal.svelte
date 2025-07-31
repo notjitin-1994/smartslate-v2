@@ -392,8 +392,8 @@
 	}
 
 	.btn-primary {
-		background-color: var(--primary-accent);
-		color: var(--background);
+		background-color: var(--secondary-accent);
+		color: var(--text-primary);
 		font-weight: bold;
 		padding: var(--space-md);
 		border-radius: var(--radius-md);

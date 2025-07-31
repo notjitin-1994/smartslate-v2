@@ -5,6 +5,7 @@
 
 	let element: HTMLElement;
 	let visible = false;
+	export let source: string;
 
 	const number1 = tweened(0, { duration: 2000, easing: cubicOut });
 	const number2 = tweened(0, { duration: 2000, easing: cubicOut });

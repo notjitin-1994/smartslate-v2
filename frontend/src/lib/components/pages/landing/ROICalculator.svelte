@@ -433,4 +433,27 @@
 		font-weight: 600;
 		color: var(--primary-accent);
 	}
+
+	@media (max-width: 768px) {
+		.section-header h2 {
+			font-size: 2.5rem;
+		}
+		.section-header p {
+			font-size: 1rem;
+		}
+		.calculator-header {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+		.calculator-header h2 {
+			font-size: 2rem;
+		}
+		.slider-wrapper {
+			flex-direction: column;
+			align-items: stretch;
+		}
+		.slider-value {
+			text-align: left;
+		}
+	}
 </style>

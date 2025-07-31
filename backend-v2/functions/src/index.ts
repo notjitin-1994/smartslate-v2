@@ -13,6 +13,8 @@ const app = express();
 const corsOptions = {
   origin: [
     "http://localhost:5173",
+    "http://localhost:5174",
+    "http://localhost:5175",
     "https://smartslate.io",
     "https://www.smartslate.io",
   ],
@@ -377,6 +379,36 @@ adminRouter.post(
   },
 );
 
+// --- Inquiry Management Endpoints ---
+
+// GET /api/admin/inquiries
+// Fetches a list of all submitted inquiries.
+adminRouter.get(
+  "/inquiries",
+  authenticateAndAuthorize(["smartslateAdmin", "smartslateManager"]),
+  async (req: express.Request, res: express.Response) => {
+    try {
+      const inquiriesSnapshot = await admin
+        .firestore()
+        .collection("inquiries")
+        .orderBy("createdAt", "desc")
+        .get();
+
+      const inquiries = inquiriesSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      return res.status(200).json({ inquiries });
+    } catch (error) {
+      functions.logger.error("Error fetching inquiries:", error);
+      return res
+        .status(500)
+        .json({ error: "An error occurred while fetching inquiries." });
+    }
+  },
+);
+
 // Mount the admin router under the /admin path
 app.use("/admin", adminRouter);
 
@@ -409,5 +441,60 @@ export const createUserDocument = functions.auth
       functions.logger.info(`Custom claim set for ${uid}`);
     } catch (error) {
       functions.logger.error(`Error creating user document for ${uid}:`, error);
+    }
+  });
+
+// --- Inquiry Creation Trigger ---
+// This function triggers when a new document is created in the 'inquiries' collection.
+// It triggers when a new inquiry is created, then creates a corresponding
+// email document in the 'mail' collection. The "Trigger Email from Firestore"
+// extension then picks up this document and sends the email.
+export const onInquiryCreate = functions.firestore
+  .document("inquiries/{inquiryId}")
+  .onCreate(async (snap) => {
+    const inquiryData = snap.data();
+    if (!inquiryData) {
+      functions.logger.error(
+        `No data associated with the inquiry document: ${snap.id}`,
+      );
+      return;
+    }
+
+    // The payload for the email document.
+    // The 'to' and 'cc' fields are arrays of email addresses.
+    const mailPayload = {
+      to: ["sanam@smartslate.io"],
+      cc: ["jitin@smartslate.io"],
+      message: {
+        subject: `🚀 New SmartSlate Inquiry: ${inquiryData.name}`,
+        html: `
+          <h1>New Contact Inquiry Received</h1>
+          <p>A new inquiry has been submitted via the website contact form.</p>
+          <ul>
+            <li><strong>Name:</strong> ${inquiryData.name}</li>
+            <li><strong>Email:</strong> ${inquiryData.email}</li>
+            <li><strong>Company:</strong> ${inquiryData.company || "Not provided"}</li>
+            <li><strong>Inquiry Type:</strong> ${inquiryData.inquiryType}</li>
+          </ul>
+          <hr>
+          <h3>Message:</h3>
+          <p>${inquiryData.message}</p>
+          <br>
+          <p><em>This is an automated notification.</em></p>
+        `,
+      },
+    };
+
+    try {
+      // Create a new document in the 'mail' collection.
+      await admin.firestore().collection("mail").add(mailPayload);
+      functions.logger.info(
+        `Successfully queued email for inquiry: ${snap.id}`,
+      );
+    } catch (error) {
+      functions.logger.error(
+        `Error queuing email for inquiry ${snap.id}:`,
+        error,
+      );
     }
   });

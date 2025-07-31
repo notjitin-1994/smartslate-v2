@@ -13,6 +13,7 @@
 		MinusCircle
 	} from 'lucide-svelte';
 	import Container from '$lib/components/pages/common/Container.svelte';
+	import { contactUsModalStore } from '$lib/stores/contactUsModalStore';
 
 	type PartnerType = 'institutions' | 'businesses';
 
@@ -97,7 +98,10 @@
 								{content.institutions.cta}
 								<ArrowRight size={16} />
 							</button>
-							<button class="cta-button secondary">Contact Us</button>
+							<button
+								class="cta-button secondary"
+								on:click={() => contactUsModalStore.openModal('Educational Institution')}>Contact Us</button
+							>
 						</div>
 					</div>
 				{/if}
@@ -142,7 +146,10 @@
 								{content.businesses.cta}
 								<ArrowRight size={16} />
 							</button>
-							<button class="cta-button secondary">Contact Us</button>
+							<button
+								class="cta-button secondary"
+								on:click={() => contactUsModalStore.openModal('Business Leader')}>Contact Us</button
+							>
 						</div>
 					</div>
 				{/if}
@@ -173,7 +180,7 @@
 		transition: var(--transition-fast);
 		width: 100%;
 		background-color: transparent;
-		border: 1px solid var(--secondary-accent);
+		border: none;
 		text-align: left;
 		color: inherit; /* Keep inherit to not affect children by default */
 		font-family: inherit;
@@ -239,6 +246,8 @@
 
 	.subsection {
 		margin-bottom: var(--space-lg);
+		border-radius: var(--border-radius-lg);
+		overflow: hidden;
 	}
 	.subsection:last-child {
 		border-bottom: none;
@@ -258,8 +267,7 @@
 
 	.content-body {
 		padding: var(--space-lg) var(--space-md);
-		border: 1px solid var(--secondary-accent);
-		border-top: none;
+		border: none;
 		border-bottom-left-radius: var(--border-radius-md);
 		border-bottom-right-radius: var(--border-radius-md);
 	}
@@ -329,6 +337,20 @@
 	}
 
 	@media (max-width: 768px) {
+		.section-header h2 {
+			font-size: 2.5rem;
+		}
+		.section-header p {
+			font-size: 1rem;
+		}
+		.section-header.interactive {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+		.icon-wrapper {
+			margin-left: 0;
+			margin-top: var(--space-md);
+		}
 		.cta-wrapper {
 			flex-direction: column;
 		}

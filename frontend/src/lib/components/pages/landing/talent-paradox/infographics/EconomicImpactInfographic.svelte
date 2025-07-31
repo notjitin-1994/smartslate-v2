@@ -3,6 +3,7 @@
 	import gsap from 'gsap';
 
 	export let isHovered: boolean = false;
+	export let source: string;
 
 	let bars: SVGRectElement[] = [];
 	let tl: gsap.core.Timeline;

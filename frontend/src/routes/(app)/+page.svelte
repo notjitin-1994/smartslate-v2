@@ -8,6 +8,8 @@
 	import Partners from '$lib/components/pages/landing/Partners.svelte';
 	import Footer from '$lib/components/pages/common/Footer.svelte';
 	import Container from '$lib/components/pages/common/Container.svelte';
+	import ContactUsModal from '$lib/components/common/ContactUsModal.svelte';
+	import { contactUsModalStore } from '$lib/stores/contactUsModalStore';
 
 	let revealedSections = {
 		paradox: false,
@@ -82,6 +84,10 @@
 </main>
 
 <Footer />
+
+{#if $contactUsModalStore.isOpen}
+	<ContactUsModal />
+{/if}
 
 <style>
 	main {

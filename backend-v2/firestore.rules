@@ -81,5 +81,18 @@ service cloud.firestore {
         // WRITE: Only Admins and Client Managers can enroll users.
         allow write: if isSmartslateAdmin() || isSmartslateClientManager();
     }
+
+    // ====================================================================
+    // Inquiries Collection Rules
+    // ====================================================================
+
+    match /inquiries/{inquiryId} {
+      // CREATE: Allow anyone to submit an inquiry.
+      allow create: if true;
+
+      // READ, UPDATE, DELETE: Disallow all other operations from the client.
+      // This data should only be accessed by backend services or admins.
+      allow read, update, delete: if false;
+    }
   }
 }

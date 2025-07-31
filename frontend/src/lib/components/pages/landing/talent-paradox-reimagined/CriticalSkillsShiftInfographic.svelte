@@ -13,6 +13,7 @@
 
 	let element: HTMLElement;
 	let visible = false;
+	export let source: string;
 
 	const skills = {
 		today: [

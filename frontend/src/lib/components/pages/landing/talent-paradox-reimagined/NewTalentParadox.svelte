@@ -62,7 +62,7 @@
 			</button>
 			{#if revealed.economic}
 				<div transition:slide|local={{ duration: 500, easing: quintOut }}>
-					<EconomicEquationInfographic />
+					<EconomicEquationInfographic source="Based on World Bank and national economic projections." />
 				</div>
 			{/if}
 		</div>
@@ -94,7 +94,7 @@
 			</button>
 			{#if revealed.employability}
 				<div transition:slide|local={{ duration: 500, easing: quintOut }}>
-					<EmployabilityCrisisInfographic />
+					<EmployabilityCrisisInfographic source="Data from NASSCOM, AICTE, and industry surveys." />
 				</div>
 			{/if}
 		</div>
@@ -122,7 +122,7 @@
 			</button>
 			{#if revealed.skills}
 				<div transition:slide|local={{ duration: 500, easing: quintOut }}>
-					<CriticalSkillsShiftInfographic />
+					<CriticalSkillsShiftInfographic source="Analysis from World Economic Forum 'Future of Jobs' report." />
 				</div>
 			{/if}
 		</div>
@@ -151,7 +151,7 @@
 			</button>
 			{#if revealed.opportunity}
 				<div transition:slide|local={{ duration: 500, easing: quintOut }}>
-					<HiddenOpportunityInfographic />
+					<HiddenOpportunityInfographic source="LinkedIn Learning and Coursera workforce trend reports." />
 				</div>
 			{/if}
 		</div>
@@ -321,5 +321,22 @@
 		background-color: var(--secondary-accent);
 		color: var(--text-primary);
 		border-color: var(--secondary-accent);
+	}
+
+	@media (max-width: 768px) {
+		.section-header h2 {
+			font-size: 2.5rem;
+		}
+		.section-header p {
+			font-size: 1rem;
+		}
+		.section-header.interactive {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+		.icon-wrapper {
+			margin-left: 0;
+			margin-top: var(--space-md);
+		}
 	}
 </style>
