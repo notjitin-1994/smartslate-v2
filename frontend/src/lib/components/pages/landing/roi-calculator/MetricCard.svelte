@@ -32,20 +32,20 @@
 
 <style>
 	.metric-card {
-		background: var(--background);
-		padding: 1.5rem;
-		border-radius: 1rem;
-		border: 1px solid var(--color-border);
+		background: var(--background-light);
+		padding: var(--space-lg);
+		border-radius: var(--radius-lg);
+		border: var(--border-subtle);
 		display: flex;
 		flex-direction: column;
 		text-align: left;
 		height: 100%;
-		transition: all 0.3s ease;
+		transition: var(--transition-medium);
 	}
 
 	.metric-card:hover {
 		transform: translateY(-4px);
-		border-color: var(--primary-accent-faded);
+		border-color: var(--primary-accent);
 	}
 
 	.card-header {
@@ -62,46 +62,46 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background-color: hsla(var(--raw-primary-accent), 0.1);
+		background-color: rgba(167, 218, 219, 0.1);
 		color: var(--primary-accent);
 	}
 
 	h3 {
-		font-family: var(--font-family-heading);
-		font-size: var(--font-size-large);
+		font-family: var(--font-heading);
+		font-size: 1.125rem;
 		font-weight: 700;
-		color: var(--color-text-primary);
+		color: var(--text-primary);
 		margin-bottom: 0.5rem;
 	}
 
 	.value {
-		font-family: var(--font-family-heading);
+		font-family: var(--font-heading);
 		font-size: 2.25rem;
-		font-weight: 600;
-		color: var(--color-text-primary);
+		font-weight: 700;
+		color: var(--primary-accent);
 		margin-bottom: 0.75rem;
 	}
 
 	.description {
-		font-size: var(--font-size-small);
-		color: var(--color-text-secondary);
+		font-size: 0.9rem;
+		color: var(--text-secondary);
 		line-height: 1.6;
 		flex-grow: 1;
 	}
 
 	.tooltip-wrapper {
 		position: relative;
-		color: var(--color-text-secondary);
+		color: var(--text-muted);
 	}
 
 	.tooltip-wrapper .tooltip-text {
 		visibility: hidden;
 		width: 220px;
-		background-color: var(--background-light);
-		color: var(--color-text-primary);
+		background-color: var(--container-bg);
+		color: var(--text-primary);
 		text-align: center;
-		border-radius: 0.5rem;
-		padding: 0.75rem;
+		border-radius: var(--radius-md);
+		padding: var(--space-md);
 		position: absolute;
 		z-index: 1;
 		bottom: 125%;
@@ -109,9 +109,9 @@
 		margin-left: -110px;
 		opacity: 0;
 		transition: opacity 0.3s;
-		font-size: var(--font-size-small);
-		border: 1px solid var(--color-border);
-		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		font-size: 0.875rem;
+		border: var(--border-subtle);
+		box-shadow: var(--shadow-lg);
 	}
 
 	.tooltip-wrapper:hover .tooltip-text {

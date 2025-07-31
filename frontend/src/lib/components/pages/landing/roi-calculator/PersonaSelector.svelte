@@ -9,22 +9,19 @@
 			id: 'educator',
 			title: 'Academic Leader',
 			icon: GraduationCap,
-			description: `Focus on <strong class="highlight">student employability</strong> & <strong class="highlight">industry partnerships</strong>.`,
-			color: 'purple'
+			description: `Focus on <strong class="highlight">student employability</strong> & <strong class="highlight">industry partnerships</strong>.`
 		},
 		{
 			id: 'businessman',
 			title: 'Corporate Leader',
 			icon: Briefcase,
-			description: `Focus on <strong class="highlight">ROI</strong>, <strong class="highlight">productivity</strong> & <strong class="highlight">talent retention</strong>.`,
-			color: 'blue'
+			description: `Focus on <strong class="highlight">ROI</strong>, <strong class="highlight">productivity</strong> & <strong class="highlight">talent retention</strong>.`
 		},
 		{
 			id: 'student',
 			title: 'Aspiring Professional',
 			icon: User,
-			description: `Focus on <strong class="highlight">career acceleration</strong> & <strong class="highlight">dream job readiness</strong>.`,
-			color: 'cyan'
+			description: `Focus on <strong class="highlight">career acceleration</strong> & <strong class="highlight">dream job readiness</strong>.`
 		}
 	];
 
@@ -78,22 +75,22 @@
 	}
 
 	.persona-card {
-		background: rgba(255, 255, 255, 0.03);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 1rem;
+		background: var(--background-light);
+		border: var(--border-subtle);
+		border-radius: var(--radius-lg);
 		padding: 2rem;
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
 		cursor: pointer;
-		transition: all 0.3s ease;
-		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		transition: var(--transition-medium);
+		box-shadow: var(--shadow-md);
 	}
 
 	.persona-card:hover {
 		transform: translateY(-8px);
-		border-color: rgba(167, 218, 219, 0.5);
-		box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+		border-color: var(--primary-accent);
+		box-shadow: var(--shadow-lg);
 	}
 
 	.card-content {
@@ -104,7 +101,7 @@
 	}
 
 	.icon-wrapper {
-		color: var(--secondary-accent);
+		color: var(--primary-accent);
 		background: rgba(167, 218, 219, 0.1);
 		width: 48px;
 		height: 48px;
@@ -115,22 +112,22 @@
 	}
 
 	h3 {
-		font-family: var(--font-family-heading);
-		font-size: var(--font-size-xl);
-		font-weight: 600;
-		color: var(--color-text-primary);
+		font-family: var(--font-heading);
+		font-size: 1.25rem;
+		font-weight: 700;
+		color: var(--text-primary);
 	}
 
 	.description {
-		font-size: var(--font-size-medium);
-		color: var(--color-text-secondary);
+		font-size: 1rem;
+		color: var(--text-secondary);
 		line-height: 1.7;
 		flex-grow: 1;
 	}
 
 	.description :global(strong.highlight) {
-		color: var(--color-text-primary);
-		font-weight: 600;
+		color: var(--primary-accent);
+		font-weight: 700;
 	}
 
 	.action {
@@ -138,36 +135,36 @@
 		align-items: center;
 		gap: 0.5rem;
 		font-weight: 600;
-		font-size: var(--font-size-medium);
-		color: var(--secondary-accent);
+		font-size: 1rem;
+		color: var(--text-secondary);
 		margin-top: 1.5rem;
-		transition: all 0.2s ease;
+		transition: var(--transition-fast);
 	}
 
 	.persona-card:hover .action {
-		color: #ffffff;
+		color: var(--secondary-accent);
 		transform: translateX(4px);
 	}
 
 	.footer-note {
 		text-align: center;
 		margin-top: 3rem;
-		font-size: var(--font-size-medium);
-		color: var(--color-text-secondary);
+		font-size: 1rem;
+		color: var(--text-muted);
 	}
 
 	.footer-note button {
 		background: none;
 		border: none;
-		color: var(--secondary-accent);
+		color: var(--primary-accent);
 		font-weight: 600;
 		cursor: pointer;
 		text-decoration: underline;
 		text-underline-offset: 4px;
-		transition: color 0.2s ease;
+		transition: var(--transition-fast);
 	}
 
 	.footer-note button:hover {
-		color: var(--primary-accent-dark);
+		color: var(--text-primary);
 	}
 </style>

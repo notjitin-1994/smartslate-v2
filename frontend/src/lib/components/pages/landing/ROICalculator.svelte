@@ -244,26 +244,20 @@
 				</div>
 			{/if}
 		</div>
-		<div class="button-wrapper">
-			<AnimatedButton
-				text="Explore Our Partnerships"
-				icon={Handshake}
-				on:click={() => dispatch('revealNext')}
-				customClass="discover-button"
-			/>
-		</div>
+		<AnimatedButton
+			text="Explore Our Partnerships"
+			icon={Handshake}
+			on:click={() => dispatch('revealNext')}
+			customClass="discover-button"
+		/>
 	</Container>
 </section>
 
 <style>
-	.button-wrapper {
-		display: flex;
-		justify-content: flex-start;
-		margin-top: var(--space-xl);
-	}
 	:global(.discover-button) {
-		background-color: var(--primary-accent) !important;
-		color: white !important;
+		margin-top: var(--space-xl);
+		background-color: var(--primary-accent);
+		color: var(--background-dark);
 	}
 	#roi-calculator {
 		padding: var(--space-xxl) 0;
@@ -292,11 +286,11 @@
 	}
 
 	.calculator-wrapper {
-		background: rgba(13, 15, 28, 0.5);
-		border: var(--border-default);
+		background: var(--container-bg);
+		border: var(--border-subtle);
 		border-radius: var(--radius-lg);
 		padding: var(--space-xl) var(--space-xxl);
-		min-height: 400px;
+		min-height: 500px;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -319,13 +313,13 @@
 	.calculator-header h2 {
 		font-size: 2.5rem;
 		font-weight: 700;
-		color: var(--primary-shade-darker);
+		color: var(--text-primary);
 		flex-grow: 1;
 	}
 
 	.calculator-header :global(strong) {
 		font-weight: 700;
-		color: var(--primary-shade-darker);
+		color: var(--primary-accent);
 	}
 
 	.back-button {
@@ -356,7 +350,7 @@
 	.slider-container label {
 		font-size: 1.1rem;
 		font-weight: 500;
-		color: var(--primary-shade-dark);
+		color: var(--text-primary);
 	}
 
 	.slider-wrapper {
@@ -370,8 +364,8 @@
 		-webkit-appearance: none;
 		appearance: none;
 		width: 100%;
-		height: 4px;
-		background: var(--primary-shade-dark);
+		height: 6px;
+		background: var(--input-bg);
 		border-radius: var(--radius-sm);
 		outline: none;
 		transition: var(--transition-fast);
@@ -380,28 +374,39 @@
 	input[type='range']::-webkit-slider-thumb {
 		-webkit-appearance: none;
 		appearance: none;
-		width: 18px;
-		height: 18px;
-		background: var(--secondary-accent);
+		width: 20px;
+		height: 20px;
+		background: var(--primary-accent);
 		cursor: pointer;
 		border-radius: 50%;
+		border: 3px solid var(--container-bg);
+		transition: var(--transition-fast);
+	}
+
+	input[type='range']::-webkit-slider-thumb:hover {
+		background: var(--text-primary);
 	}
 
 	input[type='range']::-moz-range-thumb {
-		width: 18px;
-		height: 18px;
-		background: var(--secondary-accent);
+		width: 20px;
+		height: 20px;
+		background: var(--primary-accent);
 		cursor: pointer;
 		border-radius: 50%;
-		border: none;
+		border: 3px solid var(--container-bg);
+		transition: var(--transition-fast);
+	}
+
+	input[type='range']::-moz-range-thumb:hover {
+		background: var(--text-primary);
 	}
 
 	.slider-value {
 		font-family: var(--font-heading);
 		font-weight: 600;
 		font-size: 2rem;
-		color: var(--primary-shade-darker);
-		min-width: 120px;
+		color: var(--primary-accent);
+		min-width: 150px;
 		text-align: right;
 	}
 
@@ -416,7 +421,7 @@
 		margin-top: var(--space-lg);
 		border-top: var(--border-subtle);
 		font-size: 1.1rem;
-		color: var(--primary-shade-dark);
+		color: var(--text-secondary);
 		line-height: 1.7;
 		max-width: 80ch;
 		margin-left: auto;
@@ -426,6 +431,6 @@
 
 	.closing-argument :global(strong) {
 		font-weight: 600;
-		color: var(--primary-shade-darker);
+		color: var(--primary-accent);
 	}
 </style>

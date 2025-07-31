@@ -6,11 +6,19 @@
 	export let icon: any;
 	export let href: string | undefined = undefined;
 	export let customClass: string | undefined = undefined;
+	export let variant: 'primary' | 'secondary' = 'primary';
 
 	const Tag = href ? 'a' : 'button';
 </script>
 
-<svelte:element this={Tag} {href} class="animated-btn {customClass ? customClass : ''}" on:click>
+<svelte:element
+	this={Tag}
+	{href}
+	class="animated-btn {customClass ? customClass : ''}"
+	class:secondary={variant === 'secondary'}
+	on:click
+	role={Tag === 'button' ? undefined : 'button'}
+>
 	<span>{text}</span>
 	<svelte:component this={icon} class="bounce" size={'1.1em'} />
 </svelte:element>
@@ -19,7 +27,7 @@
 	.animated-btn {
 		background-color: var(--secondary-accent);
 		color: #ffffff;
-		border: none;
+		border: 1px solid transparent;
 		padding: var(--space-md) var(--space-lg);
 		font-family: var(--font-body);
 		font-size: 1.1rem;
@@ -37,6 +45,17 @@
 	.animated-btn:hover {
 		transform: translateY(-2px);
 		box-shadow: var(--shadow-lg);
+	}
+
+	.animated-btn.secondary {
+		background-color: transparent;
+		border-color: var(--secondary-accent);
+		color: var(--secondary-accent);
+	}
+
+	.animated-btn.secondary:hover {
+		background-color: var(--secondary-accent);
+		color: var(--color-background-dark);
 	}
 
 	.bounce {

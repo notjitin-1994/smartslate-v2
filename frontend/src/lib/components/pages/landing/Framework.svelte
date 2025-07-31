@@ -1,13 +1,25 @@
 <script lang="ts">
-	import { createEventDispatcher, onMount } from 'svelte';
-	import { fly } from 'svelte/transition';
+	import { createEventDispatcher } from 'svelte';
+	import { slide, fade } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
 	import { Zap, Network, Layers, ChevronRight } from 'lucide-svelte';
 	import AnimatedButton from '$lib/components/common/animated-button.svelte';
 	import RupeeIcon from '$lib/components/common/rupee-icon.svelte';
+	import Container from '$lib/components/pages/common/Container.svelte';
 
 	const dispatch = createEventDispatcher();
 
-	const frameworkSteps = [
+	type Section = 'ignite' | 'architecture' | 'solara';
+
+	const frameworkSteps: {
+		id: Section;
+		icon: any;
+		title: string;
+		subtitle: string;
+		description: string;
+		buttonText: string;
+		href: string;
+	}[] = [
 		{
 			id: 'ignite',
 			icon: Zap,
@@ -40,69 +52,72 @@
 		}
 	];
 
-	let visible: { [key: string]: boolean } = {};
+	let activeStep: Section = 'ignite';
 
-	onMount(() => {
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						visible[entry.target.id] = true;
-					}
-				});
-			},
-			{
-				threshold: 0.5
-			}
-		);
+	function selectStep(section: Section) {
+		activeStep = section;
+	}
 
-		const steps = document.querySelectorAll('.framework-step');
-		steps.forEach((step) => {
-			observer.observe(step);
-		});
-
-		return () => {
-			steps.forEach((step) => {
-				observer.unobserve(step);
-			});
-		};
-	});
+	$: activeContent = frameworkSteps.find((s) => s.id === activeStep);
 </script>
 
 <section class="framework-section">
-	<div class="container">
+	<Container>
 		<div class="section-header">
-			<h2>The Smartslate <span class="accent">Framework</span></h2>
+			<h2>The Smartslate <span class="accent-animate">Framework</span></h2>
 			<p>
-				We don't just train; we <span class="accent">transform</span>. Our integrated ecosystem
-				bridges the critical gap between education and industry.
+				We don't just train; we <span class="accent-animate">transform</span>. Our integrated
+				ecosystem bridges the critical gap between education and industry.
 			</p>
 		</div>
 
-		<div class="steps-container">
-			{#each frameworkSteps as step, i (step.id)}
-				<div class="framework-step" id={step.id}>
-					{#if visible[step.id]}
-						<div class="step-card" in:fly={{ y: 50, duration: 800, delay: i * 100 }}>
-							<div>
-								<div class="icon-wrapper">
-									<svelte:component this={step.icon} size={36} />
-								</div>
-								<h3>{step.title}</h3>
-								<h4>{step.subtitle}</h4>
-								<p>{step.description}</p>
-							</div>
-							<a href={step.href} class="cta-button">
-								<span>{step.buttonText}</span>
-								<div class="arrow-wrapper">
-									<ChevronRight size={20} />
-								</div>
-							</a>
+		<div class="interactive-layout">
+			<div class="stepper-navigation">
+				{#each frameworkSteps as step, i (step.id)}
+					<button
+						class="step"
+						class:active={activeStep === step.id}
+						on:click={() => selectStep(step.id)}
+					>
+						<div class="step-icon">
+							<svelte:component this={step.icon} size={28} />
 						</div>
-					{/if}
-				</div>
-			{/each}
+						<div class="step-label">
+							<span class="title">{step.title}</span>
+							<span class="subtitle">{step.subtitle}</span>
+						</div>
+					</button>
+				{/each}
+			</div>
+
+			<div class="content-panel">
+				{#if activeContent}
+					{#key activeStep}
+						<div
+							class="content-body"
+							in:fade={{ duration: 300, delay: 200 }}
+							out:fade={{ duration: 200 }}
+						>
+							<h3 in:slide={{ duration: 400, easing: quintOut, axis: 'y' }}>
+								{activeContent.title}
+							</h3>
+							<p in:slide={{ duration: 400, delay: 50, easing: quintOut, axis: 'y' }}>
+								{activeContent.description}
+							</p>
+							<div in:fade={{ duration: 300, delay: 300 }}>
+								<AnimatedButton
+									text={activeContent.buttonText}
+									href={activeContent.href}
+									icon={ChevronRight}
+									variant="secondary"
+								/>
+							</div>
+						</div>
+					{/key}
+				{/if}
+			</div>
 		</div>
+
 		<div class="roi-button-container">
 			<AnimatedButton
 				text="Unearth your ROI"
@@ -110,157 +125,164 @@
 				on:click={() => dispatch('revealNext')}
 			/>
 		</div>
-	</div>
+	</Container>
 </section>
 
 <style>
 	.framework-section {
 		padding: var(--space-xxl) 0;
-		background-color: var(--background);
-	}
-
-	.container {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 0 var(--space-lg);
+		background-color: var(--color-background-dark);
+		color: var(--color-text-light);
+		border-top: 1px solid var(--color-border-subtle);
+		overflow: hidden;
 	}
 
 	.section-header {
 		text-align: left;
-		margin-bottom: var(--space-xl);
+		margin-bottom: var(--space-xxl);
 	}
 
 	.section-header h2 {
 		font-size: 3rem;
 		margin-bottom: var(--space-md);
+		color: var(--text-primary);
+		font-weight: 700;
 	}
 
 	.section-header p {
 		font-size: 1.2rem;
 		color: var(--text-secondary);
 		margin: 0;
-		max-width: 60ch;
+		max-width: 65ch;
 	}
 
-	.accent {
-		color: var(--primary-accent);
+	.accent-animate {
+		color: var(--text-primary);
+		animation: color-change-once 1s ease-in-out 0.5s forwards;
 	}
 
-	.steps-container {
+	@keyframes color-change-once {
+		to {
+			color: var(--primary-accent);
+		}
+	}
+
+	.interactive-layout {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: var(--space-lg);
+		grid-template-columns: 1fr 1.5fr;
+		gap: var(--space-xxl);
+		align-items: flex-start;
 	}
 
-	.framework-step {
-		min-height: 300px; /* Ensure observer triggers */
-	}
-
-	.icon-wrapper {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		padding: var(--space-md);
-		background-color: transparent;
-		border: 2px solid var(--secondary-accent);
-		border-radius: 50%;
-		margin-bottom: var(--space-lg);
-		color: var(--secondary-accent);
-		transition: var(--transition-medium);
-	}
-
-	.step-card {
-		background: rgba(255, 255, 255, 0.05);
-		border: var(--border-default);
-		border-radius: var(--radius-lg);
-		padding: var(--space-xl) var(--space-lg);
-		height: 100%;
-		transition: var(--transition-medium);
+	.stepper-navigation {
 		display: flex;
 		flex-direction: column;
-		justify-content: space-between;
+		position: relative;
 	}
 
-	.step-card:hover {
-		transform: translateY(-10px);
-		box-shadow: var(--shadow-lg);
-		border-color: var(--primary-accent);
-	}
-
-	.step-card:hover .icon-wrapper {
-		transform: scale(1.1) rotate(5deg);
-		background-color: var(--secondary-accent);
-		border-color: var(--secondary-accent);
-		color: var(--text-primary);
-	}
-
-	.step-card h3 {
-		font-size: clamp(1.2rem, 2.5vw, 1.75rem);
-		color: var(--primary-shade-darker);
-		margin-bottom: var(--space-sm);
-	}
-
-	.step-card h4 {
-		font-size: 1rem;
-		color: var(--primary-shade-dark);
-		margin-bottom: var(--space-md);
-		font-weight: 500;
-	}
-
-	.step-card p {
-		color: var(--primary-shade-darker);
-		line-height: 1.6;
+	.step {
+		display: flex;
+		align-items: center;
+		background: none;
+		border: none;
+		text-align: left;
+		color: var(--text-secondary);
+		padding: var(--space-lg);
+		border-radius: var(--radius-lg);
+		cursor: pointer;
+		transition: all 0.3s ease;
+		border-left: 3px solid var(--color-border-subtle);
 		margin-bottom: var(--space-lg);
 	}
 
-	.cta-button {
+	.step:hover {
+		background-color: rgba(255, 255, 255, 0.03);
+		color: var(--text-primary);
+	}
+
+	.step.active {
+		background-color: rgba(167, 218, 219, 0.08);
+		color: var(--text-primary);
+		border-left-color: var(--primary-accent);
+		transform: translateX(10px);
+	}
+
+	.step-icon {
+		flex-shrink: 0;
+		margin-right: var(--space-lg);
+		color: var(--secondary-accent);
+		transition: all 0.3s ease;
+		background-color: rgba(167, 218, 219, 0.1);
+		border-radius: 50%;
+		padding: var(--space-md);
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
-		width: 100%;
-		text-align: center;
-		padding: var(--space-lg) var(--space-xl);
-		background-color: transparent;
+		justify-content: center;
+	}
+
+	.step.active .step-icon {
 		color: var(--primary-accent);
-		border: 2px solid var(--primary-accent);
+		transform: scale(1.15);
+		box-shadow: 0 0 15px rgba(167, 218, 219, 0.3);
+	}
+
+	.step-label .title {
+		font-size: 1.25rem;
+		font-weight: 600;
+		display: block;
+	}
+
+	.step-label .subtitle {
+		font-size: 0.9rem;
+		opacity: 0.8;
+	}
+
+	.content-panel {
+		background-color: rgba(0, 0, 0, 0.2);
 		border-radius: var(--radius-lg);
-		text-decoration: none;
-		transition: var(--transition-fast);
-		font-weight: 700;
+		padding: var(--space-xl);
+		border: 1px solid var(--color-border-subtle);
+		min-height: 350px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
 	}
 
-	.cta-button:hover {
-		background-color: var(--secondary-accent);
-		color: var(--text-primary);
-		border-color: var(--secondary-accent);
+	.content-body h3 {
+		font-size: 2rem;
+		color: var(--primary-accent);
+		margin: 0 0 var(--space-md) 0;
 	}
 
-	.cta-button .arrow-wrapper {
-		transition: var(--transition-fast);
-	}
-
-	.cta-button:hover .arrow-wrapper {
-		transform: translateX(4px);
-	}
-
-	@media (max-width: 768px) {
-		.steps-container {
-			grid-template-columns: 1fr;
-			gap: var(--space-xl);
-		}
-
-		.section-header h2 {
-			font-size: 2.5rem;
-		}
-
-		.section-header p {
-			font-size: 1rem;
-		}
+	.content-body p {
+		font-size: 1.1rem;
+		line-height: 1.7;
+		color: var(--text-secondary);
+		margin: 0 0 var(--space-xl) 0;
+		max-width: 55ch;
 	}
 
 	.roi-button-container {
 		text-align: left;
-		margin-top: var(--space-xl);
+		margin-top: var(--space-xxl);
 	}
 
+	@media (max-width: 900px) {
+		.interactive-layout {
+			grid-template-columns: 1fr;
+		}
+		.content-panel {
+			min-height: auto;
+			margin-top: var(--space-xl);
+		}
+	}
+
+	@media (max-width: 768px) {
+		.section-header h2 {
+			font-size: 2.5rem;
+		}
+		.section-header p {
+			font-size: 1.1rem;
+		}
+	}
 </style>

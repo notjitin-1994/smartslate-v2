@@ -194,7 +194,7 @@
 		transition: background-color 0.2s ease-in-out;
 		width: 100%;
 		background: none;
-		border: none;
+		border: 1px solid var(--color-border-subtle);
 		text-align: left;
 		color: inherit;
 		font-family: inherit;

@@ -1,15 +1,30 @@
 <script lang="ts">
-	import { fade } from 'svelte/transition';
-	import { School, Building, ArrowRight, Lightbulb, BarChart, Users, Zap } from 'lucide-svelte';
+	import { slide } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
+	import {
+		School,
+		Building,
+		ArrowRight,
+		Lightbulb,
+		BarChart,
+		Users,
+		Zap,
+		PlusCircle,
+		MinusCircle
+	} from 'lucide-svelte';
 	import Container from '$lib/components/pages/common/Container.svelte';
 
 	type PartnerType = 'institutions' | 'businesses';
 
-	let activeTab: PartnerType = 'institutions';
+	let revealed: Partial<Record<PartnerType, boolean>> = {};
+
+	function toggle(section: PartnerType) {
+		revealed[section] = !revealed[section];
+	}
 
 	const content = {
 		institutions: {
-			title: 'Educational Institutions',
+			title: 'For Educational Institutions',
 			pitch: 'Stand out by embedding real-world, in-demand skills directly into your curriculum.',
 			benefits: [
 				{ icon: School, text: 'Industry-Informed Curriculum' },
@@ -19,7 +34,7 @@
 			cta: 'Explore Our Programs'
 		},
 		businesses: {
-			title: 'Business Leaders',
+			title: 'For Business Leaders',
 			pitch:
 				'Stop the endless search for the perfect hire and start cultivating the skills you need.',
 			benefits: [
@@ -30,46 +45,47 @@
 			cta: 'Learn More'
 		}
 	};
-
-	let activeContent = content[activeTab];
-
-	$: activeContent = content[activeTab];
 </script>
 
 <section class="partners-section">
 	<Container>
 		<div class="section-header">
-			<h2>Who We <span class="accent">Partner</span> With</h2>
+			<h2>Who We <span class="accent-animate">Partner</span> With</h2>
 			<p>
 				We collaborate with forward-thinking organizations to build the future of education and
 				workforce development.
 			</p>
 		</div>
 
-		<div class="tabs-wrapper">
-			<div class="tab-content">
-				<div class="tab-buttons">
-					<button
-						class:active={activeTab === 'institutions'}
-						on:click={() => (activeTab = 'institutions')}
+		<div class="accordion-wrapper">
+			<!-- Institutions Section -->
+			<div class="subsection">
+				<button
+					class="section-header interactive"
+					class:revealed={revealed.institutions}
+					on:click={() => toggle('institutions')}
+				>
+					<div class="header-content">
+						<h3>
+							<span class="accent-animate">{content.institutions.title}</span>
+						</h3>
+						<p>{content.institutions.pitch}</p>
+					</div>
+					<div class="icon-wrapper">
+						{#if revealed.institutions}
+							<MinusCircle />
+						{:else}
+							<PlusCircle />
+						{/if}
+					</div>
+				</button>
+				{#if revealed.institutions}
+					<div
+						class="content-body"
+						transition:slide|local={{ duration: 500, easing: quintOut }}
 					>
-						<School size={20} />
-						<span>Educational Institutions</span>
-					</button>
-					<button
-						class:active={activeTab === 'businesses'}
-						on:click={() => (activeTab = 'businesses')}
-					>
-						<Building size={20} />
-						<span>Business Leaders</span>
-					</button>
-				</div>
-				{#key activeTab}
-					<div class="content-body" in:fade={{ duration: 300 }}>
-						<h3>{activeContent.title}</h3>
-						<p class="pitch">{activeContent.pitch}</p>
 						<ul class="benefits-list">
-							{#each activeContent.benefits as benefit}
+							{#each content.institutions.benefits as benefit}
 								<li>
 									<svelte:component this={benefit.icon} size={22} />
 									<span>{benefit.text}</span>
@@ -78,13 +94,58 @@
 						</ul>
 						<div class="cta-wrapper">
 							<button class="cta-button primary">
-								{activeContent.cta}
+								{content.institutions.cta}
 								<ArrowRight size={16} />
 							</button>
 							<button class="cta-button secondary">Contact Us</button>
 						</div>
 					</div>
-				{/key}
+				{/if}
+			</div>
+
+			<!-- Businesses Section -->
+			<div class="subsection">
+				<button
+					class="section-header interactive"
+					class:revealed={revealed.businesses}
+					on:click={() => toggle('businesses')}
+				>
+					<div class="header-content">
+						<h3>
+							<span class="accent-animate">{content.businesses.title}</span>
+						</h3>
+						<p>{content.businesses.pitch}</p>
+					</div>
+					<div class="icon-wrapper">
+						{#if revealed.businesses}
+							<MinusCircle />
+						{:else}
+							<PlusCircle />
+						{/if}
+					</div>
+				</button>
+				{#if revealed.businesses}
+					<div
+						class="content-body"
+						transition:slide|local={{ duration: 500, easing: quintOut }}
+					>
+						<ul class="benefits-list">
+							{#each content.businesses.benefits as benefit}
+								<li>
+									<svelte:component this={benefit.icon} size={22} />
+									<span>{benefit.text}</span>
+								</li>
+							{/each}
+						</ul>
+						<div class="cta-wrapper">
+							<button class="cta-button primary">
+								{content.businesses.cta}
+								<ArrowRight size={16} />
+							</button>
+							<button class="cta-button secondary">Contact Us</button>
+						</div>
+					</div>
+				{/if}
 			</div>
 		</div>
 	</Container>
@@ -92,100 +153,121 @@
 
 <style>
 	.partners-section {
+		background-color: var(--color-background-dark);
+		color: var(--color-text-light);
 		padding: var(--space-xxl) 0;
-		background-color: var(--background);
+		border-top: 1px solid var(--color-border-subtle);
 	}
 
 	.section-header {
 		text-align: left;
-		margin-bottom: var(--space-xl);
+		margin-bottom: var(--space-lg);
+	}
+
+	.section-header.interactive {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		padding: var(--space-md);
+		border-radius: var(--border-radius-md);
+		transition: var(--transition-fast);
+		width: 100%;
+		background-color: transparent;
+		border: 1px solid var(--secondary-accent);
+		text-align: left;
+		color: inherit; /* Keep inherit to not affect children by default */
+		font-family: inherit;
+		cursor: pointer;
+	}
+
+	.section-header.interactive:hover {
+		background-color: var(--secondary-accent);
+		color: var(--text-primary); /* Change children color on hover */
+		border-color: var(--secondary-accent);
+	}
+
+	.section-header.interactive.revealed {
+		border-bottom-left-radius: 0;
+		border-bottom-right-radius: 0;
+		margin-bottom: -1px;
+	}
+
+	.header-content {
+		flex-grow: 1;
+	}
+
+	.icon-wrapper {
+		flex-shrink: 0;
+		margin-left: var(--space-lg);
+		color: var(--primary-accent);
+		transition: transform 0.3s ease-in-out;
+		cursor: pointer;
+		animation: pulse-glow 2s infinite ease-in-out;
+	}
+
+	@keyframes pulse-glow {
+		0%,
+		100% {
+			filter: drop-shadow(0 0 4px rgba(167, 218, 219, 0.5));
+		}
+		50% {
+			filter: drop-shadow(0 0 8px rgba(167, 218, 219, 0.9));
+		}
 	}
 
 	.section-header h2 {
 		font-size: 3rem;
 		margin-bottom: var(--space-md);
+		color: var(--text-primary);
+		font-weight: 700;
+	}
+
+	.section-header h3 {
+		font-size: 1.75rem;
+		margin-bottom: var(--space-sm);
+		color: var(--text-primary);
+		font-weight: 600;
 	}
 
 	.section-header p {
-		font-size: 1.2rem;
+		font-size: 1.125rem;
 		color: var(--text-secondary);
 		line-height: 1.6;
-		max-width: 60ch;
+		max-width: 75ch;
+		margin-top: 0;
 	}
 
-	.accent {
+	.subsection {
+		margin-bottom: var(--space-lg);
+	}
+	.subsection:last-child {
+		border-bottom: none;
+		margin-bottom: 0;
+		padding-bottom: 0;
+	}
+
+	.accent-animate {
+		color: var(--text-primary);
+		transition: color 0.5s ease-in-out;
+	}
+
+	.interactive.revealed .accent-animate,
+	.section-header:not(.interactive) .accent-animate {
 		color: var(--primary-accent);
 	}
 
-	.tabs-wrapper {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
-
-	.tab-buttons {
-		display: flex;
-		border-bottom: 1px solid var(--border-subtle);
-		margin-bottom: var(--space-xl);
-	}
-
-	.tab-buttons button {
-		background: transparent;
-		border: none;
-		color: var(--text-secondary);
-		padding: var(--space-md) var(--space-lg);
-		font-size: 1rem;
-		font-weight: 600;
-		cursor: pointer;
-		transition: var(--transition-medium);
-		display: flex;
-		align-items: center;
-		gap: var(--space-sm);
-		border-bottom: 3px solid transparent;
-		margin-bottom: -1px; /* Align with parent border */
-	}
-
-	.tab-buttons button:hover {
-		color: var(--text-primary);
-	}
-
-	.tab-buttons button.active {
-		color: var(--secondary-accent);
-		border-bottom-color: var(--secondary-accent);
-	}
-
-	.tab-content {
-		width: 100%;
-		background: rgba(13, 15, 28, 0.5);
-		border: var(--border-default);
-		border-radius: var(--radius-lg);
-		padding: var(--space-xl);
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
-
 	.content-body {
-		padding: var(--space-xl);
-	}
-
-	.content-body h3 {
-		font-size: 2rem;
-		font-weight: 700;
-		color: var(--primary-shade-darker);
-		margin-bottom: var(--space-md);
-	}
-
-	.pitch {
-		font-size: 1.125rem;
-		color: var(--primary-shade-dark);
-		margin-bottom: var(--space-xl);
+		padding: var(--space-lg) var(--space-md);
+		border: 1px solid var(--secondary-accent);
+		border-top: none;
+		border-bottom-left-radius: var(--border-radius-md);
+		border-bottom-right-radius: var(--border-radius-md);
 	}
 
 	.benefits-list {
 		list-style: none;
 		padding: 0;
-		margin: 0;
+		margin: 0 0 var(--space-xl) 0;
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-lg);
@@ -197,11 +279,12 @@
 		gap: var(--space-md);
 		font-size: 1.1rem;
 		font-weight: 500;
-		color: var(--primary-shade-darker);
+		color: var(--text-light);
 	}
 
-	.benefits-list li svg {
+	.benefits-list li :global(svg) {
 		color: var(--secondary-accent);
+		flex-shrink: 0;
 	}
 
 	.cta-wrapper {
@@ -225,12 +308,13 @@
 
 	.cta-button.primary {
 		background: var(--secondary-accent);
-		color: #ffffff;
+		color: var(--color-background-dark);
 		border-color: var(--secondary-accent);
 	}
 
 	.cta-button.primary:hover {
-		opacity: 0.9;
+		background: var(--secondary-accent-dark);
+		border-color: var(--secondary-accent-dark);
 	}
 
 	.cta-button.secondary {
@@ -241,32 +325,10 @@
 
 	.cta-button.secondary:hover {
 		background: var(--secondary-accent);
-		color: #ffffff;
+		color: var(--color-background-dark);
 	}
 
 	@media (max-width: 768px) {
-		.tab-buttons {
-			/* No change needed for column layout, but we can improve spacing */
-			gap: var(--space-sm);
-			border-bottom: none;
-		}
-
-		.tab-buttons button {
-			width: 100%;
-			justify-content: center;
-			border-bottom: 1px solid var(--border-subtle);
-			border-radius: var(--radius-md);
-		}
-
-		.tab-buttons button.active {
-			background-color: rgba(255, 255, 255, 0.05);
-			border-bottom-color: transparent;
-		}
-
-		.content-body {
-			padding: var(--space-lg);
-		}
-
 		.cta-wrapper {
 			flex-direction: column;
 		}
