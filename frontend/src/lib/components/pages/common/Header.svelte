@@ -47,21 +47,28 @@
 		}
 	});
 
-	function toggleMobileMenu() {
-		isMobileMenuOpen = !isMobileMenuOpen;
-		if (!isMobileMenuOpen) {
+	function toggleMobileMenu(event: MouseEvent) {
+		event.stopPropagation();
+		const newState = !isMobileMenuOpen;
+		isMobileMenuOpen = newState;
+		if (!newState) {
 			showMobileProducts = false;
 		}
-		mobileMenuStore.update((state) => ({ ...state, isOpen: isMobileMenuOpen }));
+		// Ensure we're not in SSR
+		if (typeof window !== 'undefined') {
+			mobileMenuStore.set({ isOpen: newState });
+		}
 	}
 
 	function toggleMobileProductsDropdown() {
 		showMobileProducts = !showMobileProducts;
 	}
 
-	function closeMobileMenu() {
+	function closeMobileMenu(event?: MouseEvent) {
+		event?.stopPropagation();
 		isMobileMenuOpen = false;
-		mobileMenuStore.update((state) => ({ ...state, isOpen: false }));
+		showMobileProducts = false;
+		mobileMenuStore.set({ isOpen: false });
 	}
 
 	function openAuthModal() {
@@ -143,10 +150,9 @@
 									</div>
 									<hr />
 									<a href="/profile" class="dropdown-item" on:click={closeDropdowns}>Profile</a>
+									<hr />
 									{#if $authStore.role && ['smartslateAdmin', 'smartslateManager', 'smartslateClientManager'].includes($authStore.role)}
-										<a href="/admin" class="dropdown-item" on:click={closeDropdowns}
-											>Admin Dashboard</a
-										>
+										<a href="/admin" class="dropdown-item" on:click={closeDropdowns}>Admin Dashboard</a>
 									{/if}
 									<button on:click={handleSignOut} class="dropdown-item">Sign Out</button>
 								</div>
@@ -163,11 +169,14 @@
 				class="hamburger"
 				class:is-active={isMobileMenuOpen}
 				on:click={toggleMobileMenu}
-				aria-label="Open menu"
+				on:keydown={(e) => e.key === 'Enter' && toggleMobileMenu(e as unknown as MouseEvent)}
+				aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+				aria-expanded={isMobileMenuOpen}
+				aria-controls="mobile-nav-panel"
 			>
-				<span />
-				<span />
-				<span />
+				<span></span>
+				<span></span>
+				<span></span>
 			</button>
 		</div>
 	</Container>
@@ -176,8 +185,12 @@
 	{#if isMobileMenuOpen}
 		<div
 			class="mobile-nav-backdrop"
-			on:click={closeMobileMenu}
+			on:click|self={closeMobileMenu}
+			on:keydown={(e) => e.key === 'Escape' && closeMobileMenu()}
 			transition:fade={{ duration: 300 }}
+			role="button"
+			tabindex="0"
+			aria-label="Close menu"
 		/>
 		<aside class="mobile-nav-panel" transition:fly={{ duration: 300, x: '100%', easing: quintOut }}>
 			<div class="mobile-nav-header">
@@ -194,9 +207,6 @@
 				{/if}
 				<a href="/difference" on:click={closeMobileMenu}>The Smartslate Difference</a>
 				<a href="/partner" on:click={closeMobileMenu}>Partner & Collaborate</a>
-				{#if $authStore.role && ['smartslateAdmin', 'smartslateManager', 'smartslateClientManager'].includes($authStore.role)}
-					<a href="/admin" on:click={closeMobileMenu}>Admin Dashboard</a>
-				{/if}
 			</nav>
 			<div class="mobile-actions">
 				<hr />
@@ -218,6 +228,10 @@
 							</div>
 						</div>
 					</a>
+
+					{#if $authStore.role && ['smartslateAdmin', 'smartslateManager', 'smartslateClientManager'].includes($authStore.role)}
+						<a href="/admin" class="mobile-admin-link" on:click={closeMobileMenu}>Admin Dashboard</a>
+					{/if}
 
 					<button
 						on:click={() => {
@@ -481,7 +495,7 @@
 		border: none;
 		cursor: pointer;
 		padding: 0;
-		z-index: 1001;
+		z-index: 1003;
 		width: 44px;
 		height: 44px;
 		position: relative;
@@ -496,6 +510,7 @@
 		position: absolute;
 		left: 50%;
 		transform: translateX(-50%);
+		transform-origin: center;
 		border-radius: var(--radius-sm);
 	}
 
@@ -510,9 +525,7 @@
 	}
 
 	.hamburger.is-active {
-		position: fixed;
-		top: calc(var(--space-md) + var(--space-md));
-		right: var(--space-md);
+		position: relative;
 	}
 
 	.hamburger.is-active span:nth-child(1) {
@@ -710,6 +723,23 @@
 		background-color: transparent;
 		border: 1px solid var(--secondary-accent);
 		color: var(--secondary-accent);
+	}
+
+	.mobile-admin-link {
+		display: block;
+		width: 100%;
+		text-align: center;
+		background-color: transparent;
+		color: var(--text-primary);
+		padding: var(--space-md) var(--space-lg);
+		border-radius: var(--radius-md);
+		text-decoration: none;
+		font-weight: bold;
+		font-size: 1.1rem;
+		border: 1px solid var(--text-primary);
+		cursor: pointer;
+		font-family: inherit;
+		margin-bottom: var(--space-md);
 	}
 
 	/* --- Responsive Breakpoint --- */
