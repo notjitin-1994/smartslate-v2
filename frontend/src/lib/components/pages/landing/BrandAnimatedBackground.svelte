@@ -11,8 +11,8 @@
 
   // Configurable props for brand colors
   export let backgroundColor = '#001c33';
-  export let particleColor = 'var(--brand-accent-color-1)';
-  export let linkColor = 'var(--brand-accent-color-2)';
+  export let particleColor = 'var(--brand-accent-color-2)';
+  export let linkColor = 'var(--brand-accent-color-1)';
 
   const TAU = 2 * Math.PI;
 
@@ -43,12 +43,20 @@
 
     draw() {
       if (!ctx) return;
+      if (!ctx) return;
+      // Add a glow effect to the particles
+      ctx.shadowBlur = 20;
+      ctx.shadowColor = particleColor;
+   
       ctx.beginPath();
       ctx.globalAlpha = 0.4;
       ctx.fillStyle = particleColor;
       ctx.arc(this.x | 0, this.y | 0, 3, 0, TAU, false);
       ctx.fill();
-    }
+   
+      // Reset shadow for other elements
+      ctx.shadowBlur = 0;
+     }
   }
 
   function init() {
@@ -69,8 +77,8 @@
 
     if (!colorsInitialized) {
       const computedStyles = getComputedStyle(canvas);
-      particleColor = computedStyles.getPropertyValue('--brand-accent-color-1').trim();
-      linkColor = computedStyles.getPropertyValue('--brand-accent-color-2').trim();
+      particleColor = computedStyles.getPropertyValue('--brand-accent-color-2').trim();
+      linkColor = computedStyles.getPropertyValue('--brand-accent-color-1').trim();
       colorsInitialized = true;
     }
 
@@ -92,7 +100,7 @@
         if (dist < 100) {
           ctx.strokeStyle = linkColor;
           ctx.globalAlpha = 1 - dist / 100;
-          ctx.lineWidth = 2;
+          ctx.lineWidth = 1.4; // Reduced by 30% from 2
           ctx.moveTo(ball1.x | 0, ball1.y | 0);
           ctx.lineTo(ball2.x | 0, ball2.y | 0);
         }

@@ -25,7 +25,7 @@
 		// Trigger for the final color change, synced with the button reveal.
 		setTimeout(() => {
 			finalColorChange = true;
-		}, 1600);
+		}, 3100);
 	});
 </script>
 
@@ -44,20 +44,20 @@
 					</span>
 				{/each}
 			</h1>
-			<p class="fade-in" style="transition-delay: 1000ms;">
+			<p class="fade-in" style="transition-delay: 1600ms;">
 				India is on the cusp of a major economic expansion, fueled by its vibrant young population.
 				However, a
 				<strong>significant skills gap</strong> threatens progress—companies need
 				<strong>job-ready talent</strong> but emerging professionals aren't yet prepared.
 			</p>
-			<p class="fade-in" style="transition-delay: 1300ms;">
+			<p class="fade-in" style="transition-delay: 2100ms;">
 				The future of business is being written in India, yet a <strong>silent crisis</strong>
 				threatens to derail it all. Millions of ambitious individuals are entering the workforce, but
 				they lack the specific, critical skills your company needs to innovate and compete. This
 				<strong>talent paradox</strong> isn't just a statistic—it's a
 				<strong>direct threat to your bottom line and future success</strong>.
 			</p>
-			<div class="fade-in" style="transition-delay: 1500ms;">
+			<div class="fade-in" style="transition-delay: 3100ms;">
 				<AnimatedButton
 					text="Uncover the Crisis"
 					icon={ChevronDown}
@@ -96,6 +96,7 @@
 		font-size: 3rem;
 		margin-bottom: var(--space-lg);
 		max-width: none;
+		color: white;
 	}
 
 	.word-wrapper {
@@ -124,7 +125,7 @@
 
 	/* Use :global() because the .accent span is rendered with @html and is not scoped by Svelte */
 	.final-color :global(.accent) {
-		color: var(--brand-indigo, #4f46e5); /* Fallback to a standard indigo */
+		color: var(--brand-accent-color-1);
 		transition: color 0.8s ease-in-out;
 	}
 
