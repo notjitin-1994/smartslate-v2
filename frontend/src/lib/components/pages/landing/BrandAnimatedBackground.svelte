@@ -10,7 +10,7 @@
   let colorsInitialized = false;
 
   // Configurable props for brand colors
-  export let backgroundColor = '#001c33';
+  export const backgroundColor = '#001c33';
   export let particleColor = 'var(--brand-accent-color-2)';
   export let linkColor = 'var(--brand-accent-color-1)';
 
