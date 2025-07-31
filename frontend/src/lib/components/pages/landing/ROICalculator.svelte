@@ -249,6 +249,7 @@
 				text="Explore Our Partnerships"
 				icon={Handshake}
 				on:click={() => dispatch('revealNext')}
+				customClass="discover-button"
 			/>
 		</div>
 	</Container>
@@ -259,6 +260,10 @@
 		display: flex;
 		justify-content: flex-start;
 		margin-top: var(--space-xl);
+	}
+	:global(.discover-button) {
+		background-color: var(--primary-accent) !important;
+		color: white !important;
 	}
 	#roi-calculator {
 		padding: var(--space-xxl) 0;

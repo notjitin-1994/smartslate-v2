@@ -7,6 +7,7 @@
 	import ROICalculator from '$lib/components/pages/landing/ROICalculator.svelte';
 	import Partners from '$lib/components/pages/landing/Partners.svelte';
 	import Footer from '$lib/components/pages/common/Footer.svelte';
+	import Container from '$lib/components/pages/common/Container.svelte';
 
 	let revealedSections = {
 		paradox: false,

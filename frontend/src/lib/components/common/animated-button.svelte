@@ -5,11 +5,12 @@
 	export let text: string;
 	export let icon: any;
 	export let href: string | undefined = undefined;
+	export let customClass: string | undefined = undefined;
 
 	const Tag = href ? 'a' : 'button';
 </script>
 
-<svelte:element this={Tag} {href} class="animated-btn" on:click>
+<svelte:element this={Tag} {href} class="animated-btn {customClass ? customClass : ''}" on:click>
 	<span>{text}</span>
 	<svelte:component this={icon} class="bounce" size={'1.1em'} />
 </svelte:element>

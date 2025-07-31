@@ -219,14 +219,14 @@
 		justify-content: space-between;
 		width: 100%;
 		text-align: center;
-		padding: var(--space-sm) var(--space-lg);
+		padding: var(--space-lg) var(--space-xl);
 		background-color: transparent;
-		color: var(--secondary-accent);
-		border: 1px solid var(--secondary-accent);
-		border-radius: var(--radius-md);
+		color: var(--primary-accent);
+		border: 2px solid var(--primary-accent);
+		border-radius: var(--radius-lg);
 		text-decoration: none;
 		transition: var(--transition-fast);
-		font-weight: 500;
+		font-weight: 700;
 	}
 
 	.cta-button:hover {
@@ -262,4 +262,5 @@
 		text-align: left;
 		margin-top: var(--space-xl);
 	}
+
 </style>

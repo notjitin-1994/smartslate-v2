@@ -37,7 +37,7 @@
 
 		<div class="subsection">
 			<button
-				class="section-header interactive"
+				class="section-header interactive cta-button"
 				class:revealed={revealed.economic}
 				on:click={() => toggle('economic')}
 			>
@@ -69,7 +69,7 @@
 
 		<div class="subsection">
 			<button
-				class="section-header interactive"
+				class="section-header interactive cta-button"
 				class:revealed={revealed.employability}
 				on:click={() => toggle('employability')}
 			>
@@ -101,7 +101,7 @@
 
 		<div class="subsection">
 			<button
-				class="section-header interactive"
+				class="section-header interactive cta-button"
 				class:revealed={revealed.skills}
 				on:click={() => toggle('skills')}
 			>
@@ -129,7 +129,7 @@
 
 		<div class="subsection">
 			<button
-				class="section-header interactive"
+				class="section-header interactive cta-button"
 				class:revealed={revealed.opportunity}
 				on:click={() => toggle('opportunity')}
 			>
@@ -215,6 +215,17 @@
 		color: var(--primary-accent);
 		transition: transform 0.3s ease-in-out;
 		cursor: pointer;
+		animation: pulse-glow 2s infinite ease-in-out;
+	}
+
+	@keyframes pulse-glow {
+		0%,
+		100% {
+			filter: drop-shadow(0 0 4px rgba(167, 218, 219, 0.5));
+		}
+		50% {
+			filter: drop-shadow(0 0 8px rgba(167, 218, 219, 0.9));
+		}
 	}
 
 	.section-header h2 {
@@ -289,5 +300,26 @@
 		to {
 			color: var(--primary-accent);
 		}
+	}
+	.cta-button {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		text-align: center;
+		padding: var(--space-sm) var(--space-lg);
+		background-color: transparent;
+		color: var(--secondary-accent);
+		border: 1px solid var(--secondary-accent);
+		border-radius: var(--radius-md);
+		text-decoration: none;
+		transition: var(--transition-fast);
+		font-weight: 500;
+	}
+
+	.cta-button:hover {
+		background-color: var(--secondary-accent);
+		color: var(--text-primary);
+		border-color: var(--secondary-accent);
 	}
 </style>

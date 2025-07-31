@@ -10,7 +10,7 @@
   let colorsInitialized = false;
 
   // Configurable props for brand colors
-  export const backgroundColor = '#001c33';
+  export let backgroundColor = '#001c33';
   export let particleColor = 'var(--brand-accent-color-2)';
   export let linkColor = 'var(--brand-accent-color-1)';
 
@@ -83,33 +83,33 @@
     }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+  
     // Update and draw balls
     for (const ball of balls) {
-      ball.update();
-      ball.draw();
+    	ball.update();
+    	ball.draw();
     }
-
+  
     // Draw links
     for (let i = 0; i < balls.length; i++) {
-      const ball1 = balls[i];
-      ctx.beginPath();
-      for (let j = i + 1; j < balls.length; j++) {
-        const ball2 = balls[j];
-        const dist = Math.hypot(ball1.x - ball2.x, ball1.y - ball2.y);
-        if (dist < 100) {
-          ctx.strokeStyle = linkColor;
-          ctx.globalAlpha = 1 - dist / 100;
-          ctx.lineWidth = 1.4; // Reduced by 30% from 2
-          ctx.moveTo(ball1.x | 0, ball1.y | 0);
-          ctx.lineTo(ball2.x | 0, ball2.y | 0);
-        }
-      }
-      ctx.stroke();
+    	const ball1 = balls[i];
+    	for (let j = i + 1; j < balls.length; j++) {
+    		const ball2 = balls[j];
+    		const dist = Math.hypot(ball1.x - ball2.x, ball1.y - ball2.y);
+    		if (dist < 100) {
+    			ctx.beginPath();
+    			ctx.strokeStyle = linkColor;
+    			ctx.globalAlpha = 1 - dist / 100;
+    			ctx.lineWidth = 1.4; // Reduced by 30% from 2
+    			ctx.moveTo(ball1.x | 0, ball1.y | 0);
+    			ctx.lineTo(ball2.x | 0, ball2.y | 0);
+    			ctx.stroke();
+    		}
+    	}
     }
-
+  
     animationFrameId = requestAnimationFrame(loop);
-  }
+   }
 
   function handleMouseMove(event: MouseEvent) {
     mouse.x = event.clientX;
