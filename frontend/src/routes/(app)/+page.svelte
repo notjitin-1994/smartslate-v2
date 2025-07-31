@@ -2,40 +2,54 @@
 	import { tick } from 'svelte';
 	import Header from '$lib/components/pages/common/Header.svelte';
 	import Hero from '$lib/components/pages/landing/Hero.svelte';
-	import TalentParadox from '$lib/components/pages/landing/TalentParadox.svelte';
+	import NewTalentParadox from '$lib/components/pages/landing/talent-paradox-reimagined/NewTalentParadox.svelte';
 	import Framework from '$lib/components/pages/landing/Framework.svelte';
 	import ROICalculator from '$lib/components/pages/landing/ROICalculator.svelte';
 	import Partners from '$lib/components/pages/landing/Partners.svelte';
 	import Footer from '$lib/components/pages/common/Footer.svelte';
 
-	let visibleSections = {
-		talentParadox: false,
+	let revealedSections = {
+		paradox: false,
 		framework: false,
-		roiCalculator: false,
+		roi: false,
 		partners: false
 	};
 
-	let talentParadoxSection: HTMLElement;
+	let paradoxSection: HTMLElement;
 	let frameworkSection: HTMLElement;
-	let roiCalculatorSection: HTMLElement;
+	let roiSection: HTMLElement;
 	let partnersSection: HTMLElement;
 
-	async function revealSection(section: keyof typeof visibleSections) {
-		visibleSections[section] = true;
-		visibleSections = visibleSections; // Trigger reactivity
+	async function revealNext(section: keyof typeof revealedSections) {
+		revealedSections[section] = true;
+		await tick(); // Wait for the DOM to update
 
-		// Wait for the DOM to update
-		await tick();
+		let elementToScrollTo;
+		switch (section) {
+			case 'paradox':
+				elementToScrollTo = paradoxSection;
+				break;
+			case 'framework':
+				elementToScrollTo = frameworkSection;
+				break;
+			case 'roi':
+				elementToScrollTo = roiSection;
+				break;
+			case 'partners':
+				elementToScrollTo = partnersSection;
+				break;
+		}
 
-		// Now scroll to the element
-		if (section === 'talentParadox' && talentParadoxSection) {
-			talentParadoxSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-		} else if (section === 'framework' && frameworkSection) {
-			frameworkSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-		} else if (section === 'roiCalculator' && roiCalculatorSection) {
-			roiCalculatorSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-		} else if (section === 'partners' && partnersSection) {
-			partnersSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		if (elementToScrollTo) {
+			const headerHeight = 80; // Approximate height of the sticky header
+			const elementRect = elementToScrollTo.getBoundingClientRect();
+			const elementTop = elementRect.top + window.pageYOffset;
+			const offsetPosition = elementTop - headerHeight;
+
+			window.scrollTo({
+				top: offsetPosition,
+				behavior: 'smooth'
+			});
 		}
 	}
 </script>
@@ -43,27 +57,23 @@
 <Header />
 
 <main id="main-content">
-	<Hero on:revealNext={() => revealSection('talentParadox')} />
-
-	{#if visibleSections.talentParadox}
-		<div bind:this={talentParadoxSection}>
-			<TalentParadox on:revealNext={() => revealSection('framework')} />
+	<Hero on:revealNext={() => revealNext('paradox')} />
+	{#if revealedSections.paradox}
+		<div bind:this={paradoxSection}>
+			<NewTalentParadox on:revealNext={() => revealNext('framework')} />
 		</div>
 	{/if}
-
-	{#if visibleSections.framework}
+	{#if revealedSections.framework}
 		<div bind:this={frameworkSection}>
-			<Framework on:revealNext={() => revealSection('roiCalculator')} />
+			<Framework on:revealNext={() => revealNext('roi')} />
 		</div>
 	{/if}
-
-	{#if visibleSections.roiCalculator}
-		<div bind:this={roiCalculatorSection}>
-			<ROICalculator on:revealNext={() => revealSection('partners')} />
+	{#if revealedSections.roi}
+		<div bind:this={roiSection}>
+			<ROICalculator on:revealNext={() => revealNext('partners')} />
 		</div>
 	{/if}
-
-	{#if visibleSections.partners}
+	{#if revealedSections.partners}
 		<div bind:this={partnersSection}>
 			<Partners />
 		</div>
