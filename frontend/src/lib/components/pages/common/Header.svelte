@@ -102,7 +102,7 @@
 							role="button"
 							tabindex="0"
 						>
-							<div class="user-avatar-button">
+							<div class="user-avatar-button" on:click={toggleUserDropdown}>
 								{#if $authStore.user.photoURL}
 									<img src={$authStore.user.photoURL} alt="User avatar" class="user-avatar" />
 								{:else}
