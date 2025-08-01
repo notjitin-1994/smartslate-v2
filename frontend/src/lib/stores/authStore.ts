@@ -10,7 +10,7 @@ interface AppUser extends User {
 	role: Role;
 }
 
-interface AuthState {
+export interface AuthState {
 	user: AppUser | null;
 	loading: boolean;
 	error: Error | null;
@@ -32,10 +32,7 @@ function createAuthStore() {
 				if (user) {
 					const tokenResult = await user.getIdTokenResult(true); // Force refresh
 					const role = (tokenResult.claims.role as Role) || 'learner';
-					const appUser: AppUser = {
-						...user,
-						role: role
-					};
+					const appUser: AppUser = Object.assign(user, { role });
 					set({ user: appUser, loading: false, error: null, role: role });
 				} else {
 					set({ user: null, loading: false, error: null, role: null });

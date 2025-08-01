@@ -83,7 +83,7 @@
 				<!-- Desktop Nav -->
 				<nav class="desktop-nav">
 					<a href="/products">Products</a>
-					<a href="/difference">The Smartslate Difference</a>
+					<a href="/the-smartslate-difference">The Smartslate Difference</a>
 					<a href="/collaborate">Partner & Collaborate</a>
 				</nav>
 
@@ -172,7 +172,7 @@
 			</div>
 			<nav class="mobile-nav">
 				<a href="/products" on:click={closeMobileMenu}>Products</a>
-				<a href="/difference" on:click={closeMobileMenu}>The Smartslate Difference</a>
+				<a href="/the-smartslate-difference" on:click={closeMobileMenu}>The Smartslate Difference</a>
 				<a href="/collaborate" on:click={closeMobileMenu}>Partner & Collaborate</a>
 			</nav>
 			<div class="mobile-actions">

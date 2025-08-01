@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 	import type { Timestamp } from 'firebase/firestore';
 	import type { Inquiry } from './types';
-	import InquiryModal from './InquiryModal.svelte';
+	import Modal from '$lib/components/common/Modal.svelte';
 
 	type SortableColumns = keyof Inquiry;
 
@@ -143,8 +143,8 @@
 	}
 </script>
 
-<div class="leads-container">
-	<h1 class="page-title">Leads</h1>
+<div class="inquiry-management-container">
+	<h1 class="page-title">Inquiry Management</h1>
 
 	{#if isLoading}
 		<div class="skeleton-table">
@@ -289,10 +289,23 @@
 	{/if}
 </div>
 
-<InquiryModal bind:isOpen={isModalOpen} inquiry={selectedInquiry} />
+{#if selectedInquiry}
+	<Modal bind:isOpen={isModalOpen} title="Inquiry Details">
+		<div class="inquiry-details">
+			<p><strong>Name:</strong> {selectedInquiry.name}</p>
+			<p><strong>Email:</strong> {selectedInquiry.email}</p>
+			<p><strong>Phone:</strong> {selectedInquiry.phone || 'N/A'}</p>
+			<p><strong>Organization:</strong> {selectedInquiry.organization || 'N/A'}</p>
+			<p><strong>Type:</strong> {selectedInquiry.inquiryType}</p>
+			<hr />
+			<p><strong>Message:</strong></p>
+			<p>{selectedInquiry.message}</p>
+		</div>
+	</Modal>
+{/if}
 
 <style>
-	.leads-container {
+	.inquiry-management-container {
 		padding: var(--space-xl);
 		background-color: var(--color-background-secondary);
 		border-radius: var(--radius-lg);
@@ -468,7 +481,7 @@
 		.mobile-only {
 			display: block;
 		}
-		.leads-container {
+		.inquiry-management-container {
 			padding: var(--space-lg);
 		}
 		.page-title {

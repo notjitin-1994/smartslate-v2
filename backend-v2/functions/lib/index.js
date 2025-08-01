@@ -36,17 +36,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onInquiryCreate = exports.createUserDocument = exports.api = void 0;
+exports.onSSAInterestCreate = exports.onInquiryCreate = exports.createUserDocument = exports.handleFormSubmission = exports.api = void 0;
 const admin = __importStar(require("firebase-admin"));
-const functions = __importStar(require("firebase-functions"));
+const https_1 = require("firebase-functions/v2/https");
+const https_2 = require("firebase-functions/v2/https");
+const firestore_1 = require("firebase-functions/v2/firestore");
+const logger = __importStar(require("firebase-functions/logger"));
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 // Initialize Firebase Admin SDK
 admin.initializeApp();
 const app = (0, express_1.default)();
 // --- CORS Configuration ---
-// This is the most critical part. We define a strict whitelist of origins.
-// The `cors` middleware will handle all OPTIONS preflight requests automatically.
 const corsOptions = {
     origin: [
         "http://localhost:5173",
@@ -59,11 +60,8 @@ const corsOptions = {
     exposedHeaders: ["Content-Type"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
 };
-// Apply CORS middleware to all routes
 app.use((0, cors_1.default)(corsOptions));
 // --- Authentication Middleware ---
-// A robust middleware to verify the Firebase ID token and check for admin claims.
-// A robust middleware to verify the Firebase ID token and check for specific roles.
 const authenticateAndAuthorize = (allowedRoles) => async (req, res, next) => {
     const { authorization } = req.headers;
     if (!authorization || !authorization.startsWith("Bearer ")) {
@@ -73,30 +71,89 @@ const authenticateAndAuthorize = (allowedRoles) => async (req, res, next) => {
     try {
         const decodedToken = await admin.auth().verifyIdToken(idToken);
         const userRole = decodedToken.role;
-        // Diagnostic logging
-        functions.logger.info(`Authenticating request for path: ${req.path}`, {
-            userEmail: decodedToken.email,
-            userRole: userRole,
-            allowedRoles: allowedRoles,
-            hasPermission: userRole && allowedRoles.includes(userRole),
-        });
         if (!userRole || !allowedRoles.includes(userRole)) {
-            functions.logger.warn(`Authorization failed for ${decodedToken.email}. Role '${userRole}' is not in allowed roles [${allowedRoles.join(", ")}].`);
             return res.status(403).send("Permission Denied: Insufficient role.");
         }
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        req.user = decodedToken; // Attach user info to the request object
+        req.user = decodedToken;
         return next();
     }
     catch (error) {
-        functions.logger.error("Error while verifying token:", error);
+        logger.error("Error while verifying token:", error);
         return res.status(403).send("Unauthorized: Invalid token.");
     }
 };
 // --- API Routes ---
-// All admin routes are protected by the authentication middleware.
 const adminRouter = express_1.default.Router();
+adminRouter.get("/stats", authenticateAndAuthorize(["smartslateAdmin", "smartslateManager"]), async (_req, res) => {
+    try {
+        const listUsersResult = await admin.auth().listUsers(1000);
+        const totalUsers = listUsersResult.users.length;
+        const coursesSnapshot = await admin
+            .firestore()
+            .collection("courses")
+            .get();
+        const totalCourses = coursesSnapshot.size;
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const inquiriesSnapshot = await admin
+            .firestore()
+            .collection("inquiries")
+            .where("createdAt", ">=", startOfMonth)
+            .get();
+        const newInquiriesThisMonth = inquiriesSnapshot.size;
+        return res.status(200).json({
+            totalUsers,
+            totalCourses,
+            newInquiriesThisMonth,
+        });
+    }
+    catch (error) {
+        logger.error("Error fetching dashboard stats:", error);
+        return res
+            .status(500)
+            .json({ error: "An error occurred while fetching dashboard stats." });
+    }
+});
+adminRouter.get("/stats/user-signups", authenticateAndAuthorize(["smartslateAdmin", "smartslateManager"]), async (_req, res) => {
+    try {
+        const now = new Date();
+        const thirtyDaysAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30);
+        const usersSnapshot = await admin
+            .firestore()
+            .collection("users")
+            .where("createdAt", ">=", thirtyDaysAgo)
+            .get();
+        const dailySignups = new Map();
+        for (let i = 0; i < 30; i++) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            const dateString = d.toISOString().split("T")[0];
+            dailySignups.set(dateString, 0);
+        }
+        usersSnapshot.forEach((doc) => {
+            var _a;
+            const user = doc.data();
+            if ((_a = user.createdAt) === null || _a === void 0 ? void 0 : _a.toDate) {
+                const creationDate = user.createdAt.toDate();
+                const dateString = creationDate.toISOString().split("T")[0];
+                if (dailySignups.has(dateString)) {
+                    dailySignups.set(dateString, dailySignups.get(dateString) + 1);
+                }
+            }
+        });
+        const chartData = Array.from(dailySignups.entries())
+            .map(([date, count]) => ({ date, count }))
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        return res.status(200).json(chartData);
+    }
+    catch (error) {
+        logger.error("Error fetching user signup stats:", error);
+        return res
+            .status(500)
+            .json({ error: "An error occurred while fetching user signup stats." });
+    }
+});
 adminRouter.get("/users", authenticateAndAuthorize([
     "smartslateAdmin",
     "smartslateManager",
@@ -118,321 +175,65 @@ adminRouter.get("/users", authenticateAndAuthorize([
         return res.status(200).json({ users });
     }
     catch (error) {
-        functions.logger.error("Error listing users:", error);
+        logger.error("Error listing users:", error);
         return res
             .status(500)
             .json({ error: "An error occurred while listing users." });
     }
 });
-adminRouter.get("/user/:uid", authenticateAndAuthorize(["smartslateAdmin", "smartslateManager"]), async (req, res) => {
-    const { uid } = req.params;
-    if (!uid) {
-        return res.status(400).json({ error: "UID is required." });
-    }
-    try {
-        const userRecord = await admin.auth().getUser(uid);
-        const user = {
-            uid: userRecord.uid,
-            email: userRecord.email,
-            displayName: userRecord.displayName,
-            photoURL: userRecord.photoURL,
-            disabled: userRecord.disabled,
-            metadata: {
-                creationTime: userRecord.metadata.creationTime,
-                lastSignInTime: userRecord.metadata.lastSignInTime,
-            },
-            customClaims: userRecord.customClaims,
-        };
-        return res.status(200).json({ user });
-    }
-    catch (error) {
-        functions.logger.error(`Error fetching user ${uid}:`, error);
-        if (error.code === "auth/user-not-found") {
-            return res.status(404).json({ error: "User not found." });
-        }
-        return res
-            .status(500)
-            .json({ error: "An error occurred while fetching user data." });
-    }
-});
-// This new endpoint allows a smartslateAdmin to set a role for any user.
-adminRouter.post("/setUserRole", authenticateAndAuthorize(["smartslateAdmin"]), async (req, res) => {
-    const { uid, role } = req.body;
-    const validRoles = [
-        "smartslateAdmin",
-        "smartslateManager",
-        "smartslateClientManager",
-        "learner",
-    ];
-    if (!uid || !role) {
-        return res.status(400).json({ error: "UID and role are required." });
-    }
-    if (!validRoles.includes(role)) {
-        return res.status(400).json({ error: "Invalid role specified." });
-    }
-    try {
-        // 1. Set the custom claim on the Firebase Auth user.
-        await admin.auth().setCustomUserClaims(uid, { role: role });
-        // 2. Update the role in the user's Firestore document.
-        const userRef = admin.firestore().collection("users").doc(uid);
-        await userRef.set({ role: role }, { merge: true });
-        return res
-            .status(200)
-            .json({ message: `Successfully set role '${role}' for user ${uid}` });
-    }
-    catch (error) {
-        functions.logger.error(`Error setting role for user ${uid}:`, error);
-        return res
-            .status(500)
-            .json({ error: "An error occurred while setting the user role." });
-    }
-});
-adminRouter.post("/deleteUser", authenticateAndAuthorize(["smartslateAdmin"]), async (req, res) => {
-    const { uid } = req.body;
-    if (!uid) {
-        return res.status(400).json({ error: "UID is required." });
-    }
-    try {
-        await admin.auth().deleteUser(uid);
-        return res
-            .status(200)
-            .json({ message: `Successfully deleted user ${uid}` });
-    }
-    catch (error) {
-        functions.logger.error(`Error deleting user ${uid}:`, error);
-        return res
-            .status(500)
-            .json({ error: "An error occurred while deleting the user." });
-    }
-});
-adminRouter.post("/toggleUserStatus", authenticateAndAuthorize(["smartslateAdmin"]), async (req, res) => {
-    const { uid, disabled } = req.body;
-    if (!uid || typeof disabled !== "boolean") {
-        return res
-            .status(400)
-            .json({ error: "UID and disabled status are required." });
-    }
-    try {
-        await admin.auth().updateUser(uid, { disabled });
-        return res.status(200).json({
-            message: `Successfully ${disabled ? "disabled" : "enabled"} user ${uid}`,
-        });
-    }
-    catch (error) {
-        functions.logger.error(`Error updating user ${uid}:`, error);
-        return res
-            .status(500)
-            .json({ error: "An error occurred while updating the user." });
-    }
-});
-adminRouter.post("/impersonateUser", authenticateAndAuthorize(["smartslateAdmin"]), async (req, res) => {
-    var _a;
-    const { uid } = req.body;
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const adminUid = req.user.uid;
-    if (!uid) {
-        return res.status(400).json({ error: "UID is required." });
-    }
-    try {
-        // --- Security Check ---
-        // Prevent an admin from impersonating another admin.
-        const userToImpersonate = await admin.auth().getUser(uid);
-        if (((_a = userToImpersonate.customClaims) === null || _a === void 0 ? void 0 : _a.role) === "smartslateAdmin") {
-            functions.logger.warn(`Attempt to impersonate an admin blocked. Admin: ${adminUid}, Target: ${uid}`);
-            return res.status(403).json({
-                error: "Permission Denied: Cannot impersonate another admin.",
-            });
-        }
-        // --- Token Generation ---
-        // Generate a custom token for the target user. This token is short-lived by default.
-        const customToken = await admin.auth().createCustomToken(uid);
-        functions.logger.info(`Admin ${adminUid} is impersonating user ${uid}.`);
-        return res.status(200).json({ customToken });
-    }
-    catch (error) {
-        functions.logger.error(`Error during impersonation for user ${uid}:`, error);
-        if (error.code === "auth/user-not-found") {
-            return res
-                .status(404)
-                .json({ error: "User to impersonate not found." });
-        }
-        return res
-            .status(500)
-            .json({ error: "An error occurred during impersonation." });
-    }
-});
-// --- Course Management Endpoints ---
-// GET /api/admin/courses
-// Fetches a list of all available courses.
-// For now, this uses dummy data. In a real implementation, this would fetch from a 'courses' collection in Firestore.
-adminRouter.get("/courses", authenticateAndAuthorize(["smartslateAdmin", "smartslateManager"]), async (req, res) => {
-    try {
-        // DUMMY DATA: Replace with actual Firestore query
-        const courses = [
-            { id: "course-101", name: "Introduction to SvelteKit" },
-            { id: "course-102", name: "Advanced Firebase" },
-            { id: "course-103", name: "UI/UX Design Principles" },
-            { id: "course-104", name: "DevOps for Web Developers" },
-        ];
-        return res.status(200).json({ courses });
-    }
-    catch (error) {
-        functions.logger.error("Error fetching courses:", error);
-        return res
-            .status(500)
-            .json({ error: "An error occurred while fetching courses." });
-    }
-});
-// GET /api/admin/user/:uid/enrollments
-// Fetches the course enrollments for a specific user.
-adminRouter.get("/user/:uid/enrollments", authenticateAndAuthorize(["smartslateAdmin", "smartslateManager"]), async (req, res) => {
-    const { uid } = req.params;
-    if (!uid) {
-        return res.status(400).json({ error: "UID is required." });
-    }
-    try {
-        const userDoc = await admin
-            .firestore()
-            .collection("users")
-            .doc(uid)
-            .get();
-        if (!userDoc.exists) {
-            return res.status(404).json({ error: "User not found." });
-        }
-        const userData = userDoc.data();
-        const enrollments = (userData === null || userData === void 0 ? void 0 : userData.enrollments) || []; // Default to empty array if not present
-        return res.status(200).json({ enrollments });
-    }
-    catch (error) {
-        functions.logger.error(`Error fetching enrollments for user ${uid}:`, error);
-        return res
-            .status(500)
-            .json({ error: "An error occurred while fetching user enrollments." });
-    }
-});
-// POST /api/admin/user/:uid/enrollments
-// Updates the course enrollments for a specific user.
-adminRouter.post("/user/:uid/enrollments", authenticateAndAuthorize(["smartslateAdmin", "smartslateManager"]), async (req, res) => {
-    const { uid } = req.params;
-    const { enrollments } = req.body; // Expects an array of course IDs
-    if (!uid) {
-        return res.status(400).json({ error: "UID is required." });
-    }
-    if (!Array.isArray(enrollments)) {
-        return res
-            .status(400)
-            .json({ error: "Enrollments must be an array of course IDs." });
-    }
-    try {
-        const userRef = admin.firestore().collection("users").doc(uid);
-        await userRef.update({ enrollments });
-        return res
-            .status(200)
-            .json({ message: `Successfully updated enrollments for user ${uid}` });
-    }
-    catch (error) {
-        functions.logger.error(`Error updating enrollments for user ${uid}:`, error);
-        return res
-            .status(500)
-            .json({ error: "An error occurred while updating enrollments." });
-    }
-});
-// --- Inquiry Management Endpoints ---
-// GET /api/admin/inquiries
-// Fetches a list of all submitted inquiries.
-adminRouter.get("/inquiries", authenticateAndAuthorize(["smartslateAdmin", "smartslateManager"]), async (req, res) => {
-    try {
-        const inquiriesSnapshot = await admin
-            .firestore()
-            .collection("inquiries")
-            .orderBy("createdAt", "desc")
-            .get();
-        const inquiries = inquiriesSnapshot.docs.map((doc) => (Object.assign({ id: doc.id }, doc.data())));
-        return res.status(200).json({ inquiries });
-    }
-    catch (error) {
-        functions.logger.error("Error fetching inquiries:", error);
-        return res
-            .status(500)
-            .json({ error: "An error occurred while fetching inquiries." });
-    }
-});
-// Mount the admin router under the /admin path
 app.use("/admin", adminRouter);
-// --- Export the Express app as a single Cloud Function ---
-// This is a more scalable pattern than exporting multiple functions.
-exports.api = functions.https.onRequest(app);
-// --- Firestore Triggers ---
-// This function triggers when a new user is created in Firebase Authentication.
-// It creates a corresponding user document in Firestore with a default 'learner' role.
-exports.createUserDocument = functions.auth
-    .user()
-    .onCreate(async (user) => {
-    const { uid, email, displayName } = user;
-    const userRef = admin.firestore().collection("users").doc(uid);
-    const newUser = {
-        uid,
-        email,
-        displayName,
-        role: "learner", // Default role for new users
+exports.api = (0, https_1.onRequest)(app);
+exports.handleFormSubmission = (0, https_2.onCall)(async (request) => {
+    var _a;
+    const { formData, type } = request.data;
+    if (!type || !formData) {
+        throw new https_2.HttpsError("invalid-argument", "The function must be called with 'type' and 'formData' arguments.");
+    }
+    const uid = ((_a = request.auth) === null || _a === void 0 ? void 0 : _a.uid) || "anonymous";
+    const inquiry = {
+        name: formData.name,
+        email: formData.email,
+        type: type,
+        userId: uid,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
     };
-    try {
-        await userRef.set(newUser);
-        functions.logger.info(`User document created for ${uid}`);
-        // Also set the initial role as a custom claim
-        await admin.auth().setCustomUserClaims(uid, { role: "learner" });
-        functions.logger.info(`Custom claim set for ${uid}`);
-    }
-    catch (error) {
-        functions.logger.error(`Error creating user document for ${uid}:`, error);
-    }
+    await admin.firestore().collection("inquiries").add(inquiry);
+    return { success: true };
 });
-// --- Inquiry Creation Trigger ---
-// This function triggers when a new document is created in the 'inquiries' collection.
-// It triggers when a new inquiry is created, then creates a corresponding
-// email document in the 'mail' collection. The "Trigger Email from Firestore"
-// extension then picks up this document and sends the email.
-exports.onInquiryCreate = functions.firestore
-    .document("inquiries/{inquiryId}")
-    .onCreate(async (snap) => {
-    const inquiryData = snap.data();
-    if (!inquiryData) {
-        functions.logger.error(`No data associated with the inquiry document: ${snap.id}`);
+var v1_functions_1 = require("./v1-functions");
+Object.defineProperty(exports, "createUserDocument", { enumerable: true, get: function () { return v1_functions_1.createUserDocument; } });
+exports.onInquiryCreate = (0, firestore_1.onDocumentCreated)("inquiries/{inquiryId}", async (event) => {
+    const snap = event.data;
+    if (!snap) {
+        logger.error("No data associated with the event");
         return;
     }
-    // The payload for the email document.
-    // The 'to' and 'cc' fields are arrays of email addresses.
+    const inquiryData = snap.data();
     const mailPayload = {
         to: ["sanam@smartslate.io"],
         cc: ["jitin@smartslate.io"],
         message: {
             subject: `🚀 New SmartSlate Inquiry: ${inquiryData.name}`,
-            html: `
-          <h1>New Contact Inquiry Received</h1>
-          <p>A new inquiry has been submitted via the website contact form.</p>
-          <ul>
-            <li><strong>Name:</strong> ${inquiryData.name}</li>
-            <li><strong>Email:</strong> ${inquiryData.email}</li>
-            <li><strong>Company:</strong> ${inquiryData.company || "Not provided"}</li>
-            <li><strong>Inquiry Type:</strong> ${inquiryData.inquiryType}</li>
-          </ul>
-          <hr>
-          <h3>Message:</h3>
-          <p>${inquiryData.message}</p>
-          <br>
-          <p><em>This is an automated notification.</em></p>
-        `,
+            html: `...`,
         },
     };
-    try {
-        // Create a new document in the 'mail' collection.
-        await admin.firestore().collection("mail").add(mailPayload);
-        functions.logger.info(`Successfully queued email for inquiry: ${snap.id}`);
+    await admin.firestore().collection("mail").add(mailPayload);
+});
+exports.onSSAInterestCreate = (0, firestore_1.onDocumentCreated)("ssa_interest/{interestId}", async (event) => {
+    const snap = event.data;
+    if (!snap) {
+        logger.error("No data associated with the event");
+        return;
     }
-    catch (error) {
-        functions.logger.error(`Error queuing email for inquiry ${snap.id}:`, error);
-    }
+    const interestData = snap.data();
+    const mailPayload = {
+        to: ["sanam@smartslate.io"],
+        cc: ["jitin@smartslate.io"],
+        message: {
+            subject: `🔥 New SSA Lead: ${interestData.name} from ${interestData.organization}`,
+            html: `...`,
+        },
+    };
+    await admin.firestore().collection("mail").add(mailPayload);
 });
 //# sourceMappingURL=index.js.map

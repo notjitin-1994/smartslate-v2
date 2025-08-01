@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import Modal from '$lib/components/common/Modal.svelte';
 
 	export let isOpen = false;
 	export let title = 'Are you sure?';
@@ -16,40 +17,64 @@
 	}
 </script>
 
-{#if isOpen}
-	<div
-		class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-		on:click={cancel}
-		on:keydown
-	>
-		<div
-			class="transform rounded-lg bg-white p-6 shadow-xl transition-all sm:w-full sm:max-w-lg"
-			role="dialog"
-			aria-modal="true"
-			aria-labelledby="modal-title"
-			on:click|stopPropagation
-			on:keydown
-		>
-			<h3 class="text-lg font-medium leading-6 text-gray-900" id="modal-title">{title}</h3>
-			<div class="mt-2">
-				<p class="text-sm text-gray-500">{message}</p>
-			</div>
-			<div class="mt-4 flex justify-end space-x-2">
-				<button
-					type="button"
-					class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm"
-					on:click={cancel}
-				>
-					Cancel
-				</button>
-				<button
-					type="button"
-					class="inline-flex justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:text-sm"
-					on:click={confirm}
-				>
-					Confirm
-				</button>
-			</div>
-		</div>
+<Modal {isOpen} on:close={cancel}>
+	<h3 class="title">{title}</h3>
+	<p class="message">{message}</p>
+
+	<div slot="footer" class="footer-actions">
+		<button type="button" class="btn-secondary" on:click={cancel}>
+			Cancel
+		</button>
+		<button type="button" class="btn-danger" on:click={confirm}>
+			Confirm
+		</button>
 	</div>
-{/if}
+</Modal>
+
+<style>
+	.title {
+		font-size: 1.25rem;
+		font-weight: 600;
+		color: var(--color-text-primary);
+	}
+	.message {
+		margin-top: 0.5rem;
+		color: var(--color-text-secondary);
+	}
+	.footer-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: 0.5rem;
+		margin-top: 1.5rem;
+	}
+
+	/* Basic Button Styles (can be extracted to a global stylesheet) */
+	.btn-secondary,
+	.btn-danger {
+		padding: 0.5rem 1rem;
+		border-radius: var(--radius-md);
+		font-weight: 500;
+		border: 1px solid transparent;
+		cursor: pointer;
+		transition: background-color 0.2s;
+	}
+
+	.btn-secondary {
+		background-color: var(--color-background-secondary);
+		color: var(--color-text-primary);
+		border-color: var(--color-border);
+	}
+
+	.btn-secondary:hover {
+		background-color: var(--color-background-tertiary);
+	}
+
+	.btn-danger {
+		background-color: #dc2626; /* red-600 */
+		color: white;
+	}
+
+	.btn-danger:hover {
+		background-color: #b91c1c; /* red-700 */
+	}
+</style>

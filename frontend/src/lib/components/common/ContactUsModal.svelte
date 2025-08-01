@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { contactUsModalStore } from '$lib/stores/contactUsModalStore';
-	import { fly, fade } from 'svelte/transition';
-	import { quintOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
-	import { auth, addInquiry } from '$lib/services/firebase';
+	import { auth, functions } from '$lib/services/firebase';
+	import { httpsCallable } from 'firebase/functions';
 	import { toastStore } from '$lib/stores/toastStore';
+	import Modal from '$lib/components/common/Modal.svelte';
 
 	// Form State
 	let name = '';
@@ -30,15 +30,16 @@
 		error = null;
 
 		try {
-			const currentUser = auth.currentUser;
-			await addInquiry({
-				name,
-				email,
-				phone,
-				organization,
-				message,
-				inquiryType,
-				userId: currentUser?.uid
+			const handleFormSubmission = httpsCallable(functions, 'handleFormSubmission');
+			await handleFormSubmission({
+				type: 'contact',
+				formData: {
+					name,
+					email,
+					phone,
+					organization,
+					message
+				}
 			});
 
 			toastStore.add('Your message has been sent successfully!', 'success');
@@ -53,189 +54,109 @@
 	}
 
 	onMount(() => {
-		const handleKeydown = (e: KeyboardEvent) => {
-			if (e.key === 'Escape') {
-				closeModal();
-			}
-		};
-		window.addEventListener('keydown', handleKeydown);
-
 		// Pre-fill user data if available
 		const currentUser = auth.currentUser;
 		if (currentUser) {
 			name = currentUser.displayName || '';
 			email = currentUser.email || '';
 		}
-
-		return () => {
-			window.removeEventListener('keydown', handleKeydown);
-		};
 	});
 </script>
 
-<div class="auth-modal-backdrop" on:click={closeModal} transition:fade={{ duration: 200 }}>
-	<div
-		class="auth-modal-container"
-		on:click|stopPropagation
-		transition:fly={{ y: 20, duration: 300, easing: quintOut }}
-	>
-		<button class="close-button" on:click={closeModal} aria-label="Close modal">
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				width="24"
-				height="24"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg
-			>
-		</button>
+<Modal isOpen={$contactUsModalStore.isOpen} on:close={closeModal} variant="dark">
+	<div class="form-container">
+		<h2 class="title">Contact <span style="color: var(--primary-accent);">Us</span></h2>
+		<p class="subtitle">
+			We're here to help. Inquiries for
+			<span class="inquiry-type">{inquiryType || 'General'}</span>
+		</p>
 
-		<div class="auth-modal-content">
-			<div class="form-container">
-				<h2 class="title">Contact <span style="color: var(--primary-accent);">Us</span></h2>
-				<p class="subtitle">
-					We're here to help. Inquiries for
-					<span class="inquiry-type">{inquiryType || 'General'}</span>
-				</p>
-
-				<form class="auth-form" on:submit={handleSubmit}>
-					<div class="input-group">
-						<label for="name">Full Name</label>
-						<input
-							type="text"
-							id="name"
-							placeholder="Your Name"
-							bind:value={name}
-							required
-							disabled={loading}
-						/>
-					</div>
-					<div class="input-group">
-						<label for="email">Email Address</label>
-						<input
-							type="email"
-							id="email"
-							placeholder="you@example.com"
-							bind:value={email}
-							required
-							disabled={loading}
-						/>
-					</div>
-					<div class="input-group">
-						<label for="phone">Phone Number</label>
-						<input
-							type="tel"
-							id="phone"
-							placeholder="Your Phone Number"
-							bind:value={phone}
-							disabled={loading}
-						/>
-					</div>
-					<div class="input-group">
-						<label for="organization">Organization</label>
-						<input
-							type="text"
-							id="organization"
-							placeholder="Your Organization"
-							bind:value={organization}
-							disabled={loading}
-						/>
-					</div>
-					<div class="input-group">
-						<label for="message">Message</label>
-						<textarea
-							id="message"
-							placeholder="How can we help you?"
-							bind:value={message}
-							required
-							disabled={loading}
-							rows="4"
-						></textarea>
-					</div>
-
-					{#if error}
-						<p class="error-message">{error}</p>
-					{/if}
-					<button type="submit" class="btn-primary" disabled={loading}>
-						{#if loading}
-							<span class="loader"></span> Submitting...
-						{:else}
-							Submit Inquiry
-						{/if}
-					</button>
-				</form>
+		<form class="auth-form" on:submit={handleSubmit}>
+			<div class="input-group">
+				<label for="name">Full Name</label>
+				<input
+					type="text"
+					id="name"
+					placeholder="Your Name"
+					bind:value={name}
+					required
+					disabled={loading}
+				/>
 			</div>
-		</div>
+			<div class="input-group">
+				<label for="email">Email Address</label>
+				<input
+					type="email"
+					id="email"
+					placeholder="you@example.com"
+					bind:value={email}
+					required
+					disabled={loading}
+				/>
+			</div>
+			<div class="input-group">
+				<label for="phone">Phone Number</label>
+				<input
+					type="tel"
+					id="phone"
+					placeholder="Your Phone Number"
+					bind:value={phone}
+					disabled={loading}
+				/>
+			</div>
+			<div class="input-group">
+				<label for="organization">Organization</label>
+				<input
+					type="text"
+					id="organization"
+					placeholder="Your Organization"
+					bind:value={organization}
+					disabled={loading}
+				/>
+			</div>
+			<div class="input-group">
+				<label for="message">Message</label>
+				<textarea
+					id="message"
+					placeholder="How can we help you?"
+					bind:value={message}
+					required
+					disabled={loading}
+					rows="4"
+				></textarea>
+			</div>
+
+			{#if error}
+				<p class="error-message">{error}</p>
+			{/if}
+			<button type="submit" class="btn-primary" disabled={loading}>
+				{#if loading}
+					<span class="loader"></span> Submitting...
+				{:else}
+					Submit Inquiry
+				{/if}
+			</button>
+		</form>
 	</div>
-</div>
+</Modal>
 
 <style>
-	.auth-modal-backdrop {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background-color: rgba(0, 0, 0, 0.5);
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		z-index: 1000;
-		padding: var(--space-md);
-	}
-
-	.auth-modal-container {
-		background-color: #1a202c;
-		color: var(--text-primary);
-		border-radius: var(--radius-lg);
-		padding: var(--space-xl);
-		width: 100%;
-		max-width: 480px;
-		position: relative;
-		box-shadow: var(--shadow-lg);
-		border: var(--border-subtle);
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-lg);
-	}
-
-	.close-button {
-		position: absolute;
-		top: var(--space-md);
-		right: var(--space-md);
-		background: transparent;
-		border: none;
-		color: var(--text-secondary);
-		cursor: pointer;
-		padding: var(--space-xs);
-		line-height: 0;
-	}
-
-	.close-button:hover {
-		color: var(--text-primary);
-	}
-
-	.auth-modal-content {
-		text-align: center;
-	}
-
 	.form-container {
 		width: 100%;
+		color: var(--text-primary);
 	}
 
 	.title {
 		font-size: 1.75rem;
 		font-weight: 600;
 		margin-bottom: var(--space-sm);
+		text-align: center;
 	}
 
 	.subtitle {
 		color: var(--text-secondary);
 		margin-bottom: var(--space-xl);
+		text-align: center;
 	}
 
 	.inquiry-type {

@@ -138,9 +138,9 @@
 			allUsers = allUsers.map((u) =>
 				u.uid === userId ? { ...u, customClaims: { ...u.customClaims, role: newRole } } : u
 			);
-			toastStore.add(`User role successfully updated.`, 'success');
+			toastStore.add(`User role successfully updated to ${newRole}.`, 'success');
 		} catch (err: any) {
-			toastStore.add(`Error: ${err.message}`, 'error');
+			toastStore.add(`Error setting role: ${err.message}`, 'error');
 		}
 	}
 
@@ -155,9 +155,9 @@
 		try {
 			await callAdminFunction('deleteUser', 'POST', { uid: userId });
 			allUsers = allUsers.filter((u) => u.uid !== userId);
-			toastStore.add(`User ${userName} successfully deleted.`, 'success');
+			toastStore.add(`User "${userName}" successfully deleted.`, 'success');
 		} catch (err: any) {
-			toastStore.add(`Error: ${err.message}`, 'error');
+			toastStore.add(`Error deleting user: ${err.message}`, 'error');
 		} finally {
 			isModalOpen = false;
 			userToDelete = null;

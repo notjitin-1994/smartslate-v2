@@ -40,32 +40,3 @@ export { signInWithCustomToken };
 
 // --- Firestore Functions ---
 
-export interface InquiryData {
-	name: string;
-	email: string;
-	phone?: string;
-	organization?: string;
-	message: string;
-	inquiryType: string | null;
-	userId?: string; // Optional: if the user is logged in
-}
-
-/**
- * Saves a new inquiry document to the 'inquiries' collection in Firestore.
- * @param data - The inquiry data to save.
- */
-export const addInquiry = async (data: InquiryData) => {
-	try {
-		const inquiryCollection = collection(db, 'inquiries');
-		const inquiryData = {
-			...data,
-			userId: data.userId || 'anonymous', // Use 'anonymous' if userId is undefined
-			createdAt: serverTimestamp()
-		};
-		await addDoc(inquiryCollection, inquiryData);
-	} catch (error) {
-		console.error('Error adding inquiry to Firestore: ', error);
-		// Re-throw the error to be handled by the calling function
-		throw new Error('Failed to submit inquiry.');
-	}
-};
