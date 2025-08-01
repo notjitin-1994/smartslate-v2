@@ -4,11 +4,11 @@
 
 <footer>
 	<div class="logo-wrapper">
-		<img src={logo} alt="SmartSlate Logo" class="footer-logo" />
+		<img src={logo} alt="Smartslate Logo" class="footer-logo" />
 	</div>
 	<div class="footer-text">
 		<p class="tagline">Revolutionizing the way the World learns.</p>
-		<p class="copyright">© 2025 SmartSlate. All rights reserved.</p>
+		<p class="copyright">© 2025 Smartslate. All rights reserved.</p>
 	</div>
 </footer>
 

@@ -12,6 +12,8 @@
 	import { fade } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	export let data;
+	import Header from '$lib/components/pages/common/Header.svelte';
+	import Footer from '$lib/components/pages/common/Footer.svelte';
 
 	let isModalOpen = false;
 	let isMobileMenuOpen = false;
@@ -40,14 +42,19 @@
 	class:modal-open={isModalOpen || isSolaraModalOpen || isContactUsModalOpen}
 	class:menu-open={isMobileMenuOpen}
 >
-	{#key data.pathname}
-		<div
-			in:fade={{ duration: 300, delay: 300, easing: quintOut }}
-			out:fade={{ duration: 300, easing: quintOut }}
-		>
-			<slot />
-		</div>
-	{/key}
+	<Header />
+	<main id="main-content">
+		{#key data.pathname}
+			<div
+				in:fade={{ duration: 300, delay: 300, easing: quintOut }}
+				out:fade={{ duration: 300, easing: quintOut }}
+				class="content-wrapper"
+			>
+				<slot />
+			</div>
+		{/key}
+	</main>
+	<Footer />
 </div>
 
 {#if isModalOpen}
@@ -65,5 +72,9 @@
 		filter: blur(5px);
 		pointer-events: none;
 		user-select: none;
+	}
+
+	.content-wrapper {
+		padding-top: var(--space-xxl);
 	}
 </style>

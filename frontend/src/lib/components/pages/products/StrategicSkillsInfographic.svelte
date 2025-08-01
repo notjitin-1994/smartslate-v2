@@ -26,19 +26,22 @@
 
 	const features = [
 		{
-			icon: '🛠️',
-			title: 'Fully Customized Content',
-			description: 'Built from the ground up for your needs.'
+			icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>`,
+			title: 'Signature Content Creation',
+			description:
+				'We build your programs from the ground up. Every module, case study, and assessment is crafted to speak your internal language and solve your specific challenges, ensuring seamless adoption and relevance.'
 		},
 		{
-			icon: '🔒',
-			title: 'Exclusive & Private',
-			description: 'Courses are not publicly available and belong to the client.'
+			icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.286zm0 13.036h.008v.008h-.008v-.008z" /></svg>`,
+			title: 'Your Intellectual Property, Guaranteed',
+			description:
+				'Your custom curriculum is yours alone. It remains a confidential, competitive asset designed exclusively for your teams, never to be shared or resold.'
 		},
 		{
-			icon: '📈',
-			title: 'Targeted Skill Development',
-			description: 'Directly addresses identified skill gaps within an organization.'
+			icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" /></svg>`,
+			title: 'Precision Skill Enhancement',
+			description:
+				'We deliver laser-focused training that targets your most critical skill gaps. This ensures maximum impact on performance, eliminates wasted training spend, and delivers a clear return on your investment.'
 		}
 	];
 </script>
@@ -57,7 +60,7 @@
 				out:fade
 			>
 				<div class="icon">
-					{feature.icon}
+					{@html feature.icon}
 				</div>
 				<h3 class="title">{feature.title}</h3>
 				<p class="description">{feature.description}</p>
@@ -123,9 +126,14 @@
 	}
 
 	.icon {
-		font-size: 2.5rem;
 		margin-bottom: 1.5rem;
 		opacity: 0.9;
+		color: var(--text-secondary);
+	}
+
+	.icon :global(svg) {
+		width: 40px;
+		height: 40px;
 	}
 
 	.title {

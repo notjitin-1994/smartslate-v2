@@ -207,7 +207,7 @@
 						<h2 class="title">
 							Create your <span style="color: var(--primary-accent);">Account</span>
 						</h2>
-						<p class="subtitle">Get started with SmartSlate</p>
+						<p class="subtitle">Get started with Smartslate</p>
 
 						<form class="auth-form" on:submit={handleSignUp}>
 							<div class="input-group">

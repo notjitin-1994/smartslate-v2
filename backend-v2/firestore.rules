@@ -20,5 +20,11 @@ service cloud.firestore {
       allow create: if true;
       allow read, update, delete: if request.auth != null && request.auth.token.admin == true;
     }
+
+    // Allow anyone to submit their interest in Strategic Skills Architecture
+    match /ssa_interest/{interestId} {
+      allow create: if true;
+      allow read, update, delete: if request.auth != null && request.auth.token.admin == true;
+    }
   }
 }

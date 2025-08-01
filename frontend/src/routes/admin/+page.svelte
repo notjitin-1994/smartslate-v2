@@ -6,7 +6,7 @@
 <div class="dashboard-container">
 	<h1 class="dashboard-title">Admin Dashboard</h1>
 	<p class="dashboard-welcome">
-		Welcome to the SmartSlate Admin Panel. Use the sidebar to navigate through the management
+		Welcome to the Smartslate Admin Panel. Use the sidebar to navigate through the management
 		sections.
 	</p>
 </div>

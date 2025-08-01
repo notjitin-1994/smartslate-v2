@@ -8,6 +8,7 @@
 	export let tagline: string;
 	export let description: string;
 	export let features: { icon: string; text: string }[];
+	export let oneLinerFeatures: { icon: string; text: string }[] | undefined = undefined;
 	export let cta: { text: string; link?: string; icon?: string };
 	export let secondaryCta: { text: string; link: string } | undefined = undefined;
 	export let reverse = false;
@@ -26,15 +27,26 @@
 		</p>
 	</div>
 
-	<dl class="features">
-		{#each features as feature}
-			<div class="feature" transition:fade>
-				<div class="icon-wrapper">
-					{@html feature.icon}
+	<dl class="features" class:one-liner-features={oneLinerFeatures}>
+		{#if oneLinerFeatures}
+			{#each oneLinerFeatures as feature}
+				<div class="feature" transition:fade>
+					<div class="icon-wrapper">
+						{@html feature.icon}
+					</div>
+					<p>{@html feature.text}</p>
 				</div>
-				<p>{@html feature.text}</p>
-			</div>
-		{/each}
+			{/each}
+		{:else}
+			{#each features as feature}
+				<div class="feature" transition:fade>
+					<div class="icon-wrapper">
+						{@html feature.icon}
+					</div>
+					<p>{@html feature.text}</p>
+				</div>
+			{/each}
+		{/if}
 	</dl>
 
 	<div class="cta-wrapper">
@@ -137,6 +149,15 @@
 		gap: var(--space-lg);
 	}
 
+	.one-liner-features .feature {
+		align-items: center;
+	}
+
+	.one-liner-features .feature p {
+		font-size: 0.9rem;
+		line-height: 1.4;
+	}
+
 	.feature {
 		display: flex;
 		align-items: center;
@@ -203,6 +224,17 @@
 
 	.arrow :global(.static-icon) {
 		animation: none;
+	}
+
+	.arrow :global(.gear-icon) {
+		transition: transform 0.3s ease, fill 0.3s ease, stroke 0.3s ease;
+	}
+
+	.btn:hover .arrow :global(.gear-icon),
+	.btn:active .arrow :global(.gear-icon) {
+		transform: scale(1.1);
+		stroke: #ffc107;
+		filter: drop-shadow(0 0 5px rgba(255, 193, 7, 0.7));
 	}
 
 	.arrow :global(.heart-icon) {
@@ -278,11 +310,8 @@
 			grid-template-areas:
 				'details-main'
 				'visual'
+				'features'
 				'cta-wrapper';
-		}
-
-		.features {
-			display: none;
 		}
 
 		.visual.has-content {

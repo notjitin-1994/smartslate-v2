@@ -412,6 +412,56 @@ adminRouter.get(
 // Mount the admin router under the /admin path
 app.use("/admin", adminRouter);
 
+// --- Public Routes ---
+
+// POST /api/ssa-interest
+// Endpoint for submitting interest in the Strategic Skills Architecture product.
+app.post("/ssa-interest", async (req, res) => {
+  const { name, email, phone, organization, jobTitle, companySize, message } =
+    req.body;
+
+  // --- Input Validation ---
+  if (!name || !email || !phone || !organization) {
+    return res.status(400).json({
+      error:
+        "Missing required fields: name, email, phone, and organization are required.",
+    });
+  }
+
+  // Basic email format validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ error: "Invalid email format." });
+  }
+
+  try {
+    const interestData = {
+      name,
+      email,
+      phone,
+      organization,
+      jobTitle: jobTitle || null,
+      companySize: companySize || null,
+      message: message || null,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    };
+
+    const docRef = await admin
+      .firestore()
+      .collection("ssa_interest")
+      .add(interestData);
+    functions.logger.info(`New SSA interest document created: ${docRef.id}`);
+    return res
+      .status(201)
+      .json({ message: "Interest successfully recorded.", id: docRef.id });
+  } catch (error) {
+    functions.logger.error("Error recording SSA interest:", error);
+    return res
+      .status(500)
+      .json({ error: "An internal error occurred. Please try again." });
+  }
+});
+
 // --- Export the Express app as a single Cloud Function ---
 // This is a more scalable pattern than exporting multiple functions.
 export const api = functions.https.onRequest(app);
@@ -494,6 +544,58 @@ export const onInquiryCreate = functions.firestore
     } catch (error) {
       functions.logger.error(
         `Error queuing email for inquiry ${snap.id}:`,
+        error,
+      );
+    }
+  });
+
+// --- SSA Interest Creation Trigger ---
+// This function triggers when a new document is created in the 'ssa_interest' collection.
+// It sends an email notification to the sales team.
+export const onSSAInterestCreate = functions.firestore
+  .document("ssa_interest/{interestId}")
+  .onCreate(async (snap) => {
+    const interestData = snap.data();
+    if (!interestData) {
+      functions.logger.error(
+        `No data associated with the SSA interest document: ${snap.id}`,
+      );
+      return;
+    }
+
+    const mailPayload = {
+      to: ["sanam@smartslate.io"],
+      cc: ["jitin@smartslate.io"],
+      message: {
+        subject: `🔥 New SSA Lead: ${interestData.name} from ${interestData.organization}`,
+        html: `
+          <h1>New Strategic Skills Architecture Lead</h1>
+          <p>A new lead has been captured for the SSA product.</p>
+          <ul>
+            <li><strong>Name:</strong> ${interestData.name}</li>
+            <li><strong>Email:</strong> ${interestData.email}</li>
+            <li><strong>Phone:</strong> ${interestData.phone}</li>
+            <li><strong>Organization:</strong> ${interestData.organization}</li>
+            <li><strong>Job Title:</strong> ${interestData.jobTitle || "Not provided"}</li>
+            <li><strong>Company Size:</strong> ${interestData.companySize || "Not provided"}</li>
+          </ul>
+          <hr>
+          <h3>Message:</h3>
+          <p>${interestData.message || "No message provided."}</p>
+          <br>
+          <p><em>This is an automated notification. Please follow up promptly.</em></p>
+        `,
+      },
+    };
+
+    try {
+      await admin.firestore().collection("mail").add(mailPayload);
+      functions.logger.info(
+        `Successfully queued email for SSA interest: ${snap.id}`,
+      );
+    } catch (error) {
+      functions.logger.error(
+        `Error queuing email for SSA interest ${snap.id}:`,
         error,
       );
     }

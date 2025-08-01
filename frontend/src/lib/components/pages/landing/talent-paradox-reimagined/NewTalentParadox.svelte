@@ -159,7 +159,7 @@
 		<div class="section-header final-cta">
 			<h4>Your <span class="accent-animate">Workforce is Ready to Evolve</span></h4>
 			<p>
-				Understanding the problem is the first step. Solving it is the next. SmartSlate is
+				Understanding the problem is the first step. Solving it is the next. Smartslate is
 				designed to be the bridge across this divide—connecting motivated talent with the
 				future-focused skills your company needs to thrive.
 		</p>

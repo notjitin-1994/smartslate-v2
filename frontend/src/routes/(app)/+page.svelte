@@ -1,12 +1,10 @@
 <script lang="ts">
 	import { tick } from 'svelte';
-	import Header from '$lib/components/pages/common/Header.svelte';
 	import Hero from '$lib/components/pages/landing/Hero.svelte';
 	import NewTalentParadox from '$lib/components/pages/landing/talent-paradox-reimagined/NewTalentParadox.svelte';
 	import Framework from '$lib/components/pages/landing/Framework.svelte';
 	import ROICalculator from '$lib/components/pages/landing/ROICalculator.svelte';
 	import Partners from '$lib/components/pages/landing/Partners.svelte';
-	import Footer from '$lib/components/pages/common/Footer.svelte';
 	import Container from '$lib/components/pages/common/Container.svelte';
 	import { contactUsModalStore } from '$lib/stores/contactUsModalStore';
 
@@ -56,38 +54,28 @@
 	}
 </script>
 
-<Header />
-
-<main id="main-content">
-	<Hero on:revealNext={() => revealNext('paradox')} />
-	{#if revealedSections.paradox}
-		<div bind:this={paradoxSection}>
-			<NewTalentParadox on:revealNext={() => revealNext('framework')} />
-		</div>
-	{/if}
-	{#if revealedSections.framework}
-		<div bind:this={frameworkSection}>
-			<Framework on:revealNext={() => revealNext('roi')} />
-		</div>
-	{/if}
-	{#if revealedSections.roi}
-		<div bind:this={roiSection}>
-			<ROICalculator on:revealNext={() => revealNext('partners')} />
-		</div>
-	{/if}
-	{#if revealedSections.partners}
-		<div bind:this={partnersSection}>
-			<Partners />
-		</div>
-	{/if}
-</main>
-
-<Footer />
+<Hero on:revealNext={() => revealNext('paradox')} />
+{#if revealedSections.paradox}
+	<div bind:this={paradoxSection}>
+		<NewTalentParadox on:revealNext={() => revealNext('framework')} />
+	</div>
+{/if}
+{#if revealedSections.framework}
+	<div bind:this={frameworkSection}>
+		<Framework on:revealNext={() => revealNext('roi')} />
+	</div>
+{/if}
+{#if revealedSections.roi}
+	<div bind:this={roiSection}>
+		<ROICalculator on:revealNext={() => revealNext('partners')} />
+	</div>
+{/if}
+{#if revealedSections.partners}
+	<div bind:this={partnersSection}>
+		<Partners />
+	</div>
+{/if}
 
 
 <style>
-	main {
-		/* Creates space for the sticky floating header */
-		margin-top: var(--space-lg);
-	}
 </style>

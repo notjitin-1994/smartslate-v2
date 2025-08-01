@@ -6,5 +6,8 @@ import { writable } from 'svelte/store';
  * @property {boolean} isOpen - If true, the modal is visible. Defaults to false.
  */
 export const authModalStore = writable({
-	isOpen: false
+	isOpen: false,
+	view: 'login' as 'login' | 'register',
+	title: '',
+	subtitle: ''
 });

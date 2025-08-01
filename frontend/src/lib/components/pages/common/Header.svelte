@@ -72,11 +72,11 @@
 </script>
 
 <header>
-	<div class="header-background" />
+	<div class="header-background"></div>
 	<Container>
 		<div class="content">
 			<a href="/" class="logo-link" on:click={closeMobileMenu}>
-				<img src={logo} alt="SmartSlate Logo" />
+				<img src={logo} alt="Smartslate Logo" />
 			</a>
 
 			<div class="nav-and-actions">
@@ -89,10 +89,20 @@
 
 				<div class="actions">
 					{#if $authStore.loading}
-						<div class="loader" />
+						<div class="loader"></div>
 					{:else if $authStore.user}
-						<div class="dropdown-container" on:click|stopPropagation>
-							<button class="user-avatar-button" on:click|stopPropagation={toggleUserDropdown}>
+						<div
+							class="dropdown-container"
+							on:click|stopPropagation
+							on:keydown|stopPropagation={(e) => {
+								if (e.key === 'Enter' || e.key === ' ') {
+									toggleUserDropdown();
+								}
+							}}
+							role="button"
+							tabindex="0"
+						>
+							<div class="user-avatar-button">
 								{#if $authStore.user.photoURL}
 									<img src={$authStore.user.photoURL} alt="User avatar" class="user-avatar" />
 								{:else}
@@ -100,7 +110,7 @@
 										{$authStore.user.email?.charAt(0).toUpperCase()}
 									</div>
 								{/if}
-							</button>
+							</div>
 							{#if showUserDropdown}
 								<div
 									class="dropdown-menu user-dropdown"
@@ -148,12 +158,14 @@
 		<div
 			class="mobile-nav-backdrop"
 			on:click|self={closeMobileMenu}
-			on:keydown={(e) => e.key === 'Escape' && closeMobileMenu()}
+			on:keydown={(e) => {
+				if (e.key === 'Escape') closeMobileMenu();
+			}}
 			transition:fade={{ duration: 300 }}
 			role="button"
 			tabindex="0"
 			aria-label="Close menu"
-		/>
+		></div>
 		<aside class="mobile-nav-panel" transition:fly={{ duration: 300, x: '100%', easing: quintOut }}>
 			<div class="mobile-nav-header">
 				<h2 class="mobile-nav-title">Menu</h2>
