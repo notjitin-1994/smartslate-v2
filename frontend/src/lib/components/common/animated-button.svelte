@@ -20,7 +20,7 @@
 	role={Tag === 'button' ? undefined : 'button'}
 >
 	<span>{text}</span>
-	<svelte:component this={icon} class="bounce" size={'1.1em'} />
+	<svelte:component this={icon} size={'1.1em'} />
 </svelte:element>
 
 <style>
@@ -47,6 +47,10 @@
 		box-shadow: var(--shadow-lg);
 	}
 
+	.animated-btn:hover :global(svg) {
+		color: var(--brand-accent-indigo);
+	}
+
 	.animated-btn.secondary {
 		background-color: transparent;
 		border-color: var(--secondary-accent);
@@ -56,25 +60,5 @@
 	.animated-btn.secondary:hover {
 		background-color: var(--secondary-accent);
 		color: var(--color-background-dark);
-	}
-
-	.bounce {
-		animation: bounce 2s infinite;
-	}
-
-	@keyframes bounce {
-		0%,
-		20%,
-		50%,
-		80%,
-		100% {
-			transform: translateY(0);
-		}
-		40% {
-			transform: translateY(-8px);
-		}
-		60% {
-			transform: translateY(-4px);
-		}
 	}
 </style>

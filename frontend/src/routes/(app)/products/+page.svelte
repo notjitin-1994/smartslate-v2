@@ -23,21 +23,21 @@
 	const products: Product[] = [
 		{
 			heading: 'Ignite Series',
-			tagline: 'Bridging the Gap Between Academia and Industry',
+			tagline: 'From Classroom to Career: A Direct Pipeline to Verified Talent',
 			description:
-				'Our pre-built courses are designed for higher education institutions to make their students market-ready. The curriculum is shaped by deep industry research and interviews with leaders and hiring managers, ensuring students learn the most in-demand skills.',
+				"We bridge the critical gap between academic knowledge and real-world impact. Our pre-built courses are engineered in collaboration with industry leaders to cultivate the next generation of market-ready professionals. We transform promising students into high-performing new hires, creating a seamless talent pipeline for leading companies.",
 			features: [
 				{
 					icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9a9 9 0 1 1 9 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75a9 9 0 0 0-9 0m9 0a9 9 0 0 1-9 0m9 0h-9m9 0h-9" /></svg>`,
-					text: 'Industry-Validated Skills: Courses on the most in-demand skills.'
+					text: '<strong>Industry-Forged Curriculum:</strong> Market-driven courses designed with industry leaders to build in-demand skills.'
 				},
 				{
 					icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>`,
-					text: 'Leader & Hiring Manager Visibility: Emphasize the value and credibility of the Smartslate Certification.'
+					text: '<strong>A Trusted Signal for Top Talent:</strong> Smartslate Certification validates career-focused education and de-risks hiring for businesses.'
 				},
 				{
 					icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>`,
-					text: 'Strict Certification Standards: Note that the certification has rigorous requirements.'
+					text: '<strong>A Commitment to Excellence:</strong> Rigorous, earned certification ensures every professional is ready to make an immediate impact.'
 				}
 			],
 			cta: {
@@ -136,7 +136,7 @@
 				description={product.description}
 				features={product.features}
 				cta={product.cta}
-				on:ctaClick={product.heading === 'Solara' ? handleSolaraCtaClick : undefined}
+				on:ctaClick={product.heading === 'Solara' ? handleSolaraCtaClick : () => {}}
 				secondaryCta={product.secondaryCta}
 				reverse={product.reverse}
 				status={product.status}

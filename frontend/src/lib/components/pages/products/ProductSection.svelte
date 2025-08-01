@@ -188,11 +188,17 @@
 	.arrow :global(svg) {
 		width: 18px;
 		height: 18px;
-		animation: bounce-horizontal 1.5s infinite;
 	}
 
 	.arrow :global(.book-icon) {
-		animation: flip-page 2s infinite ease-in-out;
+		transition: transform 0.3s ease, fill 0.3s ease, stroke 0.3s ease;
+	}
+
+	.btn:hover .arrow :global(.book-icon),
+	.btn:active .arrow :global(.book-icon) {
+		fill: #14b8a6;
+		stroke: #A7F3D0;
+		transform: scale(1.1);
 	}
 
 	.arrow :global(.static-icon) {
@@ -211,15 +217,6 @@
 		filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.7));
 	}
 
-	@keyframes bounce-horizontal {
-		0%,
-		100% {
-			transform: translateX(0);
-		}
-		50% {
-			transform: translateX(5px);
-		}
-	}
 
 	@keyframes flip-page {
 		0% {
@@ -232,6 +229,7 @@
 			transform: perspective(400px) rotateY(0deg);
 		}
 	}
+
 
 	.visual {
 		display: none;
