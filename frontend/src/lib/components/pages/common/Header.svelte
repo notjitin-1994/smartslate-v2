@@ -229,7 +229,7 @@
 	header {
 		position: sticky;
 		top: var(--space-md);
-		z-index: 10;
+		z-index: 50;
 		max-width: 1200px;
 		margin: 0 auto;
 		width: calc(100% - var(--space-lg));
