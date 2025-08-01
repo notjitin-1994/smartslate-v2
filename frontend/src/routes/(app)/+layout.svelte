@@ -9,6 +9,9 @@
 	import ToastContainer from '$lib/components/common/toast-container.svelte';
 	import { contactUsModalStore } from '$lib/stores/contactUsModalStore';
 	import ContactUsModal from '$lib/components/common/ContactUsModal.svelte';
+	import { fade } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
+	export let data;
 
 	let isModalOpen = false;
 	let isMobileMenuOpen = false;
@@ -37,7 +40,14 @@
 	class:modal-open={isModalOpen || isSolaraModalOpen || isContactUsModalOpen}
 	class:menu-open={isMobileMenuOpen}
 >
-	<slot />
+	{#key data.pathname}
+		<div
+			in:fade={{ duration: 300, delay: 300, easing: quintOut }}
+			out:fade={{ duration: 300, easing: quintOut }}
+		>
+			<slot />
+		</div>
+	{/key}
 </div>
 
 {#if isModalOpen}
