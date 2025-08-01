@@ -21,7 +21,7 @@
 		name: '',
 		email: '',
 		phone: '',
-		company: '',
+		organization: '',
 		inquiryType: 'all',
 		startDate: '',
 		endDate: ''
@@ -143,8 +143,8 @@
 	}
 </script>
 
-<div class="reach-outs-container">
-	<h1 class="page-title">Reach Outs</h1>
+<div class="leads-container">
+	<h1 class="page-title">Leads</h1>
 
 	{#if isLoading}
 		<div class="skeleton-table">
@@ -179,9 +179,9 @@
 							Phone
 							{#if sortColumn === 'phone'}{sortDirection === 'asc' ? '▲' : '▼'}{/if}
 						</th>
-						<th on:click={() => handleSort('company')} class="sortable">
-							Company
-							{#if sortColumn === 'company'}{sortDirection === 'asc' ? '▲' : '▼'}{/if}
+						<th on:click={() => handleSort('organization')} class="sortable">
+							Organization
+							{#if sortColumn === 'organization'}{sortDirection === 'asc' ? '▲' : '▼'}{/if}
 						</th>
 						<th on:click={() => handleSort('inquiryType')} class="sortable">
 							Type
@@ -222,8 +222,8 @@
 						<td class="filter-cell">
 							<input
 								type="text"
-								placeholder="Filter company..."
-								bind:value={filters.company}
+								placeholder="Filter organization..."
+								bind:value={filters.organization}
 								class="filter-input"
 							/>
 						</td>
@@ -251,7 +251,7 @@
 							<td class="align-top">{inquiry.name}</td>
 							<td class="align-top">{inquiry.email}</td>
 							<td class="align-top">{inquiry.phone || '--'}</td>
-							<td class="align-top">{inquiry.company || '--'}</td>
+							<td class="align-top">{inquiry.organization || '--'}</td>
 							<td class="align-top">{inquiry.inquiryType}</td>
 							<td class="message-cell align-top">{inquiry.message}</td>
 						</tr>
@@ -279,7 +279,7 @@
 						<div class="item-date">{formatDate(inquiry.createdAt, true)}</div>
 						<div class="item-details">
 							<span class="item-name">{inquiry.name}</span>
-							<span class="item-company">{inquiry.company || 'N/A'}</span>
+							<span class="item-company">{inquiry.organization || 'N/A'}</span>
 						</div>
 						<div class="item-arrow">&rsaquo;</div>
 					</li>
@@ -292,7 +292,7 @@
 <InquiryModal bind:isOpen={isModalOpen} inquiry={selectedInquiry} />
 
 <style>
-	.reach-outs-container {
+	.leads-container {
 		padding: var(--space-xl);
 		background-color: var(--color-background-secondary);
 		border-radius: var(--radius-lg);
@@ -468,7 +468,7 @@
 		.mobile-only {
 			display: block;
 		}
-		.reach-outs-container {
+		.leads-container {
 			padding: var(--space-lg);
 		}
 		.page-title {

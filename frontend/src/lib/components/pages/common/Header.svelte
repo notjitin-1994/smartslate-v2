@@ -11,27 +11,14 @@
 	import { browser } from '$app/environment';
 	import { mobileMenuStore } from '$lib/stores/mobileMenuStore';
 
-	let showProductsDropdown = false;
 	let showUserDropdown = false;
 	let isMobileMenuOpen = false;
-	let showMobileProducts = false;
-
-	function toggleProductsDropdown() {
-		showProductsDropdown = !showProductsDropdown;
-		if (showProductsDropdown) {
-			showUserDropdown = false;
-		}
-	}
 
 	function toggleUserDropdown() {
 		showUserDropdown = !showUserDropdown;
-		if (showUserDropdown) {
-			showProductsDropdown = false;
-		}
 	}
 
 	function closeDropdowns() {
-		showProductsDropdown = false;
 		showUserDropdown = false;
 	}
 
@@ -51,23 +38,15 @@
 		event.stopPropagation();
 		const newState = !isMobileMenuOpen;
 		isMobileMenuOpen = newState;
-		if (!newState) {
-			showMobileProducts = false;
-		}
 		// Ensure we're not in SSR
 		if (typeof window !== 'undefined') {
 			mobileMenuStore.set({ isOpen: newState });
 		}
 	}
 
-	function toggleMobileProductsDropdown() {
-		showMobileProducts = !showMobileProducts;
-	}
-
 	function closeMobileMenu(event?: MouseEvent) {
 		event?.stopPropagation();
 		isMobileMenuOpen = false;
-		showMobileProducts = false;
 		mobileMenuStore.set({ isOpen: false });
 	}
 
@@ -103,24 +82,7 @@
 			<div class="nav-and-actions">
 				<!-- Desktop Nav -->
 				<nav class="desktop-nav">
-					<div class="dropdown-container" on:click|stopPropagation>
-						<button
-							class="dropdown-toggle-button"
-							on:click|stopPropagation={toggleProductsDropdown}
-						>
-							Products
-						</button>
-						{#if showProductsDropdown}
-							<div
-								class="dropdown-menu"
-								transition:fly={{ y: -10, duration: 200, easing: quintOut }}
-							>
-								<a href="/products/ignite">Ignite Series</a>
-								<a href="/products/ssa">Strategic Skills Architecture</a>
-								<a href="/products/solara">Solara</a>
-							</div>
-						{/if}
-					</div>
+					<a href="/products">Products</a>
 					<a href="/difference">The Smartslate Difference</a>
 					<a href="/partner">Partner & Collaborate</a>
 				</nav>
@@ -142,7 +104,7 @@
 							{#if showUserDropdown}
 								<div
 									class="dropdown-menu user-dropdown"
-									transition:fly={{ y: -10, duration: 200, easing: quintOut }}
+									transition:fly={{ y: -5, duration: 300, easing: quintOut }}
 								>
 									<div class="user-info">
 										<p class="user-name">{$authStore.user.displayName || 'User'}</p>
@@ -197,14 +159,7 @@
 				<h2 class="mobile-nav-title">Menu</h2>
 			</div>
 			<nav class="mobile-nav">
-				<button class="mobile-nav-toggle" on:click={toggleMobileProductsDropdown}>Products</button>
-				{#if showMobileProducts}
-					<div class="mobile-dropdown">
-						<a href="/products/ignite" on:click={closeMobileMenu}>Ignite Series</a>
-						<a href="/products/ssa" on:click={closeMobileMenu}>Strategic Skills Architecture</a>
-						<a href="/products/solara" on:click={closeMobileMenu}>Solara</a>
-					</div>
-				{/if}
+				<a href="/products" on:click={closeMobileMenu}>Products</a>
 				<a href="/difference" on:click={closeMobileMenu}>The Smartslate Difference</a>
 				<a href="/partner" on:click={closeMobileMenu}>Partner & Collaborate</a>
 			</nav>
@@ -320,28 +275,14 @@
 		position: relative;
 	}
 
-	.dropdown-toggle-button {
-		background: none;
-		border: none;
-		color: var(--text-primary);
-		font-size: 0.9rem;
-		font-family: inherit;
-		cursor: pointer;
-		padding: 0;
-		transition: var(--transition-fast);
-		position: relative;
-	}
-
-	.dropdown-toggle-button:hover {
-		color: var(--primary-accent);
-	}
 
 	.dropdown-menu {
 		position: absolute;
-		top: calc(100% + var(--space-md));
+		top: calc(100% + 8px);
 		left: 50%;
 		transform: translateX(-50%);
-		background-color: var(--background);
+		background-color: rgba(9, 21, 33, 0.5);
+		backdrop-filter: blur(12px);
 		border: var(--border-subtle);
 		border-radius: var(--radius-md);
 		padding: var(--space-sm) 0;
@@ -350,6 +291,7 @@
 		box-shadow: var(--shadow-lg);
 		display: flex;
 		flex-direction: column;
+		overflow: hidden;
 	}
 
 	.dropdown-menu a {
@@ -361,7 +303,7 @@
 
 	.dropdown-menu a:hover {
 		background-color: var(--primary-accent);
-		color: var(--background);
+		color: #0D1B2A; /* Darker text for better contrast on hover */
 		text-decoration: none;
 	}
 
@@ -426,6 +368,7 @@
 		right: 0;
 		left: auto;
 		transform: translateX(0);
+		transform-origin: top right;
 	}
 
 	.user-info {
@@ -465,7 +408,7 @@
 
 	.dropdown-item:hover {
 		background-color: var(--primary-accent);
-		color: var(--background);
+		color: #0D1B2A; /* Darker text for better contrast on hover */
 	}
 
 	.loader {
@@ -661,34 +604,9 @@
 		font-family: var(--font-body);
 	}
 
-	.mobile-nav > a,
-	.mobile-nav-toggle {
+	.mobile-nav > a {
 		color: var(--text-primary);
 		font-weight: 500;
-	}
-
-	.mobile-nav-toggle {
-		background: none;
-		border: none;
-		padding: 0;
-		font-size: 1.1rem;
-		font-family: var(--font-body);
-		cursor: pointer;
-		text-align: left;
-	}
-
-	.mobile-dropdown {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		gap: var(--space-md);
-		margin-top: calc(-1 * var(--space-sm));
-		padding-left: var(--space-md);
-		border-left: var(--border-subtle);
-	}
-
-	.mobile-dropdown a {
-		color: var(--primary-shade-dark);
 	}
 
 	.mobile-actions {

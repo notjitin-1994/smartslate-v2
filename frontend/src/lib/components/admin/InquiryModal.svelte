@@ -26,7 +26,7 @@
 				<div><strong>Name:</strong> {inquiry.name}</div>
 				<div><strong>Email:</strong> {inquiry.email}</div>
 				<div><strong>Phone:</strong> {inquiry.phone || '--'}</div>
-				<div><strong>Company:</strong> {inquiry.company || '--'}</div>
+				<div><strong>Organization:</strong> {inquiry.organization || '--'}</div>
 				<div><strong>Date:</strong> {formatDate(inquiry.createdAt)}</div>
 				<div><strong>Type:</strong> {inquiry.inquiryType}</div>
 				<div class="full-width"><strong>Message:</strong></div>

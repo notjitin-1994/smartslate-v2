@@ -9,6 +9,8 @@
 	// Form State
 	let name = '';
 	let email = '';
+	let phone = '';
+	let organization = '';
 	let message = '';
 	let loading = false;
 	let error: string | null = null;
@@ -32,6 +34,8 @@
 			await addInquiry({
 				name,
 				email,
+				phone,
+				organization,
 				message,
 				inquiryType,
 				userId: currentUser?.uid
@@ -118,6 +122,26 @@
 							placeholder="you@example.com"
 							bind:value={email}
 							required
+							disabled={loading}
+						/>
+					</div>
+					<div class="input-group">
+						<label for="phone">Phone Number</label>
+						<input
+							type="tel"
+							id="phone"
+							placeholder="Your Phone Number"
+							bind:value={phone}
+							disabled={loading}
+						/>
+					</div>
+					<div class="input-group">
+						<label for="organization">Organization</label>
+						<input
+							type="text"
+							id="organization"
+							placeholder="Your Organization"
+							bind:value={organization}
 							disabled={loading}
 						/>
 					</div>

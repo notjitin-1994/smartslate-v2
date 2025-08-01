@@ -2,7 +2,7 @@ export interface Inquiry {
 	id: string;
 	name: string;
 	email: string;
-	company?: string;
+	organization?: string;
 	phone?: string;
 	inquiryType: string;
 	message: string;

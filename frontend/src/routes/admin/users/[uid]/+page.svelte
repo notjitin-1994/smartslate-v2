@@ -6,7 +6,6 @@
 	import ConfirmationModal from '$lib/components/admin/user-management/ConfirmationModal.svelte';
 	import { toastStore } from '$lib/stores/toastStore';
 	import { goto } from '$app/navigation';
-	import ProgressBar from '$lib/components/admin/user-management/ProgressBar.svelte';
 
 	export let data: PageData;
 
@@ -244,10 +243,10 @@
 					<div class="space-y-4">
 						{#if progress && progress.length > 0}
 							{#each progress as courseProgress (courseProgress.courseId)}
-								<ProgressBar
-									courseName={courseProgress.courseName}
-									progress={courseProgress.progress}
-								/>
+								<div>
+									<p>{courseProgress.courseName}</p>
+									<p>Progress: {courseProgress.progress}%</p>
+								</div>
 							{/each}
 						{:else}
 							<p class="text-sm text-gray-500">No progress data available.</p>

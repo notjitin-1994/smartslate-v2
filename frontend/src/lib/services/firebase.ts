@@ -28,7 +28,7 @@ const firebaseConfig = {
 // Initialize Firebase
 // We add a check to see if the app is already initialized to prevent errors during hot-reloading in development.
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-
+export { app };
 // Export the necessary Firebase services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
@@ -43,6 +43,8 @@ export { signInWithCustomToken };
 export interface InquiryData {
 	name: string;
 	email: string;
+	phone?: string;
+	organization?: string;
 	message: string;
 	inquiryType: string | null;
 	userId?: string; // Optional: if the user is logged in
