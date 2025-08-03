@@ -276,21 +276,26 @@
 	}
 
 	.accent-animate {
-		color: var(--text-primary);
+		color: var(--primary-accent);
+		font-weight: 600;
 	}
 
 	/* Animate static headers on load */
 	.section-header:not(.interactive) .accent-animate {
-		animation: color-change-once 1s ease-in-out 0.5s forwards;
+		opacity: 0;
+		animation: fadeInAccent 1s ease-in-out 0.5s forwards;
 	}
 
 	/* Transition interactive headers on reveal */
 	.interactive .accent-animate {
-		transition: color 0.5s ease-in-out;
+		transition: all 0.5s ease-in-out;
+		color: var(--text-secondary);
+		font-weight: 500;
 	}
 
 	.interactive.revealed .accent-animate {
 		color: var(--primary-accent);
+		font-weight: 600;
 	}
 
 	@keyframes color-change-once {
@@ -299,6 +304,12 @@
 		}
 		to {
 			color: var(--primary-accent);
+		}
+	}
+
+	@keyframes fadeInAccent {
+		to {
+			opacity: 1;
 		}
 	}
 	.cta-button {
