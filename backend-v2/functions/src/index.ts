@@ -83,10 +83,26 @@ adminRouter.get(
         .get();
       const newInquiriesThisMonth = inquiriesSnapshot.size;
 
+      const solaraInterestsSnapshot = await admin
+        .firestore()
+        .collection("solara_interest")
+        .where("createdAt", ">=", startOfMonth)
+        .get();
+      const newSolaraInterestsThisMonth = solaraInterestsSnapshot.size;
+
+      const ssaInterestsSnapshot = await admin
+        .firestore()
+        .collection("ssa_interest")
+        .where("createdAt", ">=", startOfMonth)
+        .get();
+      const newSSAInterestsThisMonth = ssaInterestsSnapshot.size;
+
       return res.status(200).json({
         totalUsers,
         totalCourses,
         newInquiriesThisMonth,
+        newSolaraInterestsThisMonth,
+        newSSAInterestsThisMonth,
       });
     } catch (error) {
       logger.error("Error fetching dashboard stats:", error);
@@ -177,6 +193,58 @@ adminRouter.get(
       return res
         .status(500)
         .json({ error: "An error occurred while listing users." });
+    }
+  },
+);
+
+adminRouter.get(
+  "/solara-interests",
+  authenticateAndAuthorize(["smartslateAdmin", "smartslateManager"]),
+  async (req: express.Request, res: express.Response) => {
+    try {
+      const solaraInterestsSnapshot = await admin
+        .firestore()
+        .collection("solara_interest")
+        .orderBy("createdAt", "desc")
+        .get();
+      
+      const interests = solaraInterestsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      
+      return res.status(200).json({ interests });
+    } catch (error) {
+      logger.error("Error fetching Solara interests:", error);
+      return res
+        .status(500)
+        .json({ error: "An error occurred while fetching Solara interests." });
+    }
+  },
+);
+
+adminRouter.get(
+  "/ssa-interests", 
+  authenticateAndAuthorize(["smartslateAdmin", "smartslateManager"]),
+  async (req: express.Request, res: express.Response) => {
+    try {
+      const ssaInterestsSnapshot = await admin
+        .firestore()
+        .collection("ssa_interest")
+        .orderBy("createdAt", "desc")
+        .get();
+      
+      const interests = ssaInterestsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      
+      return res.status(200).json({ interests });
+    } catch (error) {
+      logger.error("Error fetching SSA interests:", error);
+      return res
+        .status(500)
+        .json({ error: "An error occurred while fetching SSA interests." });
     }
   },
 );
