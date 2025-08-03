@@ -30,7 +30,7 @@ function createAuthStore() {
 			auth,
 			async (user) => {
 				if (user) {
-					const tokenResult = await user.getIdTokenResult(true); // Force refresh
+					const tokenResult = await user.getIdTokenResult();
 					const role = (tokenResult.claims.role as Role) || 'learner';
 					const appUser: AppUser = Object.assign(user, { role });
 					set({ user: appUser, loading: false, error: null, role: role });

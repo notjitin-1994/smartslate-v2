@@ -210,9 +210,7 @@
 		font-weight: 800;
 		line-height: 1;
 		margin-bottom: 1.5rem;
-		background: -webkit-linear-gradient(45deg, var(--primary-accent), var(--secondary-accent));
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
+		color: var(--primary-accent);
 	}
 
 	.subhead {
