@@ -81,6 +81,10 @@
 		text-align: center;
 		background: rgba(15, 23, 42, 0.6);
 		backdrop-filter: blur(10px);
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		height: 100%;
 	}
 
 	.card-background {
@@ -135,5 +139,29 @@
 	.sub-text {
 		font-size: var(--font-size-sm);
 		color: var(--color-text-muted);
+	}
+	@media (max-width: 768px) {
+		.infographic-container {
+			grid-template-columns: 1fr;
+		}
+		.data-viz {
+			font-size: 3rem;
+		}
+
+		.data-viz .symbol {
+			font-size: 1.5rem;
+		}
+
+		.data-viz .unit {
+			font-size: 1rem;
+		}
+
+		.label {
+			font-size: var(--font-size-sm);
+		}
+
+		.sub-text {
+			font-size: var(--font-size-xs);
+		}
 	}
 </style>

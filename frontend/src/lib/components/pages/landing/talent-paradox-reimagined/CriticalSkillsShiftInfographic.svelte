@@ -199,4 +199,20 @@
 			opacity: 1;
 		}
 	}
+	@media (max-width: 768px) {
+		.infographic-container {
+			grid-template-columns: 1fr;
+			gap: var(--space-md);
+			padding: var(--space-md);
+		}
+
+		.arrow-container {
+			transform: rotate(90deg) scale(0.8);
+			margin: -20px 0;
+		}
+
+		.arrow-container.visible {
+			transform: rotate(90deg) scale(1);
+		}
+	}
 </style>
